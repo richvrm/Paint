@@ -32,12 +32,15 @@ public class Paint extends JPanel
 	//Classe interna para lidar com eventos de mouse
 	private class MouseHandler extends MouseAdapter
 	{
+
 		public void mousePressed( MouseEvent e )
 		{
 			x1 = e.getX();
 			y1 = e.getY();
 
 			setupDesenho();
+
+			g.drawLine(x1,y1,x1,y1);
 
 			x2=x1;
 			y2=y1;
