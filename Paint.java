@@ -1,29 +1,57 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
-public class Paint extends JPanel {
+public class Paint extends JPanel
+{
+	private final int LARGURA  = 800;
+	private final int ALTURA = 800;
+	private final Color FUNDO   = Color.WHITE;
 
-  public Paint() {
-  }
+	private int x1, y1, x2, y2;
 
-  public void paintComponent(Graphics g) {
-    int width = getWidth();
-    int height = getHeight();
-    g.setColor(Color.black);
-    g.drawOval(0, 0, width, height);
-  }
+	private MouseHandler mouse;
+	private Graphics g;
 
-  public static void main(String args[]) {
-    JFrame frame = new JFrame("Oval Sample");
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.add(new Paint());
-    frame.setSize(300, 200);
-    frame.setVisible(true);
-	JPanel panel = new JPanel();
-	frame.add(panel);
-	Paint p = new Paint();
-  }
+	public Paint()
+	{
+		setBackground( FUNDO );
+		setPreferredSize( new Dimension( LARGURA, ALTURA ) );
+
+		mouse  = new MouseHandler();
+
+		this.addMouseListener( mouse );
+		this.addMouseMotionListener( mouse );
+	}
+
+	private void setupDesenho()
+	{
+		g = getGraphics();
+	}
+
+	//Classe interna para lidar com eventos de mouse
+	private class MouseHandler extends MouseAdapter
+	{
+		public void mousePressed( MouseEvent e )
+		{
+			x1 = e.getX();
+			y1 = e.getY();
+
+			setupDesenho();
+
+			x2=x1;
+			y2=y1;
+		}
+
+		public void mouseDragged( MouseEvent e )
+		{
+			x1 = e.getX();
+			y1 = e.getY();
+
+			g.drawLine(x1,y1,x2,y2);
+
+			x2=x1;
+			y2=y1;
+		}
+	}
 }
-
