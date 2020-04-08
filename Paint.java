@@ -91,7 +91,7 @@ public class Paint extends JPanel
 
 		public void mouseDragged( MouseEvent e )
 		{
-			if(ferramenta_atual == Ferramentas.RETANGULO) {
+			if(ferramenta_atual == Ferramentas.NORMAL) {
 				x1 = e.getX();
 				y1 = e.getY();
 
