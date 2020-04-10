@@ -91,13 +91,15 @@ public class Paint extends JPanel
 
 		public void mouseDragged( MouseEvent e )
 		{
-			x1 = e.getX();
-			y1 = e.getY();
+			if(ferramenta_atual == Ferramentas.NORMAL) {
+				x1 = e.getX();
+				y1 = e.getY();
 
-			g.drawLine(x1,y1,x2,y2);
+				g.drawLine(x1,y1,x2,y2);
 
-			x2=x1;
-			y2=y1;
+				x2=x1;
+				y2=y1;
+			}
 		}
 	}
 }
