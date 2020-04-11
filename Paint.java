@@ -56,6 +56,31 @@ public class Paint extends JPanel
 	private class MouseHandler extends MouseAdapter
 	{
 
+		public void dda(int x1, int y1, int x2, int y2) 
+		{
+			int dx, dy, passos, k;
+			double x_inc, y_inc, x,y;
+			dx = x2-x1;
+			dy = y2-y1;
+			if (abs(dx) > abs(dy))
+				passos = abs(dx);
+			else
+				passos = abs(dy);
+
+			x_inc = double(dx)/double(passos);
+			y_inc = double(dy)/double(passos);
+
+			x=x1;
+			y=y1;
+			drawLine(round(x),round(y),round(x),round(y));
+
+			for(k=1; k< passos; k++) {
+				x = x+x_inc;
+				y = y+y_inc;
+				drawLine(round(x),round(y),round(x),round(y));
+			}
+		}
+
 		public void ponto(int x,int y)
 		{
 			setupDesenho();
