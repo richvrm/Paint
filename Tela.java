@@ -1,10 +1,4 @@
-
 import java.util.ArrayList;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.awt.Color;
-import java.awt.Point;
 
 import javax.swing.*;
 import javax.swing.DefaultComboBoxModel;
@@ -15,11 +9,14 @@ import javax.swing.JLabel.*;
 import javax.swing.JButton;
 import javax.swing.border.*;
 import javax.swing.border.EmptyBorder;
-//import javax.swing.border.TitledBorder;
-
 import javax.swing.GroupLayout.*;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.Icon;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
@@ -44,14 +41,18 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
     private JButton buttonRetangulo;
     private JButton buttonCirculo;
     private int forma;
+    private int x1, y1, x2,y2;
+    private Graphics g;
+    private Point mousePos;
 
+    protected Point mouseReleased;
+    protected Point mousePressed;
     protected JColorChooser Cores;
     protected Color corE = Color.BLACK;
 
-    private Point mousePos;
-    protected Point mouseReleased;
-    protected Point mousePressed;
-	private Graphics g;
+    private Icon pen  = new ImageIcon(getClass().getResource("img/pen.png"));
+    private Icon ret  = new ImageIcon(getClass().getResource("img/ret.png"));
+    private Icon circ = new ImageIcon(getClass().getResource("img/circ.png"));
 
     public static void main(String[] args){
         EventQueue.invokeLater(new Runnable(){
@@ -67,6 +68,7 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
     }
 
     public Tela(){
+        //Inicializando Ambiente
         setTitle("Paint Calafrio");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100,100,800,600);
@@ -77,35 +79,42 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
 
 
 
-        //area de itens
+        //Painel com botoes
         panelMenu = new JPanel();
         panelMenu.setBounds(0,0,800,60);
-        //panelMenu.setBackground( Color.BLACK );
         contentPane.add(panelMenu);
 
+        //botao selecionar cor
         buttonCor = new JButton();
         buttonCor.addActionListener(this);
         buttonCor.setBackground(Color.BLACK);
-        //buttonCor.setHorizontalTextPosition(SwingConstants.CENTER); 
-
-        buttonPonto = new JButton("Ponto");
+        buttonCor.setHorizontalTextPosition(SwingConstants.CENTER); 
+        
+        //botao caneta
+        buttonPonto = new JButton();
         buttonPonto.addActionListener(this);
-        //buttonPonto.setBackground(Color.BLACK);
-        //buttonPonto.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonPonto.setIcon(pen);
+        buttonPonto.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonPonto.setBackground(Color.WHITE);
 
-        buttonRetangulo = new JButton("Retangulo");
+        //botao retangulo
+        buttonRetangulo = new JButton();
         buttonRetangulo.addActionListener(this);
-        //buttonRetangulo.setBackground(Color.BLACK);
-        //buttonRetangulo.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonRetangulo.setIcon(ret);
+        buttonRetangulo.setBackground(Color.WHITE);
+        buttonRetangulo.setHorizontalTextPosition(SwingConstants.CENTER); 
 
-        buttonCirculo = new JButton("Circulo");
+        //botao circulo
+        buttonCirculo = new JButton();
         buttonCirculo.addActionListener(this);
-        //buttonCirculo.setBackground(Color.BLACK);
-        //buttonCirculo.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonCirculo.setIcon(circ);
+        buttonCirculo.setBackground(Color.WHITE);
+        buttonCirculo.setHorizontalTextPosition(SwingConstants.CENTER); 
 
+        //configurar grupo de botoes
         GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
         g1_panelMenu.setHorizontalGroup(
-            g1_panelMenu.createParallelGroup(Alignment.LEADING)//.addGap(0,60,Short.MAX_VALUE)
+            g1_panelMenu.createParallelGroup(Alignment.CENTER)
             .addGroup( g1_panelMenu.createSequentialGroup()
                 .addComponent(buttonCor)
                 .addGap(10)
@@ -118,8 +127,9 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
         );
 
         g1_panelMenu.setVerticalGroup(
-            g1_panelMenu.createParallelGroup(Alignment.LEADING)//.addGap(0,60,Short.MAX_VALUE)
+            g1_panelMenu.createParallelGroup(Alignment.CENTER)
             .addGroup(g1_panelMenu.createSequentialGroup()
+            .addGap(10)
             .addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
             .addComponent(buttonCor)
             .addComponent(buttonPonto)
@@ -131,9 +141,7 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
 
 
 
-
-
-        //area de desenho
+        //Painel de desenho
         panel = new JPanel();
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
@@ -144,23 +152,24 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
 
 
 
-        //area posição
+        //Painel que exibe a posição no Painel de desenho
         panelStatus = new JPanel();
         panelStatus.setBounds(0,502,800,60);
-        //panelStatus.setBackground(Color.BLUE);
         contentPane.add(panelStatus);
-
+	    
+	// label que exibe a posicao X
         labelPosX = new JLabel("");
         labelPosX.setHorizontalTextPosition(SwingConstants.CENTER);
         labelPosX.setVerticalTextPosition(SwingConstants.CENTER);
         labelPosX.setBorder(new TitledBorder(null, "X", TitledBorder.LEADING,TitledBorder.TOP, null,null));
-
+	    
+	// label que exibe a posicao Y
         labelPosY = new JLabel("");
         labelPosY.setHorizontalTextPosition(SwingConstants.CENTER);
         labelPosY.setVerticalTextPosition(SwingConstants.CENTER);
         labelPosY.setBorder(new TitledBorder(null, "Y", TitledBorder.LEADING,TitledBorder.TOP, null,null));
 
-
+        //configurar grupo do painel de posição
         GroupLayout g1_panelStatus = new GroupLayout(panelStatus);     
         g1_panelStatus.setHorizontalGroup(
             g1_panelStatus.createParallelGroup(Alignment.LEADING)
@@ -181,8 +190,8 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
             .addContainerGap()
             )
         );
-
         panelStatus.setLayout(g1_panelStatus);
+	    
     }
 
 
@@ -190,7 +199,15 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
         mousePos = panel.getMousePosition();
         labelPosX.setText(String.valueOf(mousePos.x));
         labelPosY.setText(String.valueOf(mousePos.y));
-
+		
+        //se forma == 1 desenha o ponto
+        if(forma == 1) {
+			x1 = mousePos.x;
+			y1 = mousePos.y;
+			g.drawLine(x1,y1+60,x2,y2+60);
+			x2=x1;
+			y2=y1;
+		}
     }
 
     public void mouseMoved(MouseEvent arg0){
@@ -200,6 +217,7 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
     }
 
     protected void do_panel_mouseMoved(MouseEvent arg0){
+        //print da posicao X e Y na tela
         mousePos = panel.getMousePosition();
         labelPosX.setText(String.valueOf(mousePos.x));
         labelPosY.setText(String.valueOf(mousePos.y));
@@ -250,16 +268,20 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
     }
 
     public void mousePressed(MouseEvent arg0){
-		int x1 = arg0.getX();
-		int	y1 = arg0.getY();
+        mousePos = panel.getMousePosition();
+		int x1 = mousePos.x;
+		int	y1 = mousePos.y;
+
+        //se forma == 1 desenha o ponto
         if(forma == 1){
 		    ponto(x1,y1);
         }
-
+	    x2=x1;
+        y2=y1;
     }
     public void ponto(int x,int y){
-			setupDesenho();
-			g.drawLine(x,y,x,y);
+		setupDesenho();
+		g.drawLine(x,y+60,x,y+60);
     }
 	private void setupDesenho(){
 		g = getGraphics();
@@ -269,18 +291,11 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
 
     public void mouseReleased(MouseEvent arg0){
 
-
-      
-
-
     }
-
 
     public void do_panel_mousePressed(MouseEvent arg0){
         mousePressed = panel.getMousePosition();
     }
 
-
-    
 
 }
