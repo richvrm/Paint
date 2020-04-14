@@ -1,17 +1,62 @@
+import java.util.ArrayList;
+
+import javax.swing.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JLabel.*;
+import javax.swing.JButton;
+import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.GroupLayout.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.Icon;
+
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 
-public class Paint extends JPanel
-{
-	private final int LARGURA  = 800;
-	private final int ALTURA = 800;
-	private final Color FUNDO   = Color.WHITE;
+public class Paint extends JFrame implements ActionListener{ //MouseListener, MouseMotionListener{
+    private JPanel contentPane;
+    private JPanel panelMenu;
+    private JPanel panelStatus;
+    private JPanel panel;
+    private JLabel labelPosX;
+    private JLabel labelPosY;
+    private JButton buttonCor;
+    private JButton buttonPonto;
+    private JButton buttonRetangulo;
+    private JButton buttonCirculo;
+    private JButton buttonReta;
+    private Point mousePos;
 
-	private int x1, y1, x2, y2;
 
+    private int x1, y1, x2,y2;
 	private MouseHandler mouse;
-	private Graphics g;
+    private Graphics g;
+
+    protected Point mouseReleased;
+    protected Point mousePressed;
+    protected JColorChooser Cores;
+    protected Color corE = Color.BLACK;
+
+    private Icon pen  = new ImageIcon(getClass().getResource("img/pen.png"));
+    private Icon ret  = new ImageIcon(getClass().getResource("img/ret.png"));
+    private Icon circ = new ImageIcon(getClass().getResource("img/circ.png"));
+    private Icon reta = new ImageIcon(getClass().getResource("img/reta.png"));
 
 	//variaveis das coordenadas do retangulo
 	private int Rx1 = -1;
@@ -36,29 +81,184 @@ public class Paint extends JPanel
 	private int CBy = -1;
 	private int CBraio = 50;
 
+    //Ferramentas possiveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, RETA
 	};
-
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
 
-	public Paint()
-	{
-		setBackground( FUNDO );
-		setPreferredSize( new Dimension( LARGURA, ALTURA ) );
+    //main: inicializar tela e captura de eventos
+    public static void main(String[] args){
+        EventQueue.invokeLater(new Runnable(){
+            public void run(){
+                try{
+                    Paint frame = new Paint();
+                    frame.setVisible(true);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
-		mouse  = new MouseHandler();
+    public Paint(){
+
+        //Inicializando Ambiente
+
+        setTitle("Paint Brush");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100,100,800,600);
+        contentPane = new JPanel();
+       // contentPane.setBorder(new EmptyBorder(5,5,5,5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+
+
+
+        //Painel com botoes
+        panelMenu = new JPanel();
+        panelMenu.setBounds(0,0,800,60);
+        contentPane.add(panelMenu);
+
+        //botao selecionar cor
+        buttonCor = new JButton();
+        buttonCor.addActionListener(this);
+        buttonCor.setBackground(Color.BLACK);
+        buttonCor.setHorizontalTextPosition(SwingConstants.CENTER); 
+        
+        //botao caneta
+
+        buttonPonto = new JButton();
+        buttonPonto.addActionListener(this);
+        buttonPonto.setIcon(pen);
+        buttonPonto.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonPonto.setBackground(Color.WHITE);
+
+        //botao retangulo
+
+        buttonRetangulo = new JButton();
+        buttonRetangulo.addActionListener(this);
+        buttonRetangulo.setIcon(ret);
+        buttonRetangulo.setBackground(Color.WHITE);
+        buttonRetangulo.setHorizontalTextPosition(SwingConstants.CENTER); 
+
+        //botao circulo
+
+        buttonCirculo = new JButton();
+        buttonCirculo.addActionListener(this);
+        buttonCirculo.setIcon(circ);
+        buttonCirculo.setBackground(Color.WHITE);
+        buttonCirculo.setHorizontalTextPosition(SwingConstants.CENTER); 
+
+        //botao reta
+
+        buttonReta = new JButton();
+        buttonReta.addActionListener(this);
+        buttonReta.setIcon(reta);
+        buttonReta.setBackground(Color.WHITE);
+        buttonReta.setHorizontalTextPosition(SwingConstants.CENTER); 
+
+
+        //configurar grupo de botoes
+        GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
+        g1_panelMenu.setHorizontalGroup(
+            g1_panelMenu.createParallelGroup(Alignment.CENTER)
+
+            .addGroup( g1_panelMenu.createSequentialGroup()
+                .addComponent(buttonCor)
+                .addGap(10)
+                .addComponent(buttonPonto)
+                .addGap(10)
+                .addComponent(buttonRetangulo)
+                .addGap(10)
+                .addComponent(buttonCirculo)
+                .addGap(10)
+                .addComponent(buttonReta)
+            )
+        );
+
+        g1_panelMenu.setVerticalGroup(
+            g1_panelMenu.createParallelGroup(Alignment.CENTER)
+            .addGroup(g1_panelMenu.createSequentialGroup()
+            .addGap(10)
+            .addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
+            .addComponent(buttonCor)
+            .addComponent(buttonPonto)
+            .addComponent(buttonRetangulo)
+            .addComponent(buttonCirculo)
+            .addComponent(buttonReta)
+            ))
+         );
+        panelMenu.setLayout(g1_panelMenu);
+
+        //Painel de desenho
+        panel = new JPanel();
+        panel.setBackground(Color.WHITE);
+        panel.setBounds(0,60,800,540);
+        contentPane.add(panel);
+        panel.setLayout(null);
+
+        mouse  = new MouseHandler();
 
 		this.addMouseListener( mouse );
 		this.addMouseMotionListener( mouse );
-	}
 
-	private void setupDesenho()
-	{
+    }
+
+    //capturar click em botoes
+    public void actionPerformed(ActionEvent arg0){
+        if(arg0.getSource() == buttonCor){
+            do_buttonCor_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonPonto){
+            do_buttonPonto_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonRetangulo){
+            do_buttonRetangulo_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonCirculo){
+            do_buttonCirculo_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonReta){
+            do_buttonReta_actionPerfomed(arg0);
+        }
+    }
+
+    //mudar cor
+    protected void do_buttonCor_actionPerfomed(ActionEvent arg0){
+        Cores = new JColorChooser();
+        corE = Cores.showDialog(null,"Escolha a cor", Color.BLACK);
+        buttonCor.setBackground(corE);
+ 	    g.setColor(corE);
+    }
+
+	private void setupDesenho(){
 		g = getGraphics();
-	}
+	    g.setColor(corE);
+    }
 
-	//Classe interna para lidar com eventos de mouse
+//set ferramenta atual de acordo com o botao clicado
+    protected void do_buttonPonto_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.NORMAL;
+    }
+    
+    protected void do_buttonRetangulo_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.RETANGULO;
+    }
+
+    protected void do_buttonCirculo_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.CIRC_BRESENHAM;
+    }
+
+    protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.RETA_BRESENHAM;
+    }
+
+
+
+    
+
+//Classe interna para lidar com eventos de mouse
 	private class MouseHandler extends MouseAdapter
 	{
 		public void dda() 
@@ -291,5 +491,17 @@ public class Paint extends JPanel
 				y2=y1;
 			}
 		}
+
+		public void reta() {
+			setupDesenho();
+			//Reta superior
+			RBx1 = Rx1;
+			RBy1 = Ry1;
+			RBx2 = Rx2;
+			RBy2 = Ry1;
+			Rx1 = Ry1 = Rx2 = Ry2 = -1;
+		}
 	}
+
+
 }
