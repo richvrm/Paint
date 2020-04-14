@@ -14,7 +14,7 @@ java Paint
 ```
 
 ### Alunos
-Laura Nunes de Andrade
-Lucca Augusto Moreira Santos
-Pedro Achilles Carvalho
-Richard Vinícius Rezende Mariano
+ - Laura Nunes de Andrade
+ - Lucca Augusto Moreira Santos
+ - Pedro Achilles Carvalho
+ - Richard Vinícius Rezende Mariano
