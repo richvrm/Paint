@@ -40,6 +40,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JButton buttonPonto;
     private JButton buttonRetangulo;
     private JButton buttonCirculo;
+    private JButton buttonReta;
     private Point mousePos;
 
 
@@ -55,6 +56,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private Icon pen  = new ImageIcon(getClass().getResource("img/pen.png"));
     private Icon ret  = new ImageIcon(getClass().getResource("img/ret.png"));
     private Icon circ = new ImageIcon(getClass().getResource("img/circ.png"));
+    private Icon reta = new ImageIcon(getClass().getResource("img/reta.png"));
 
 	//variaveis das coordenadas do retangulo
 	private int Rx1 = -1;
@@ -81,7 +83,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
     //Ferramentas possiveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, RETA
 	};
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
 
@@ -148,6 +150,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         buttonCirculo.setBackground(Color.WHITE);
         buttonCirculo.setHorizontalTextPosition(SwingConstants.CENTER); 
 
+        //botao reta
+
+        buttonReta = new JButton();
+        buttonReta.addActionListener(this);
+        buttonReta.setIcon(reta);
+        buttonReta.setBackground(Color.WHITE);
+        buttonReta.setHorizontalTextPosition(SwingConstants.CENTER); 
+
 
         //configurar grupo de botoes
         GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
@@ -162,6 +172,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                 .addComponent(buttonRetangulo)
                 .addGap(10)
                 .addComponent(buttonCirculo)
+                .addGap(10)
+                .addComponent(buttonReta)
             )
         );
 
@@ -174,6 +186,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             .addComponent(buttonPonto)
             .addComponent(buttonRetangulo)
             .addComponent(buttonCirculo)
+            .addComponent(buttonReta)
             ))
          );
         panelMenu.setLayout(g1_panelMenu);
@@ -206,6 +219,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         if(arg0.getSource() == buttonCirculo){
             do_buttonCirculo_actionPerfomed(arg0);
         }
+        if(arg0.getSource() == buttonReta){
+            do_buttonReta_actionPerfomed(arg0);
+        }
     }
 
     //mudar cor
@@ -232,6 +248,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
     protected void do_buttonCirculo_actionPerfomed(ActionEvent arg0){
         ferramenta_atual = Ferramentas.CIRC_BRESENHAM;
+    }
+
+    protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.RETA_BRESENHAM;
     }
 
 
@@ -470,6 +490,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				x2=x1;
 				y2=y1;
 			}
+		}
+
+		public void reta() {
+			setupDesenho();
+			//Reta superior
+			RBx1 = Rx1;
+			RBy1 = Ry1;
+			RBx2 = Rx2;
+			RBy2 = Ry1;
+			Rx1 = Ry1 = Rx2 = Ry2 = -1;
 		}
 	}
 
