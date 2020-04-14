@@ -13,7 +13,7 @@ javac Paint.java
 java Paint
 ```
 
-###Alunos
+### Alunos
 Laura Nunes de Andrade
 Lucca Augusto Moreira Santos
 Pedro Achilles Carvalho
