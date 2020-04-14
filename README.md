@@ -1,5 +1,5 @@
 # Paint
-Este  trabalho  tem  como  objetivo  complementar  os  conhecimentos  teóricos  na  disciplina  deComputação Gráfica com o desenvolvimento de uma aplicação de desenho gráfico assistido, como o Paint Brush.
+Este  trabalho  tem  como  objetivo  complementar  os  conhecimentos  teóricos  na  disciplina  de Computação Gráfica com o desenvolvimento de uma aplicação de desenho gráfico assistido, como o Paint Brush.
 
 ### Instalar
 ```
@@ -9,6 +9,12 @@ cd Paint
 
 ### Executar
 ```
-javac Start.java
-java Start
+javac Paint.java
+java Paint
 ```
+
+###Alunos
+Laura Nunes de Andrade
+Lucca Augusto Moreira Santos
+Pedro Achilles Carvalho
+Richard Vinícius Rezende Mariano
