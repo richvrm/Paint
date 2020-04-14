@@ -29,7 +29,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
-public class Tela extends JFrame implements MouseMotionListener, ActionListener, MouseListener{
+public class Tela extends JFrame implements ActionListener{ //MouseListener, MouseMotionListener{
     private JPanel contentPane;
     private JPanel panelMenu;
     private JPanel panelStatus;
@@ -40,11 +40,12 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
     private JButton buttonPonto;
     private JButton buttonRetangulo;
     private JButton buttonCirculo;
-    private int forma;
-    private int x1, y1, x2,y2;
-
-    private Graphics g;
     private Point mousePos;
+
+
+    private int x1, y1, x2,y2;
+	private MouseHandler mouse;
+    private Graphics g;
 
     protected Point mouseReleased;
     protected Point mousePressed;
@@ -55,6 +56,36 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
     private Icon ret  = new ImageIcon(getClass().getResource("img/ret.png"));
     private Icon circ = new ImageIcon(getClass().getResource("img/circ.png"));
 
+	//variaveis das coordenadas do retangulo
+	private int Rx1 = -1;
+	private int Ry1 = -1;
+	private int Rx2 = -1;
+	private int Ry2 = -1;
+
+	//variaveis das coordenadas do DDA
+	private int DDAx1 = -1;
+	private int DDAy1 = -1;
+	private int DDAx2 = -1;
+	private int DDAy2 = -1;
+
+	//variaveis das coordenadas da reta bresenham
+	private int RBx1 = -1;
+	private int RBy1 = -1;
+	private int RBx2 = -1;
+	private int RBy2 = -1;
+
+	//variaveis da circunferencia de bresenham
+	private int CBx = -1;
+	private int CBy = -1;
+	private int CBraio = 50;
+
+    //Ferramentas possiveis
+	private enum Ferramentas {
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM
+	};
+	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
+
+    //main: inicializar tela e captura de eventos
     public static void main(String[] args){
         EventQueue.invokeLater(new Runnable(){
             public void run(){
@@ -76,7 +107,7 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100,100,800,600);
         contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5,5,5,5));
+       // contentPane.setBorder(new EmptyBorder(5,5,5,5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
 
@@ -147,99 +178,21 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
          );
         panelMenu.setLayout(g1_panelMenu);
 
-
-
-
         //Painel de desenho
-
         panel = new JPanel();
-        panel.addMouseListener(this);
-        panel.addMouseMotionListener(this);
         panel.setBackground(Color.WHITE);
-        panel.setBounds(0,60,800,442);
+        panel.setBounds(0,60,800,540);
         contentPane.add(panel);
         panel.setLayout(null);
 
+        mouse  = new MouseHandler();
 
-
-        //Painel que exibe a posição no Painel de desenho
-        panelStatus = new JPanel();
-        panelStatus.setBounds(0,502,800,60);
-        contentPane.add(panelStatus);
-	    
-	// label que exibe a posicao X
-
-        labelPosX = new JLabel("");
-        labelPosX.setHorizontalTextPosition(SwingConstants.CENTER);
-        labelPosX.setVerticalTextPosition(SwingConstants.CENTER);
-        labelPosX.setBorder(new TitledBorder(null, "X", TitledBorder.LEADING,TitledBorder.TOP, null,null));
-	    
-	// label que exibe a posicao Y
-
-        labelPosY = new JLabel("");
-        labelPosY.setHorizontalTextPosition(SwingConstants.CENTER);
-        labelPosY.setVerticalTextPosition(SwingConstants.CENTER);
-        labelPosY.setBorder(new TitledBorder(null, "Y", TitledBorder.LEADING,TitledBorder.TOP, null,null));
-
-        //configurar grupo do painel de posição
-
-        GroupLayout g1_panelStatus = new GroupLayout(panelStatus);     
-        g1_panelStatus.setHorizontalGroup(
-            g1_panelStatus.createParallelGroup(Alignment.LEADING)
-            .addGroup(g1_panelStatus.createSequentialGroup()
-            .addGap(10)
-            .addComponent(labelPosX,GroupLayout.PREFERRED_SIZE,40,GroupLayout.PREFERRED_SIZE)
-            .addComponent(labelPosY,GroupLayout.PREFERRED_SIZE,40,GroupLayout.PREFERRED_SIZE)
-            )
-        );
-
-        g1_panelStatus.setVerticalGroup(
-            g1_panelStatus.createParallelGroup(Alignment.TRAILING)
-            .addGroup(g1_panelStatus.createSequentialGroup()
-            .addContainerGap()
-            .addGroup(g1_panelStatus.createParallelGroup(Alignment.TRAILING)
-            .addComponent(labelPosX, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,40,Short.MAX_VALUE)
-            .addComponent(labelPosY, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,40,Short.MAX_VALUE))
-            .addContainerGap()
-            )
-        );
-        panelStatus.setLayout(g1_panelStatus);
-	    
+		this.addMouseListener( mouse );
+		this.addMouseMotionListener( mouse );
 
     }
 
-
-    public void mouseDragged(MouseEvent arg0){
-        mousePos = panel.getMousePosition();
-        labelPosX.setText(String.valueOf(mousePos.x));
-        labelPosY.setText(String.valueOf(mousePos.y));
-		
-
-        //se forma == 1 desenha o ponto
-
-        if(forma == 1) {
-			x1 = mousePos.x;
-			y1 = mousePos.y;
-			g.drawLine(x1,y1+60,x2,y2+60);
-			x2=x1;
-			y2=y1;
-		}
-    }
-
-    public void mouseMoved(MouseEvent arg0){
-        if(arg0.getSource() == panel){
-            do_panel_mouseMoved(arg0);
-        }
-    }
-
-    protected void do_panel_mouseMoved(MouseEvent arg0){
-        //print da posicao X e Y na tela
-
-        mousePos = panel.getMousePosition();
-        labelPosX.setText(String.valueOf(mousePos.x));
-        labelPosY.setText(String.valueOf(mousePos.y));
-    }
-
+    //capturar click em botoes
     public void actionPerformed(ActionEvent arg0){
         if(arg0.getSource() == buttonCor){
             do_buttonCor_actionPerfomed(arg0);
@@ -253,67 +206,272 @@ public class Tela extends JFrame implements MouseMotionListener, ActionListener,
         if(arg0.getSource() == buttonCirculo){
             do_buttonCirculo_actionPerfomed(arg0);
         }
-
     }
 
+    //mudar cor
     protected void do_buttonCor_actionPerfomed(ActionEvent arg0){
         Cores = new JColorChooser();
         corE = Cores.showDialog(null,"Escolha a cor", Color.BLACK);
         buttonCor.setBackground(corE);
+ 	    g.setColor(corE);
     }
 
+	private void setupDesenho(){
+		g = getGraphics();
+	    g.setColor(corE);
+    }
+
+//set ferramenta atual de acordo com o botao clicado
     protected void do_buttonPonto_actionPerfomed(ActionEvent arg0){
-        forma = 1;
+        ferramenta_atual = Ferramentas.NORMAL;
     }
     
     protected void do_buttonRetangulo_actionPerfomed(ActionEvent arg0){
-        forma = 2;
+        ferramenta_atual = Ferramentas.RETANGULO;
     }
 
     protected void do_buttonCirculo_actionPerfomed(ActionEvent arg0){
-        forma = 3;
+        ferramenta_atual = Ferramentas.CIRC_BRESENHAM;
     }
 
-    public void mouseClicked(MouseEvent arg0){
 
-    }
-    public void mouseEntered(MouseEvent arg0){
 
-    }
-    public void mouseExited(MouseEvent arg0){
-
-    }
-
-    public void mousePressed(MouseEvent arg0){
-        mousePos = panel.getMousePosition();
-		int x1 = mousePos.x;
-		int	y1 = mousePos.y;
-
-        //se forma == 1 desenha o ponto
-
-        if(forma == 1){
-		    ponto(x1,y1);
-        }
-	    x2=x1;
-        y2=y1;
-    }
-    public void ponto(int x,int y){
-		setupDesenho();
-		g.drawLine(x,y+60,x,y+60);
-    }
-	private void setupDesenho(){
-		g = getGraphics();
-    }
     
 
+//Classe interna para lidar com eventos de mouse
+	private class MouseHandler extends MouseAdapter
+	{
+		public void dda() 
+		{
+			int dx, dy, passos, k;
+			double x_inc, y_inc, x, y;
+			Ponto p;
+			Ponto p1 = new Ponto(DDAx1, DDAy1);
+			Ponto p2 = new Ponto(DDAx2, DDAy2);
+			dx = p2.x - p1.x;
+			dy = p2.y - p1.y;
+			if (Math.abs(dx) > Math.abs(dy))
+				passos = Math.abs(dx);
+			else
+				passos = Math.abs(dy);
 
-    public void mouseReleased(MouseEvent arg0){
+			x_inc = (double)dx / (double)passos;
+			y_inc = (double)dy / (double)passos;
 
-    }
+			x = p1.x;
+			y = p1.y;
 
-    public void do_panel_mousePressed(MouseEvent arg0){
-        mousePressed = panel.getMousePosition();
-    }
+			p = new Ponto((int)Math.floor(x), (int)Math.floor(y));
+			setPixel(p);
+
+			for(k=1; k< passos; k++) {
+				x = x+x_inc;
+				y = y+y_inc;
+				p = new Ponto((int)Math.floor(x), (int)Math.floor(y));
+				setPixel(p);
+			}
+
+			DDAx1 = DDAy1 = DDAx2 = DDAy2 = -1;
+		}
+
+		public void setPixel(Ponto ponto) {
+			setupDesenho();
+			g.drawLine(ponto.x, ponto.y, ponto.x, ponto.y);
+		}
+
+		public void retangulo() {
+			setupDesenho();
+			//Reta superior
+			RBx1 = Rx1;
+			RBy1 = Ry1;
+			RBx2 = Rx2;
+			RBy2 = Ry1;
+			reta_bresenham();
+			//lateral esquerda
+			RBx1 = Rx1;
+			RBy1 = Ry1;
+			RBx2 = Rx1;
+			RBy2 = Ry2;
+			reta_bresenham();
+			//reta inferior
+			RBx1 = Rx1;
+			RBy1 = Ry2;
+			RBx2 = Rx2;
+			RBy2 = Ry2;
+			reta_bresenham();
+			//lateral direita
+			RBx1 = Rx2;
+			RBy1 = Ry1;
+			RBx2 = Rx2;
+			RBy2 = Ry2;
+			reta_bresenham();
+			Rx1 = Ry1 = Rx2 = Ry2 = -1;
+		}
+
+		public void reta_bresenham() {
+			int x, y, dx, dy, i, incrx, incry, const1, const2, p;
+			Ponto ponto;
+			dx = RBx2 - RBx1;
+			dy = RBy2 - RBy1;
+			if (dx >= 0)
+				incrx = 1;
+			else {
+				incrx = -1;
+				dx = -dx;
+			}
+			if (dy >= 0)
+				incry = 1;
+			else {
+				incry = -1;
+				dy= -dy;
+			}
+			x = RBx1;
+			y = RBy1;
+			ponto = new Ponto(x, y);
+			setPixel(ponto);
+			if (dy < dx) {
+				p = 2 * dy - dx;
+				const1 = 2 * dy;
+				const2 = 2 * (dy - dx);
+				for(i = 0; i < dx; i++) {
+					x += incrx;
+					if (p < 0)
+						p += const1;
+					else {
+						y += incry;
+						p += const2;
+					}
+					ponto = new Ponto(x, y);
+					setPixel(ponto);
+				}
+			}
+			else {
+				p = 2 * dx - dy;
+				const1 = 2 * dx;
+				const2 = 2 * (dx - dy);
+				for(i = 0; i < dy; i++) {
+					y += incry;
+					if (p < 0)
+						p += const1;
+					else { x += incrx;
+						p += const2;
+					}
+					ponto = new Ponto(x, y);
+					setPixel(ponto);
+				}
+			}
+			RBx1 = RBy1 = RBx2 = RBy2 = -1;
+		}
+
+		public void colorirSimetricos(int x, int y) {
+			Ponto[] pontos = new Ponto[8];
+			pontos[0] = new Ponto(CBx + x, CBy + y);
+			pontos[1] = new Ponto(CBx - x, CBy + y);
+			pontos[2] = new Ponto(CBx + x, CBy - y);
+			pontos[3] = new Ponto(CBx - x, CBy - y);
+			pontos[4] = new Ponto(CBx + y, CBy + x);
+			pontos[5] = new Ponto(CBx - y, CBy + x);
+			pontos[6] = new Ponto(CBx + y, CBy - x);
+			pontos[7] = new Ponto(CBx - y, CBy - x);
+			for(int i = 0; i < pontos.length; i++)
+				setPixel(pontos[i]);
+		}
+
+		public void circunferencia_bresenham() {
+			int x, y, p;
+			x = 0;
+			y = CBraio;
+			p = 3 - 2 * CBraio;
+			colorirSimetricos(x, y);
+			while(x < y) {
+				if (p < 0)
+					p += 4 * x + 6;
+				else {
+					p += 4 * (x - y) + 10;
+					y--;
+				}
+				x++;
+				colorirSimetricos(x, y);
+			}
+			CBx = CBy = -1;
+		}
+
+		public void mousePressed( MouseEvent e )
+		{
+			x1 = e.getX();
+			y1 = e.getY();
+
+			if (ferramenta_atual == Ferramentas.NORMAL) {
+				Ponto p = new Ponto(x1, y1);
+				setPixel(p);
+			} else if(ferramenta_atual == Ferramentas.RETANGULO) {
+				//captura o primeiro ponto se as primeiras variaveis do
+				//retangulo forem -1
+				if (Rx1 == -1) {
+					Rx1 = x1;
+					Ry1 = y1;
+				//Captura o segundo ponto se as primeiras variaveis do 
+				//retangulo forem != -1 e as segundas forem -1
+				}else if(Rx2 == -1) {
+					Rx2 = x1;
+					Ry2 = y1;
+					//Desenha o retangulo 
+					retangulo();
+				}
+			} else if(ferramenta_atual == Ferramentas.RETA_BRESENHAM) {
+				//captura o primeiro ponto se as primeiras variaveis da
+				//reta forem -1
+				if (RBx1 == -1) {
+					RBx1 = x1;
+					RBy1 = y1;
+				//Captura o segundo ponto se as primeiras variaveis da 
+				//reta forem != -1 e as segundas forem -1
+				} else if(RBx2 == -1) {
+					RBx2 = x1;
+					RBy2 = y1;
+					//Desenha a reta bresenham
+					reta_bresenham();
+				}
+			} else if(ferramenta_atual == Ferramentas.CIRC_BRESENHAM) {
+				CBx = x1;
+				CBy = y1;
+				circunferencia_bresenham();
+			} else if(ferramenta_atual == Ferramentas.DDA) {
+				//captura o primeiro ponto se as primeiras variaveis da
+				//reta forem -1
+				if (DDAx1 == -1) {
+					DDAx1 = x1;
+					DDAy1 = y1;
+				//Captura o segundo ponto se as primeiras variaveis da 
+				//reta forem != -1 e as segundas forem -1
+				} else if(DDAx2 == -1) {
+					DDAx2 = x1;
+					DDAy2 = y1;
+					dda();
+				}
+			}
+			x2=x1;
+			y2=y1;
+		}
+
+		public void mouseDragged( MouseEvent e )
+		{
+			if(ferramenta_atual == Ferramentas.NORMAL) {
+				x1 = e.getX();
+				y1 = e.getY();
+
+				RBx1 = x1;
+				RBy1 = y1;
+				RBx2 = x2;
+				RBy2 = y2;
+
+				reta_bresenham();
+
+				x2=x1;
+				y2=y1;
+			}
+		}
+	}
 
 
 }
