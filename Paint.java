@@ -101,9 +101,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int TEx = 20;
 	private int TEy = 20;
 
+	//variaveis do recorte
+	private Ponto ReMin = new Ponto();
+	private Ponto ReMax = new Ponto();
+
 	//Ferramentas possiveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE
 	};
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
 
@@ -703,6 +707,107 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		}
 
+		public int region_code(Ponto p) {
+			int codigo =0;
+			if (p.x < ReMin.x) {
+				++codigo;
+			}
+			if (p.x > ReMax.x) {
+				codigo += 2;
+			}
+			if (p.y < ReMin.y) {
+				codigo += 4;
+			}
+			if (p.y > ReMax.y) {
+				codigo += 8;
+			}
+			return codigo;
+		}
+
+		public void cohenSutherland(Ponto p1,Ponto p2) {
+			boolean aceite = false;
+			boolean feito = false;
+			int c1;
+			int c2;
+			int cfora;
+			float xint = 0;
+			float yint = 0;
+			float x1 = 0,x2 = 0,y1 = 0,y2 = 0;
+			while (!feito) {
+				c1 = region_code(p1);
+				c2 = region_code(p2);
+				if (c1 == 0 && c2 == 0) {// 100% dentro
+					aceite = true;
+					feito = true;
+				}else if (c1 != 0 && c2 != 0) {//100% fora
+					feito = true;
+				}else{
+					if(c1 != 0) //determina um ponto fora
+						cfora = c1;
+					else
+						cfora = c2;
+
+					if ((cfora & 1) == 1) { // limite esquerdo
+						xint = ReMin.x;
+						yint = p1.y + (p2.y - p1.y) * (ReMin.x - p1.x)/(p2.x-p1.x);
+					}else if ((cfora & 2) == 1){//limite direito
+						xint = ReMax.x;
+						yint = p1.y + (p2.y - p1.y) * (ReMax.x - p1.x)/(p2.x-p1.x);
+					}else if ((cfora & 4) == 1) {//limite inferior
+						yint = ReMin.y;
+						xint = p1.x + (p2.x - p1.x) * (ReMin.y - p1.y)/(p2.y-p1.y);
+					}else if ((cfora & 8) == 1) {//limite superior
+						yint = ReMax.y;
+						xint = p1.x + (p2.x - p1.x) * (ReMax.y - p1.y)/(p2.y-p1.y);
+					}
+					if (c1 == cfora) {
+						x1 = xint;
+						y1 = yint;
+					}else{
+						x2 = xint;
+						y2 = yint;
+						
+					}
+				}
+			}
+			if (aceite) {
+				Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
+				Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
+				dda(f1,f2,Color.BLACK);
+			}
+		}
+
+		public void recorte() {
+			//Troca valores caso ponto minimo seja maximo em x ou em y
+			if(ReMin.x > ReMax.x) {
+				int aux = ReMax.x;
+				ReMax.x = ReMin.x;
+				ReMin.x = aux;
+			}
+
+			if(ReMin.y > ReMax.y) {
+				int aux = ReMax.y;
+				ReMax.y = ReMin.y;
+				ReMin.y = aux;
+			}
+
+			RetaDDA retaDDA;
+			RetaBRE retaBRE;
+			for(int i=0; i < RetaDDA.lista.size(); i++) {
+				retaDDA = RetaDDA.lista.get(i);
+				//apaga e plota a reta recortada
+				apaga_dda(retaDDA);
+				cohenSutherland(retaDDA.p1,retaDDA.p2);
+			}
+			for(int i=0; i < RetaBRE.lista.size(); i++) {
+				retaBRE = RetaBRE.lista.get(i);
+				//apaga e plota a reta recortada
+				apaga_reta_bresenham(retaBRE);
+				cohenSutherland(retaBRE.p1,retaBRE.p2);
+			}
+		}
+
+
 		public void mousePressed( MouseEvent e )
 		{
 			x1 = e.getX();
@@ -770,6 +875,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				}
 			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
 				translacao();
+			} else if (ferramenta_atual == Ferramentas.RECORTE) {
+				if (ReMin.x == -1) {
+					ReMin.x = x1;
+					ReMin.y = y1;
+				}else if(ReMax.x == -1) {
+					ReMax.x = x1;
+					ReMax.y = y1;
+					recorte();
+				}
 			}
 			x2=x1;
 			y2=y1;
