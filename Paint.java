@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.lang.Math;
 
 import javax.swing.*;
 import javax.swing.DefaultComboBoxModel;
@@ -47,6 +48,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JButton buttonMirrorX;
     private JButton buttonMirrorY;
     private JButton buttonMirrorXY;
+    private JButton buttonRota;
 	private Point mousePos;
 
 	private int x1, y1, x2,y2;
@@ -67,6 +69,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private Icon mirrorX  = new ImageIcon(getClass().getResource("img/mirror_x.png"));
     private Icon mirrorY  = new ImageIcon(getClass().getResource("img/mirror_y.png"));
     private Icon mirrorXY = new ImageIcon(getClass().getResource("img/mirror_xy.png"));
+    private Icon rota     = new ImageIcon(getClass().getResource("img/rotacao.png"));
 
 
     //Tamanho do Canvas
@@ -106,9 +109,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private Ponto ReMin = new Ponto();
 	private Ponto ReMax = new Ponto();
 
+	//variaveis da rotacao
+	private int Grau = 20;
+
 	//Ferramentas possiveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE, ROTACAO
 	};
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
 
@@ -215,7 +221,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         buttonMirrorXY.addActionListener(this);
         buttonMirrorXY.setIcon(mirrorXY);
         buttonMirrorXY.setBackground(Color.decode("#e70065"));
-        buttonMirrorXY.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonMirrorXY.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        buttonRota = new JButton();
+        buttonRota.addActionListener(this);
+        buttonRota.setIcon(rota);
+        buttonRota.setBackground(Color.decode("#e70065"));
+        buttonRota.setHorizontalTextPosition(SwingConstants.CENTER);  
 
 
 		//configurar grupo de botoes
@@ -243,6 +255,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addComponent(buttonMirrorY)
                     .addGap(10)
                     .addComponent(buttonMirrorXY)
+                    .addGap(10)
+                    .addComponent(buttonRota)
 					)
 				);
 
@@ -261,6 +275,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                         .addComponent(buttonMirrorX)
                         .addComponent(buttonMirrorY)
                         .addComponent(buttonMirrorXY)
+                        .addComponent(buttonRota)
 						))
 				);
 		panelMenu.setLayout(g1_panelMenu);
@@ -310,6 +325,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         }
         if(arg0.getSource() == buttonMirrorXY){
             do_buttonMirrorXY_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonRota){
+            do_buttonRota_actionPerfomed(arg0);
         }
 	}
 
@@ -366,6 +384,17 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		mouse.mirror(true,true);
     }
 
+    protected void do_buttonRota_actionPerfomed(ActionEvent arg0){
+		String grau;
+        grau = JOptionPane.showInputDialog("Digite o grau:");
+            try {
+                Grau = Integer.parseInt(grau);
+                ferramenta_atual = Ferramentas.ROTACAO;
+                mouse.rotation();
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
+            }  
+    }
 
 	private void setupDesenho(){
 		g = panel.getGraphics();
@@ -717,6 +746,57 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				circunferencia_bresenham(circ.centro,circ.raio,Color.BLACK);
 			}
 
+		}
+
+		public void rotation() {
+			RetaDDA retaDDA;
+			RetaBRE retaBRE;
+			Retangulo r;
+			Circunferencia circ;
+
+			//double angulo = Math.toRadians(grau);
+
+			for(int i=0; i < RetaDDA.lista.size(); i++) {
+				retaDDA = RetaDDA.lista.get(i);
+				//apaga e plota a reta rotacionada
+				apaga_dda(retaDDA);
+
+				double x = retaDDA.p2.x * Math.cos(Grau) - retaDDA.p2.x * Math.sin(Grau);
+				double y = retaDDA.p2.y * Math.sin(Grau) + retaDDA.p2.y * Math.cos(Grau);
+
+				retaDDA.p2.x = (int)x;
+				retaDDA.p2.y = (int)y;
+
+				dda(retaDDA.p1,retaDDA.p2,Color.BLACK);
+			}
+
+			for(int i=0; i < RetaBRE.lista.size(); i++) {
+				retaBRE = RetaBRE.lista.get(i);
+				//apaga e plota a reta rotacionada
+				apaga_reta_bresenham(retaBRE);
+				
+				double x = retaBRE.p2.x * Math.cos(Grau) - retaBRE.p2.x * Math.sin(Grau);
+				double y = retaBRE.p2.y * Math.sin(Grau) + retaBRE.p2.y * Math.cos(Grau);
+
+				retaBRE.p2.x = (int)x;
+				retaBRE.p2.y = (int)y;
+
+				reta_bresenham(retaBRE.p1,retaBRE.p2,Color.BLACK);
+			}
+
+			for(int i=0; i < Retangulo.lista.size(); i++) {
+				r = Retangulo.lista.get(i);
+				//apaga e plota o retangulo rotacionado
+				apaga_retangulo(r);
+
+				double x = r.p2.x * Math.cos(Grau) - r.p2.x * Math.sin(Grau);
+				double y = r.p2.y * Math.sin(Grau) + r.p2.y * Math.cos(Grau);
+
+				r.p2.x = (int)x;
+				r.p2.y = (int)y;
+
+				retangulo(r.p1,r.p2,Color.BLACK);
+			}
 		}
 
 		public int region_code(Ponto p) {
