@@ -43,9 +43,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JButton buttonReta;
     private Point mousePos;
 
-
     private int x1, y1, x2,y2;
-	private MouseHandler mouse;
+    private MouseHandler mouse;
     private Graphics g;
 
     protected Point mouseReleased;
@@ -80,10 +79,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int CBx = -1;
 	private int CBy = -1;
 	private int CBraio = 50;
+   
+   //variaveis da escala
+   private int TEx = 20;
+   private int TEy = 20;
 
     //Ferramentas possiveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, RETA
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO
 	};
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
 
@@ -232,14 +235,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
  	    g.setColor(corE);
     }
 
-	private void setupDesenho(){
-		g = getGraphics();
-	    g.setColor(corE);
+    private void setupDesenho(){
+       g = getGraphics();
     }
 
 //set ferramenta atual de acordo com o botao clicado
     protected void do_buttonPonto_actionPerfomed(ActionEvent arg0){
-        ferramenta_atual = Ferramentas.NORMAL;
+        ferramenta_atual = Ferramentas.TRANSLACAO;
     }
     
     protected void do_buttonRetangulo_actionPerfomed(ActionEvent arg0){
@@ -251,88 +253,100 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     }
 
     protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
-        ferramenta_atual = Ferramentas.RETA_BRESENHAM;
+        ferramenta_atual = Ferramentas.DDA;
     }
-
-
-
-    
 
 //Classe interna para lidar com eventos de mouse
 	private class MouseHandler extends MouseAdapter
 	{
-		public void dda() 
-		{
-			int dx, dy, passos, k;
-			double x_inc, y_inc, x, y;
-			Ponto p;
-			Ponto p1 = new Ponto(DDAx1, DDAy1);
-			Ponto p2 = new Ponto(DDAx2, DDAy2);
-			dx = p2.x - p1.x;
-			dy = p2.y - p1.y;
-			if (Math.abs(dx) > Math.abs(dy))
-				passos = Math.abs(dx);
-			else
-				passos = Math.abs(dy);
-
-			x_inc = (double)dx / (double)passos;
-			y_inc = (double)dy / (double)passos;
-
-			x = p1.x;
-			y = p1.y;
-
-			p = new Ponto((int)Math.floor(x), (int)Math.floor(y));
-			setPixel(p);
-
-			for(k=1; k< passos; k++) {
-				x = x+x_inc;
-				y = y+y_inc;
-				p = new Ponto((int)Math.floor(x), (int)Math.floor(y));
-				setPixel(p);
-			}
-
-			DDAx1 = DDAy1 = DDAx2 = DDAy2 = -1;
+   
+		public void setPixel(Ponto ponto, Color cor) {
+         setupDesenho();
+         g.setColor(cor);
+			// talvez seja bom por um try/catch aqui para ignorar pontos que passem da margem
+         g.drawLine(ponto.x, ponto.y, ponto.x, ponto.y);
+         g.setColor(corE);
 		}
 
-		public void setPixel(Ponto ponto) {
-			setupDesenho();
-			g.drawLine(ponto.x, ponto.y, ponto.x, ponto.y);
-		}
+      public void apaga_dda(RetaDDA reta) {
+         dda(reta.p1, reta.p2, Color.WHITE);
+      }
 
-		public void retangulo() {
-			setupDesenho();
+      public void dda(Ponto p1, Ponto p2, Color cor) {
+         int dx, dy, passos, k;
+	      double x_inc, y_inc, x, y;
+	      Ponto p;
+	      dx = p2.x - p1.x;
+	      dy = p2.y - p1.y;
+	      if (Math.abs(dx) > Math.abs(dy))
+	      	passos = Math.abs(dx);
+	      else
+	      	passos = Math.abs(dy);
+	      x_inc = (double)dx / (double)passos;
+	      y_inc = (double)dy / (double)passos;
+	      x = p1.x;
+	      y = p1.y;
+	      p = new Ponto((int)Math.floor(x), (int)Math.floor(y));
+	      setPixel(p, cor);
+	      for(k=1; k< passos; k++) {
+	      	x = x + x_inc;
+	      	y = y + y_inc;
+	      	p = new Ponto((int)Math.floor(x), (int)Math.floor(y));
+	      	setPixel(p, cor);
+         }		
+	   	DDAx1 = DDAy1 = DDAx2 = DDAy2 = -1;
+	   }
+      
+      public void apaga_retangulo(Retangulo retangulo) {
+         retangulo(retangulo.p1, retangulo.p2, Color.WHITE);
+      }
+      
+		public void retangulo(Ponto p1, Ponto p2, Color cor) {
+			Ponto pr1, pr2;
 			//Reta superior
-			RBx1 = Rx1;
-			RBy1 = Ry1;
-			RBx2 = Rx2;
-			RBy2 = Ry1;
-			reta_bresenham();
+			RBx1 = p1.x;
+			RBy1 = p1.y;
+			RBx2 = p2.x;
+			RBy2 = p1.y;
+         pr1 = new Ponto(RBx1, RBy1);
+         pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
 			//lateral esquerda
-			RBx1 = Rx1;
-			RBy1 = Ry1;
-			RBx2 = Rx1;
-			RBy2 = Ry2;
-			reta_bresenham();
+			RBx1 = p1.x;
+			RBy1 = p1.y;
+			RBx2 = p1.x;
+			RBy2 = p2.y;
+			pr1 = new Ponto(RBx1, RBy1);
+         pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
 			//reta inferior
-			RBx1 = Rx1;
-			RBy1 = Ry2;
-			RBx2 = Rx2;
-			RBy2 = Ry2;
-			reta_bresenham();
+			RBx1 = p1.x;
+			RBy1 = p2.y;
+			RBx2 = p2.x;
+			RBy2 = p2.y;
+			pr1 = new Ponto(RBx1, RBy1);
+         pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
 			//lateral direita
-			RBx1 = Rx2;
-			RBy1 = Ry1;
-			RBx2 = Rx2;
-			RBy2 = Ry2;
-			reta_bresenham();
+			RBx1 = p2.x;
+			RBy1 = p1.y;
+			RBx2 = p2.x;
+			RBy2 = p2.y;
+			pr1 = new Ponto(RBx1, RBy1);
+         pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
 			Rx1 = Ry1 = Rx2 = Ry2 = -1;
 		}
 
-		public void reta_bresenham() {
+      public void apaga_reta_bresenham(RetaBRE reta) {
+         reta_bresenham(reta.p1, reta.p2, Color.WHITE);
+      }
+
+		public void reta_bresenham(Ponto p1, Ponto p2, Color cor) {
 			int x, y, dx, dy, i, incrx, incry, const1, const2, p;
 			Ponto ponto;
-			dx = RBx2 - RBx1;
-			dy = RBy2 - RBy1;
+			dx = p2.x - p1.x;
+			dy = p2.y - p1.y;
 			if (dx >= 0)
 				incrx = 1;
 			else {
@@ -348,7 +362,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			x = RBx1;
 			y = RBy1;
 			ponto = new Ponto(x, y);
-			setPixel(ponto);
+			setPixel(ponto, cor);
 			if (dy < dx) {
 				p = 2 * dy - dx;
 				const1 = 2 * dy;
@@ -362,7 +376,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						p += const2;
 					}
 					ponto = new Ponto(x, y);
-					setPixel(ponto);
+					setPixel(ponto, cor);
 				}
 			}
 			else {
@@ -377,32 +391,36 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						p += const2;
 					}
 					ponto = new Ponto(x, y);
-					setPixel(ponto);
+					setPixel(ponto, cor);
 				}
 			}
 			RBx1 = RBy1 = RBx2 = RBy2 = -1;
 		}
 
-		public void colorirSimetricos(int x, int y) {
+      public void apaga_circunferencia_bresenham(Circunferencia circ) {
+         circunferencia_bresenham(circ.centro, circ.raio, Color.WHITE);
+      }
+
+		public void colorirSimetricos(Ponto centro, int x, int y, Color cor) {
 			Ponto[] pontos = new Ponto[8];
-			pontos[0] = new Ponto(CBx + x, CBy + y);
-			pontos[1] = new Ponto(CBx - x, CBy + y);
-			pontos[2] = new Ponto(CBx + x, CBy - y);
-			pontos[3] = new Ponto(CBx - x, CBy - y);
-			pontos[4] = new Ponto(CBx + y, CBy + x);
-			pontos[5] = new Ponto(CBx - y, CBy + x);
-			pontos[6] = new Ponto(CBx + y, CBy - x);
-			pontos[7] = new Ponto(CBx - y, CBy - x);
+			pontos[0] = new Ponto(centro.x + x, centro.y + y);
+			pontos[1] = new Ponto(centro.x - x, centro.y + y);
+			pontos[2] = new Ponto(centro.x + x, centro.y - y);
+			pontos[3] = new Ponto(centro.x - x, centro.y - y);
+			pontos[4] = new Ponto(centro.x + y, centro.y + x);
+			pontos[5] = new Ponto(centro.x - y, centro.y + x);
+			pontos[6] = new Ponto(centro.x + y, centro.y - x);
+			pontos[7] = new Ponto(centro.x - y, centro.y - x);
 			for(int i = 0; i < pontos.length; i++)
-				setPixel(pontos[i]);
+            setPixel(pontos[i], cor);
 		}
 
-		public void circunferencia_bresenham() {
+		public void circunferencia_bresenham(Ponto centro, int raio, Color cor) {
 			int x, y, p;
 			x = 0;
-			y = CBraio;
-			p = 3 - 2 * CBraio;
-			colorirSimetricos(x, y);
+			y = raio;
+			p = 3 - 2 * raio;
+			colorirSimetricos(centro, x, y, cor);
 			while(x < y) {
 				if (p < 0)
 					p += 4 * x + 6;
@@ -411,10 +429,104 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					y--;
 				}
 				x++;
-				colorirSimetricos(x, y);
+				colorirSimetricos(centro, x, y, cor);
 			}
 			CBx = CBy = -1;
 		}
+
+      public void translacao() {
+         RetaDDA retaDDA;
+         RetaBRE retaBRE;
+         Retangulo r;
+         Circunferencia circ;
+         
+         // apaga imagens atuais na tela
+         for(int i = 0; i < RetaDDA.lista.size(); i++) {
+            retaDDA = RetaDDA.lista.get(i);
+            apaga_dda(retaDDA);
+         }
+         for(int i = 0; i < RetaBRE.lista.size(); i++) {
+            retaBRE = RetaBRE.lista.get(i);
+            apaga_reta_bresenham(retaBRE);
+         }
+         for(int i = 0; i < Retangulo.lista.size(); i++) {
+            r = Retangulo.lista.get(i);
+            apaga_retangulo(r);
+         }
+         for(int i = 0; i < Circunferencia.lista.size(); i++) {
+            circ = Circunferencia.lista.get(i);
+            apaga_circunferencia_bresenham(circ);
+         }
+         
+         // aplica translacao nas retas DDA
+         for(int i = 0; i < RetaDDA.lista.size(); i++) {
+            retaDDA = RetaDDA.lista.get(i);
+            // atualiza p1
+            retaDDA.p1.x = retaDDA.p1.x + TEx;
+            retaDDA.p1.y = retaDDA.p1.y + TEy;
+            // atualiza p2
+            retaDDA.p2.x = retaDDA.p2.x + TEx;
+            retaDDA.p2.y = retaDDA.p2.y + TEy;
+            // substitui a reta pela nova na lista
+            RetaDDA.lista.set(i, retaDDA);
+         }
+         // redesenha as retas da lista
+         for(int i = 0; i < RetaDDA.lista.size(); i++) {
+            retaDDA = RetaDDA.lista.get(i);
+            dda(retaDDA.p1, retaDDA.p2, retaDDA.cor);
+         }
+         
+         // aplica translacao nas retas bresenham
+         for(int i = 0; i < RetaBRE.lista.size(); i++) {
+            retaBRE = RetaBRE.lista.get(i);
+            // atualiza p1
+            retaBRE.p1.x = retaBRE.p1.x + TEx;
+            retaBRE.p1.y = retaBRE.p1.y + TEy;
+            // atualiza p2
+            retaBRE.p2.x = retaBRE.p2.x + TEx;
+            retaBRE.p2.y = retaBRE.p2.y + TEy;
+            // substitui a reta pela nova na lista
+            RetaBRE.lista.set(i, retaBRE);
+         }
+         // redesenha as retas da lista
+         for(int i = 0; i < RetaBRE.lista.size(); i++) {
+            retaBRE = RetaBRE.lista.get(i);
+            reta_bresenham(retaBRE.p1, retaBRE.p2, retaBRE.cor);
+         }
+         
+         // aplica translacao nos retangulos
+         for(int i = 0; i < Retangulo.lista.size(); i++) {
+            r = Retangulo.lista.get(i);
+            // atualiza p1
+            r.p1.x = r.p1.x + TEx;
+            r.p1.y = r.p1.y + TEy;
+            // atualiza p2
+            r.p2.x = r.p2.x + TEx;
+            r.p2.y = r.p2.y + TEy;
+            // substitui o retangulo pelo novo na lista
+            Retangulo.lista.set(i, r);
+         }
+         // redesenha os retangulos da lista
+         for(int i = 0; i < Retangulo.lista.size(); i++) {
+            r = Retangulo.lista.get(i);
+            retangulo(r.p1, r.p2, r.cor);
+         }
+         
+         // aplica translacao nas circunferencias
+         for(int i = 0; i < Circunferencia.lista.size(); i++) {
+            circ = Circunferencia.lista.get(i);
+            // atualiza o centro
+            circ.centro.x = circ.centro.x + TEx;
+            circ.centro.y = circ.centro.y + TEy;
+            // substitui a circunferencia pela nova na lista
+            Circunferencia.lista.set(i, circ);
+         }
+         // redesenha as circunferencias da lista
+         for(int i = 0; i < Circunferencia.lista.size(); i++) {
+            circ = Circunferencia.lista.get(i);
+            circunferencia_bresenham(circ.centro, circ.raio, circ.cor);
+         }
+      }
 
 		public void mousePressed( MouseEvent e )
 		{
@@ -423,7 +535,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 			if (ferramenta_atual == Ferramentas.NORMAL) {
 				Ponto p = new Ponto(x1, y1);
-				setPixel(p);
+				setPixel(p, corE);
 			} else if(ferramenta_atual == Ferramentas.RETANGULO) {
 				//captura o primeiro ponto se as primeiras variaveis do
 				//retangulo forem -1
@@ -435,8 +547,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				}else if(Rx2 == -1) {
 					Rx2 = x1;
 					Ry2 = y1;
-					//Desenha o retangulo 
-					retangulo();
+					//Desenha o retangulo
+               Ponto Rp1 = new Ponto(Rx1, Ry1);
+               Ponto Rp2 = new Ponto(Rx2, Ry2);
+               Retangulo r = new Retangulo(Rp1, Rp2, corE);
+					retangulo(Rp1, Rp2, corE);
 				}
 			} else if(ferramenta_atual == Ferramentas.RETA_BRESENHAM) {
 				//captura o primeiro ponto se as primeiras variaveis da
@@ -450,12 +565,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					RBx2 = x1;
 					RBy2 = y1;
 					//Desenha a reta bresenham
-					reta_bresenham();
+               Ponto RBp1 = new Ponto(RBx1, RBy1);
+               Ponto RBp2 = new Ponto(RBx2, RBy2);
+               RetaBRE retaBRE = new RetaBRE(RBp1, RBp2, corE);
+					reta_bresenham(RBp1, RBp2, corE);
 				}
 			} else if(ferramenta_atual == Ferramentas.CIRC_BRESENHAM) {
 				CBx = x1;
 				CBy = y1;
-				circunferencia_bresenham();
+            //Desenha a circunferencia
+            Ponto CBp = new Ponto(CBx, CBy);
+            Circunferencia circ = new Circunferencia(CBp, CBraio, corE);
+				circunferencia_bresenham(CBp, CBraio, corE);
 			} else if(ferramenta_atual == Ferramentas.DDA) {
 				//captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
@@ -467,9 +588,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				} else if(DDAx2 == -1) {
 					DDAx2 = x1;
 					DDAy2 = y1;
-					dda();
+               Ponto DDAp1 = new Ponto(DDAx1, DDAy1);
+               Ponto DDAp2 = new Ponto(DDAx2, DDAy2);
+               RetaDDA retaDDA = new RetaDDA(DDAp1, DDAp2, corE);
+					dda(DDAp1, DDAp2, corE);
 				}
-			}
+			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
+            translacao();
+         }
 			x2=x1;
 			y2=y1;
 		}
@@ -485,23 +611,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				RBx2 = x2;
 				RBy2 = y2;
 
-				reta_bresenham();
+            Ponto p1 = new Ponto(RBx1, RBy1);
+            Ponto p2 = new Ponto(RBx2, RBy2);
+				reta_bresenham(p1, p2, corE);
 
 				x2=x1;
 				y2=y1;
 			}
 		}
-
-		public void reta() {
-			setupDesenho();
-			//Reta superior
-			RBx1 = Rx1;
-			RBy1 = Ry1;
-			RBx2 = Rx2;
-			RBy2 = Ry1;
-			Rx1 = Ry1 = Rx2 = Ry2 = -1;
-		}
 	}
-
-
 }
