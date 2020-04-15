@@ -39,8 +39,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private JButton buttonCor;
 	private JButton buttonPonto;
 	private JButton buttonRetangulo;
-	private JButton buttonCirculo;
-	private JButton buttonReta;
+    private JButton buttonCirculo;
+    private JButton buttonRetaD;
+    private JButton buttonTrans;
+    private JButton buttonRetaB;
+
+    private JButton buttonMirrorX;
+    private JButton buttonMirrorY;
+    private JButton buttonMirrorXY;
 	private Point mousePos;
 
 	private int x1, y1, x2,y2;
@@ -52,10 +58,21 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	protected JColorChooser Cores;
 	protected Color corE = Color.BLACK;
 
-	private Icon pen  = new ImageIcon(getClass().getResource("img/pen.png"));
-	private Icon ret  = new ImageIcon(getClass().getResource("img/ret.png"));
-	private Icon circ = new ImageIcon(getClass().getResource("img/circ.png"));
-	private Icon reta = new ImageIcon(getClass().getResource("img/reta.png"));
+    private Icon pen      = new ImageIcon(getClass().getResource("img/pen.png"));
+    private Icon ret      = new ImageIcon(getClass().getResource("img/retangulo.png"));
+    private Icon circ     = new ImageIcon(getClass().getResource("img/circulo.png"));
+    private Icon retaD    = new ImageIcon(getClass().getResource("img/DDA.png"));
+    private Icon retaB    = new ImageIcon(getClass().getResource("img/bresenham.png"));
+    private Icon mirrorX  = new ImageIcon(getClass().getResource("img/mirror_x.png"));
+    private Icon mirrorY  = new ImageIcon(getClass().getResource("img/mirror_y.png"));
+    private Icon mirrorXY = new ImageIcon(getClass().getResource("img/mirror_xy.png"));
+
+
+    //Tamanho do Canvas
+    private int inicioL = 0;
+    private int inicioA = 60;
+    private int Largura = 800;
+    private int Altura = 540;
 
 	//variaveis das coordenadas do retangulo
 	private int Rx1 = -1;
@@ -123,43 +140,77 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		panelMenu.setBounds(0,0,800,60);
 		contentPane.add(panelMenu);
 
-		//botao selecionar cor
-		buttonCor = new JButton();
-		buttonCor.addActionListener(this);
-		buttonCor.setBackground(Color.BLACK);
-		buttonCor.setHorizontalTextPosition(SwingConstants.CENTER); 
+        //botao selecionar cor
+        buttonCor = new JButton();
+        buttonCor.addActionListener(this);
+        buttonCor.setPreferredSize(new Dimension(30, 30));
+        buttonCor.setBackground(Color.BLACK);
+        buttonCor.setHorizontalTextPosition(SwingConstants.CENTER); 
+        
+        //botao caneta
+        buttonPonto = new JButton();
+        buttonPonto.addActionListener(this);
+        buttonPonto.setIcon(pen);
+        buttonPonto.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonPonto.setBackground(Color.WHITE);
 
-		//botao caneta
-
-		buttonPonto = new JButton();
-		buttonPonto.addActionListener(this);
-		buttonPonto.setIcon(pen);
-		buttonPonto.setHorizontalTextPosition(SwingConstants.CENTER); 
-		buttonPonto.setBackground(Color.WHITE);
-
-		//botao retangulo
-
-		buttonRetangulo = new JButton();
-		buttonRetangulo.addActionListener(this);
-		buttonRetangulo.setIcon(ret);
-		buttonRetangulo.setBackground(Color.WHITE);
-		buttonRetangulo.setHorizontalTextPosition(SwingConstants.CENTER); 
+        //botao retangulo
+        buttonRetangulo = new JButton();
+        buttonRetangulo.addActionListener(this);
+        buttonRetangulo.setIcon(ret);
+        buttonRetangulo.setBackground(Color.decode("#e70065"));
+        buttonRetangulo.setHorizontalTextPosition(SwingConstants.CENTER); 
 
 		//botao circulo
 
 		buttonCirculo = new JButton();
 		buttonCirculo.addActionListener(this);
 		buttonCirculo.setIcon(circ);
-		buttonCirculo.setBackground(Color.WHITE);
+        buttonCirculo.setBackground(Color.decode("#e70065"));
 		buttonCirculo.setHorizontalTextPosition(SwingConstants.CENTER); 
 
-		//botao reta
+        //botao retaDDA
 
-		buttonReta = new JButton();
-		buttonReta.addActionListener(this);
-		buttonReta.setIcon(reta);
-		buttonReta.setBackground(Color.WHITE);
-		buttonReta.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonRetaD = new JButton();
+        buttonRetaD.addActionListener(this);
+        buttonRetaD.setIcon(retaD);
+        buttonRetaD.setBackground(Color.decode("#e70065"));
+        buttonRetaD.setHorizontalTextPosition(SwingConstants.CENTER); 
+
+        //botao retaB
+        buttonRetaB = new JButton();
+        buttonRetaB.addActionListener(this);
+        buttonRetaB.setIcon(retaB);
+        buttonRetaB.setBackground(Color.decode("#e70065"));
+        buttonRetaB.setHorizontalTextPosition(SwingConstants.CENTER); 
+
+        //botao transform
+        buttonTrans = new JButton();
+        buttonTrans.addActionListener(this);
+        buttonTrans.setIcon(pen);
+        buttonTrans.setHorizontalTextPosition(SwingConstants.CENTER); 
+        buttonTrans.setBackground(Color.WHITE);
+
+
+        buttonMirrorX = new JButton();
+        buttonMirrorX.addActionListener(this);
+        buttonMirrorX.setIcon(mirrorX);
+        buttonMirrorX.setBackground(Color.decode("#e70065"));
+        buttonMirrorX.setHorizontalTextPosition(SwingConstants.CENTER); 
+
+
+        buttonMirrorY = new JButton();
+        buttonMirrorY.addActionListener(this);
+        buttonMirrorY.setIcon(mirrorY);
+        buttonMirrorY.setBackground(Color.decode("#e70065"));
+        buttonMirrorY.setHorizontalTextPosition(SwingConstants.CENTER); 
+
+
+        buttonMirrorXY = new JButton();
+        buttonMirrorXY.addActionListener(this);
+        buttonMirrorXY.setIcon(mirrorXY);
+        buttonMirrorXY.setBackground(Color.decode("#e70065"));
+        buttonMirrorXY.setHorizontalTextPosition(SwingConstants.CENTER); 
 
 
 		//configurar grupo de botoes
@@ -174,9 +225,19 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addGap(10)
 					.addComponent(buttonRetangulo)
 					.addGap(10)
-					.addComponent(buttonCirculo)
-					.addGap(10)
-					.addComponent(buttonReta)
+                    .addComponent(buttonCirculo)
+                    .addGap(10)
+                    .addComponent(buttonRetaD)
+                    .addGap(10)
+                    .addComponent(buttonRetaB)
+                    .addGap(10)
+                    .addComponent(buttonTrans)
+                    .addGap(10)
+                    .addComponent(buttonMirrorX)
+                    .addGap(10)
+                    .addComponent(buttonMirrorY)
+                    .addGap(10)
+                    .addComponent(buttonMirrorXY)
 					)
 				);
 
@@ -189,7 +250,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonPonto)
 						.addComponent(buttonRetangulo)
 						.addComponent(buttonCirculo)
-						.addComponent(buttonReta)
+                        .addComponent(buttonRetaD)
+                        .addComponent(buttonRetaB)
+                        .addComponent(buttonTrans)
+                        .addComponent(buttonMirrorX)
+                        .addComponent(buttonMirrorY)
+                        .addComponent(buttonMirrorXY)
 						))
 				);
 		panelMenu.setLayout(g1_panelMenu);
@@ -197,7 +263,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		//Painel de desenho
 		panel = new JPanel();
 		panel.setBackground(Color.WHITE);
-		panel.setBounds(0,60,800,540);
+		panel.setBounds(inicioL,inicioA,Largura,Altura);
 		contentPane.add(panel);
 		panel.setLayout(null);
 
@@ -222,9 +288,24 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		if(arg0.getSource() == buttonCirculo){
 			do_buttonCirculo_actionPerfomed(arg0);
 		}
-		if(arg0.getSource() == buttonReta){
-			do_buttonReta_actionPerfomed(arg0);
-		}
+        if(arg0.getSource() == buttonRetaD){
+            do_buttonReta_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonRetaB){
+            do_buttonReta_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonTrans){
+            do_buttonTrans_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonMirrorX){
+            do_buttonMirrorX_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonMirrorY){
+            do_buttonMirrorY_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonMirrorXY){
+            do_buttonMirrorXY_actionPerfomed(arg0);
+        }
 	}
 
 	//mudar cor
@@ -235,39 +316,45 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		g.setColor(corE);
 	}
 
-	private void setupDesenho(){
-		g = getGraphics();
-	}
-
 
 	//set ferramenta atual de acordo com o botao clicado
 	protected void do_buttonPonto_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.TRANSLACAO;
+		ferramenta_atual = Ferramentas.NORMAL;
 	}
 
 	protected void do_buttonRetangulo_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.RETANGULO;
 	}
 
-	protected void do_buttonCirculo_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.CIRC_BRESENHAM;
-	}
+    protected void do_buttonCirculo_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.CIRC_BRESENHAM;
+    }
 
-	protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.DDA;
-	}
+    protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.DDA;
+    }
 
-	protected void do_buttonMirrorX_actionPerformed(ActionEvent arg0){
+    protected void do_buttonTrans_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.TRANSLACAO;
+    }
+
+    protected void do_buttonMirrorX_actionPerfomed(ActionEvent arg0){
 		mouse.mirror(true,false);
-	}
+    }
 
-	protected void do_buttonMirrorY_actionPerformed(ActionEvent arg0){
+    protected void do_buttonMirrorY_actionPerfomed(ActionEvent arg0){
 		mouse.mirror(false,true);
+    }
+
+    protected void do_buttonMirrorXY_actionPerfomed(ActionEvent arg0){
+		mouse.mirror(true,true);
+    }
+
+
+	private void setupDesenho(){
+		g = panel.getGraphics();
 	}
 
-	protected void do_buttonMirrorXY_actionPerformed(ActionEvent arg0){
-		mouse.mirror(true,true);
-	}
 
 	//Classe interna para lidar com eventos de mouse
 	private class MouseHandler extends MouseAdapter
@@ -276,8 +363,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		public void setPixel(Ponto ponto, Color cor) {
 			setupDesenho();
 			g.setColor(cor);
-			// talvez seja bom por um try/catch aqui para ignorar pontos que passem da margem
-			g.drawLine(ponto.x, ponto.y, ponto.x, ponto.y);
+			g.drawLine(ponto.x, ponto.y-80, ponto.x, ponto.y-80);
 			g.setColor(corE);
 		}
 
