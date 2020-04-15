@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel.*;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.border.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.GroupLayout.*;
@@ -43,7 +44,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JButton buttonRetaD;
     private JButton buttonTrans;
     private JButton buttonRetaB;
-
     private JButton buttonMirrorX;
     private JButton buttonMirrorY;
     private JButton buttonMirrorXY;
@@ -63,6 +63,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private Icon circ     = new ImageIcon(getClass().getResource("img/circulo.png"));
     private Icon retaD    = new ImageIcon(getClass().getResource("img/DDA.png"));
     private Icon retaB    = new ImageIcon(getClass().getResource("img/bresenham.png"));
+    private Icon trans    = new ImageIcon(getClass().getResource("img/translacao.png"));
     private Icon mirrorX  = new ImageIcon(getClass().getResource("img/mirror_x.png"));
     private Icon mirrorY  = new ImageIcon(getClass().getResource("img/mirror_y.png"));
     private Icon mirrorXY = new ImageIcon(getClass().getResource("img/mirror_xy.png"));
@@ -191,9 +192,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         //botao transform
         buttonTrans = new JButton();
         buttonTrans.addActionListener(this);
-        buttonTrans.setIcon(pen);
+        buttonTrans.setIcon(trans);
+        buttonTrans.setBackground(Color.decode("#e70065"));
         buttonTrans.setHorizontalTextPosition(SwingConstants.CENTER); 
-        buttonTrans.setBackground(Color.WHITE);
 
 
         buttonMirrorX = new JButton();
@@ -339,7 +340,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     }
 
     protected void do_buttonTrans_actionPerfomed(ActionEvent arg0){
-        ferramenta_atual = Ferramentas.TRANSLACAO;
+        String xis;
+        String yis;
+        xis = JOptionPane.showInputDialog("Digite X:");
+        yis = JOptionPane.showInputDialog("Digite Y:");
+            try {
+                TEx = Integer.parseInt(xis);
+                TEy = Integer.parseInt(yis);
+                ferramenta_atual = Ferramentas.TRANSLACAO;
+                mouse.translacao();
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
+            }     
     }
 
     protected void do_buttonMirrorX_actionPerfomed(ActionEvent arg0){
@@ -874,7 +886,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					dda(DDAp1, DDAp2, corE);
 				}
 			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
-				translacao();
+			//	translacao();
 			} else if (ferramenta_atual == Ferramentas.RECORTE) {
 				if (ReMin.x == -1) {
 					ReMin.x = x1;
