@@ -49,6 +49,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JButton buttonMirrorY;
     private JButton buttonMirrorXY;
     private JButton buttonRota;
+    private JButton buttonClear;
 	private Point mousePos;
 
 	private int x1, y1, x2,y2;
@@ -70,6 +71,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private Icon mirrorY  = new ImageIcon(getClass().getResource("img/mirror_y.png"));
     private Icon mirrorXY = new ImageIcon(getClass().getResource("img/mirror_xy.png"));
     private Icon rota     = new ImageIcon(getClass().getResource("img/rotacao.png"));
+    private Icon clear     = new ImageIcon(getClass().getResource("img/pen.png"));
 
 
     //Tamanho do Canvas
@@ -227,7 +229,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         buttonRota.addActionListener(this);
         buttonRota.setIcon(rota);
         buttonRota.setBackground(Color.decode("#e70065"));
-        buttonRota.setHorizontalTextPosition(SwingConstants.CENTER);  
+        buttonRota.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        buttonClear = new JButton();
+        buttonClear.addActionListener(this);
+        buttonClear.setIcon(clear);
+        buttonClear.setBackground(Color.decode("#e70065"));
+        buttonClear.setHorizontalTextPosition(SwingConstants.CENTER);  
 
 
 		//configurar grupo de botoes
@@ -257,6 +265,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addComponent(buttonMirrorXY)
                     .addGap(10)
                     .addComponent(buttonRota)
+                    .addGap(10)
+                    .addComponent(buttonClear)
 					)
 				);
 
@@ -276,6 +286,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                         .addComponent(buttonMirrorY)
                         .addComponent(buttonMirrorXY)
                         .addComponent(buttonRota)
+                        .addComponent(buttonClear)
 						))
 				);
 		panelMenu.setLayout(g1_panelMenu);
@@ -329,6 +340,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         if(arg0.getSource() == buttonRota){
             do_buttonRota_actionPerfomed(arg0);
         }
+        if(arg0.getSource() == buttonClear){
+            do_buttonClear_actionPerfomed(arg0);
+        }
 	}
 
 	//mudar cor
@@ -338,7 +352,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonCor.setBackground(corE);
 		g.setColor(corE);
 	}
-
 
 	//set ferramenta atual de acordo com o botao clicado
 	protected void do_buttonPonto_actionPerfomed(ActionEvent arg0){
@@ -394,6 +407,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             }catch(NumberFormatException e){
                 JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
             }  
+    }
+
+    protected void do_buttonClear_actionPerfomed(ActionEvent arg0){
+		panel.repaint();
     }
 
 	private void setupDesenho(){
@@ -751,21 +768,25 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		}
 
+		//método para rotacionar objetos
 		public void rotation() {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
 			Retangulo r;
 			Circunferencia circ;
 
-			//double angulo = Math.toRadians(grau);
-
+			//apaga e plota a reta rotacionada
 			for(int i=0; i < RetaDDA.lista.size(); i++) {
 				retaDDA = RetaDDA.lista.get(i);
-				//apaga e plota a reta rotacionada
 				apaga_dda(retaDDA);
 
-				double x = retaDDA.p2.x * Math.cos(Grau) - retaDDA.p2.x * Math.sin(Grau);
-				double y = retaDDA.p2.y * Math.sin(Grau) + retaDDA.p2.y * Math.cos(Grau);
+				int x0 = retaDDA.p2.x;
+				int y0 = retaDDA.p2.y;
+				int xr = retaDDA.p1.x;
+				int yr = retaDDA.p1.y;
+
+				double x = (x0 - xr) * Math.cos(Grau+180) - (y0 - yr) * Math.sin(Grau+180) + xr;
+				double y = (y0 - yr) * Math.cos(Grau+180) + (x0 - xr) * Math.sin(Grau+180) + yr;
 
 				retaDDA.p2.x = (int)x;
 				retaDDA.p2.y = (int)y;
@@ -773,13 +794,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				dda(retaDDA.p1,retaDDA.p2,Color.BLACK);
 			}
 
+			//apaga e plota a reta rotacionada
 			for(int i=0; i < RetaBRE.lista.size(); i++) {
 				retaBRE = RetaBRE.lista.get(i);
-				//apaga e plota a reta rotacionada
 				apaga_reta_bresenham(retaBRE);
 				
-				double x = retaBRE.p2.x * Math.cos(Grau) - retaBRE.p2.x * Math.sin(Grau);
-				double y = retaBRE.p2.y * Math.sin(Grau) + retaBRE.p2.y * Math.cos(Grau);
+				int x0 = retaBRE.p2.x;
+				int y0 = retaBRE.p2.y;
+				int xr = retaBRE.p1.x;
+				int yr = retaBRE.p1.y;
+
+				double x = (x0 - xr) * Math.cos(Grau+180) - (y0 - yr) * Math.sin(Grau+180) + xr;
+				double y = (y0 - yr) * Math.cos(Grau+180) + (x0 - xr) * Math.sin(Grau+180) + yr;
 
 				retaBRE.p2.x = (int)x;
 				retaBRE.p2.y = (int)y;
@@ -787,13 +813,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				reta_bresenham(retaBRE.p1,retaBRE.p2,Color.BLACK);
 			}
 
+			//apaga e plota o retangulo rotacionado
 			for(int i=0; i < Retangulo.lista.size(); i++) {
 				r = Retangulo.lista.get(i);
-				//apaga e plota o retangulo rotacionado
 				apaga_retangulo(r);
 
-				double x = r.p2.x * Math.cos(Grau) - r.p2.x * Math.sin(Grau);
-				double y = r.p2.y * Math.sin(Grau) + r.p2.y * Math.cos(Grau);
+				int x0 = r.p2.x;
+				int y0 = r.p2.y;
+				int xr = r.p1.x;
+				int yr = r.p1.y;
+
+				double x = (x0 - xr) * Math.cos(Grau+180) - (y0 - yr) * Math.sin(Grau+180) + xr;
+				double y = (y0 - yr) * Math.cos(Grau+180) + (x0 - xr) * Math.sin(Grau+180) + yr;
 
 				r.p2.x = (int)x;
 				r.p2.y = (int)y;
