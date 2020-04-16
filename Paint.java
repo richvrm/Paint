@@ -685,6 +685,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			Retangulo r;
 			Circunferencia circ;
 
+			//Levando em consideracao a barra superior e inferior mais os botoes
+			int altura = Altura + 2*(inicioA+20);
+
 			// como nao existem posicoes negativas no canvas subtraimos o x do 
 			// ponto mais distante da origem para espelhar no meio do canvas
 			//
@@ -693,12 +696,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//apaga e plota a refletida
 				apaga_dda(retaDDA);
 				if (rx) {
-					retaDDA.p1.y = 800 - retaDDA.p1.y;
-					retaDDA.p2.y = 800 - retaDDA.p2.y;
+					retaDDA.p1.y = altura - retaDDA.p1.y;
+					retaDDA.p2.y = altura - retaDDA.p2.y;
 				}
 				if (ry) {
-					retaDDA.p1.x = 600 - retaDDA.p1.x;
-					retaDDA.p2.x = 600 - retaDDA.p2.x;
+					retaDDA.p1.x = Largura - retaDDA.p1.x;
+					retaDDA.p2.x = Largura - retaDDA.p2.x;
 				}
 				dda(retaDDA.p1,retaDDA.p2,Color.BLACK);
 			}
@@ -708,12 +711,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//apaga e plota a refletida
 				apaga_reta_bresenham(retaBRE);
 				if (rx) {
-					retaBRE.p1.y = 800 - retaBRE.p1.y;
-					retaBRE.p2.y = 800 - retaBRE.p2.y;
+					retaBRE.p1.y = altura - retaBRE.p1.y;
+					retaBRE.p2.y = altura - retaBRE.p2.y;
 				}
 				if (ry) {
-					retaBRE.p1.x = 600 - retaBRE.p1.x;
-					retaBRE.p2.x = 600 - retaBRE.p2.x;
+					retaBRE.p1.x = Largura - retaBRE.p1.x;
+					retaBRE.p2.x = Largura - retaBRE.p2.x;
 				}
 				reta_bresenham(retaBRE.p1,retaBRE.p2,Color.BLACK);
 			}
@@ -723,12 +726,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//apaga e plota a refletida
 				apaga_retangulo(r);
 				if (rx) {
-					r.p1.y = 800 - r.p1.y;
-					r.p2.y = 800 - r.p2.y;
+					r.p1.y = altura - r.p1.y;
+					r.p2.y = altura - r.p2.y;
 				}
 				if (ry) {
-					r.p1.x = 600 - r.p1.x;
-					r.p2.x = 600 - r.p2.x;
+					r.p1.x = Largura - r.p1.x;
+					r.p2.x = Largura - r.p2.x;
 				}
 				retangulo(r.p1,r.p2,Color.BLACK);
 			}
@@ -738,10 +741,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//apaga e plota a refletida
 				apaga_circunferencia_bresenham(circ);
 				if (rx) {
-					circ.centro.y = 800 - circ.centro.y;
+					circ.centro.y = altura - circ.centro.y;
 				}
 				if (ry) {
-					circ.centro.x = 600 - circ.centro.x;
+					circ.centro.x = Largura - circ.centro.x;
 				}
 				circunferencia_bresenham(circ.centro,circ.raio,Color.BLACK);
 			}
@@ -824,10 +827,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			int cfora;
 			float xint = 0;
 			float yint = 0;
-			float x1 = 0,x2 = 0,y1 = 0,y2 = 0;
+			float x1 = p1.x,
+				  x2 = p2.x,
+				  y1 = p1.y,
+				  y2 = p2.y;
+			Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
+			Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
 			while (!feito) {
-				c1 = region_code(p1);
-				c2 = region_code(p2);
+				c1 = region_code(f1);
+				c2 = region_code(f2);
 				if (c1 == 0 && c2 == 0) {// 100% dentro
 					aceite = true;
 					feito = true;
@@ -841,16 +849,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 					if ((cfora & 1) == 1) { // limite esquerdo
 						xint = ReMin.x;
-						yint = p1.y + (p2.y - p1.y) * (ReMin.x - p1.x)/(p2.x-p1.x);
-					}else if ((cfora & 2) == 1){//limite direito
+						yint = y1 + (y2 - y1) * (ReMin.x - x1)/(x2-x1);
+					}else if ((cfora>>>1 & 1) == 1){//limite direito
 						xint = ReMax.x;
-						yint = p1.y + (p2.y - p1.y) * (ReMax.x - p1.x)/(p2.x-p1.x);
-					}else if ((cfora & 4) == 1) {//limite inferior
+						yint = y1 + (y2 - y1) * (ReMax.x - x1)/(x2-x1);
+					}else if ((cfora>>>2 & 1) == 1) {//limite inferior
 						yint = ReMin.y;
-						xint = p1.x + (p2.x - p1.x) * (ReMin.y - p1.y)/(p2.y-p1.y);
-					}else if ((cfora & 8) == 1) {//limite superior
+						xint = x1 + (x2 - x1) * (ReMin.y - y1)/(y2-y1);
+					}else if ((cfora>>>3 & 1) == 1) {//limite superior
 						yint = ReMax.y;
-						xint = p1.x + (p2.x - p1.x) * (ReMax.y - p1.y)/(p2.y-p1.y);
+						xint = x1 + (x2 - x1) * (ReMax.y - y1)/(y2-y1);
 					}
 					if (c1 == cfora) {
 						x1 = xint;
@@ -858,14 +866,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					}else{
 						x2 = xint;
 						y2 = yint;
-						
 					}
 				}
+				f1 = new Ponto(Math.round(x1),Math.round(y1));
+				f2 = new Ponto(Math.round(x2),Math.round(y2));
 			}
 			if (aceite) {
-				Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
-				Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
-				dda(f1,f2,Color.BLACK);
+				f1 = new Ponto(Math.round(x1),Math.round(y1));
+				f2 = new Ponto(Math.round(x2),Math.round(y2));
+				dda(f1,f2,corE);
 			}
 		}
 
@@ -885,6 +894,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
+			Retangulo ret;
 			for(int i=0; i < RetaDDA.lista.size(); i++) {
 				retaDDA = RetaDDA.lista.get(i);
 				//apaga e plota a reta recortada
@@ -897,6 +907,21 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				apaga_reta_bresenham(retaBRE);
 				cohenSutherland(retaBRE.p1,retaBRE.p2);
 			}
+			for(int i=0; i < Retangulo.lista.size(); i++) {
+				ret = Retangulo.lista.get(i);
+				//apaga e plota o retangulo
+				apaga_retangulo(ret);
+				Ponto p1 = new Ponto(ret.p1.x,ret.p1.y);
+				Ponto p2 = new Ponto(ret.p1.x,ret.p2.y);
+				Ponto p3 = new Ponto(ret.p2.x,ret.p1.y);
+				Ponto p4 = new Ponto(ret.p2.x,ret.p2.y);
+				cohenSutherland(p1,p2);
+				cohenSutherland(p2,p4);
+				cohenSutherland(p3,p4);
+				cohenSutherland(p1,p3);
+			}
+			ReMax.x=-1;ReMax.y=-1;
+			ReMin.x=-1;ReMin.y=-1;
 		}
 
 
