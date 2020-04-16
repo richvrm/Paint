@@ -76,7 +76,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
     //Tamanho do Canvas
     private int inicioL = 0;
-    private int inicioA = 60;
+    private int inicioA = 120;
     private int Largura = 800;
     private int Altura = 540;
 
@@ -150,7 +150,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		//Painel com botoes
 		panelMenu = new JPanel();
-		panelMenu.setBounds(0,0,800,60);
+		panelMenu.setBounds(0,0,800,120);
 		contentPane.add(panelMenu);
 
         //botao selecionar cor
@@ -242,7 +242,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
 		g1_panelMenu.setHorizontalGroup(
 				g1_panelMenu.createParallelGroup(Alignment.CENTER)
-
 				.addGroup( g1_panelMenu.createSequentialGroup()
 					.addComponent(buttonCor)
 					.addGap(10)
@@ -257,6 +256,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addComponent(buttonRetaB)
                     .addGap(10)
                     .addComponent(buttonTrans)
+
+					)
+                .addGroup( g1_panelMenu.createSequentialGroup()
                     .addGap(10)
                     .addComponent(buttonMirrorX)
                     .addGap(10)
@@ -267,8 +269,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addComponent(buttonRota)
                     .addGap(10)
                     .addComponent(buttonClear)
-					)
-				);
+                )
+			);
 
 		g1_panelMenu.setVerticalGroup(
 				g1_panelMenu.createParallelGroup(Alignment.CENTER)
@@ -282,14 +284,21 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                         .addComponent(buttonRetaD)
                         .addComponent(buttonRetaB)
                         .addComponent(buttonTrans)
+ 
+						)
+                    .addGap(10)
+					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
                         .addComponent(buttonMirrorX)
                         .addComponent(buttonMirrorY)
                         .addComponent(buttonMirrorXY)
                         .addComponent(buttonRota)
                         .addComponent(buttonClear)
-						))
+                        ))
 				);
+
 		panelMenu.setLayout(g1_panelMenu);
+
+
 
 		//Painel de desenho
 		panel = new JPanel();
@@ -425,7 +434,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		public void setPixel(Ponto ponto, Color cor) {
 			setupDesenho();
 			g.setColor(cor);
-			g.drawLine(ponto.x, ponto.y-80, ponto.x, ponto.y-80);
+			g.drawLine(ponto.x, ponto.y-140, ponto.x, ponto.y-140);
 			g.setColor(corE);
 		}
 
@@ -703,7 +712,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			Circunferencia circ;
 
 			//Levando em consideracao a barra superior e inferior mais os botoes
-			int altura = Altura + 2*(inicioA+20);
+			int altura = Altura + (inicioA+80);
 
 			// como nao existem posicoes negativas no canvas subtraimos o x do 
 			// ponto mais distante da origem para espelhar no meio do canvas
