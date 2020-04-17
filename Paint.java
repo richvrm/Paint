@@ -912,8 +912,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				f2 = new Ponto(Math.round(x2),Math.round(y2));
 			}
 			if (aceite) {
-				f1 = new Ponto(Math.round(x1),Math.round(y1));
-				f2 = new Ponto(Math.round(x2),Math.round(y2));
 				dda(f1,f2,corE);
 			}
 		}
