@@ -71,7 +71,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private Icon mirrorY  = new ImageIcon(getClass().getResource("img/mirror_y.png"));
     private Icon mirrorXY = new ImageIcon(getClass().getResource("img/mirror_xy.png"));
     private Icon rota     = new ImageIcon(getClass().getResource("img/rotacao.png"));
-    private Icon clear     = new ImageIcon(getClass().getResource("img/pen.png"));
+    private Icon clear    = new ImageIcon(getClass().getResource("img/pen.png"));
 
 
     //Tamanho do Canvas
@@ -99,9 +99,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int RBy2 = -1;
 
 	//variaveis da circunferencia de bresenham
-	private int CBx = -1;
-	private int CBy = -1;
-	private int CBraio = 50;
+	private int DAx = -1;
+	private int DAy = -1;
+	private int DBx = -1;
+	private int DBy = -1;
 
 	//variaveis da escala
 	private int TEx = 20;
@@ -568,7 +569,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 		public void apaga_circunferencia_bresenham(Circunferencia circ) {
-			circunferencia_bresenham(circ.centro, circ.raio, Color.WHITE);
+			circunferencia_bresenham(circ, Color.WHITE);
 		}
 
 		public void colorirSimetricos(Ponto centro, int x, int y, Color cor) {
@@ -585,12 +586,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				setPixel(pontos[i], cor);
 		}
 
-		public void circunferencia_bresenham(Ponto centro, int raio, Color cor) {
+		public void circunferencia_bresenham(Circunferencia circ, Color cor) {
 			int x, y, p;
 			x = 0;
-			y = raio;
-			p = 3 - 2 * raio;
-			colorirSimetricos(centro, x, y, cor);
+			y = circ.raio;
+			p = 3 - 2 * circ.raio;
+			colorirSimetricos(circ.centro, x, y, cor);
 			while(x < y) {
 				if (p < 0)
 					p += 4 * x + 6;
@@ -599,9 +600,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					y--;
 				}
 				x++;
-				colorirSimetricos(centro, x, y, cor);
+				colorirSimetricos(circ.centro, x, y, cor);
 			}
-			CBx = CBy = -1;
 		}
 
 
@@ -695,7 +695,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			// redesenha as circunferencias da lista
 			for(int i = 0; i < Circunferencia.lista.size(); i++) {
 				circ = Circunferencia.lista.get(i);
-				circunferencia_bresenham(circ.centro, circ.raio, circ.cor);
+				circunferencia_bresenham(circ, circ.cor);
 			}
 		}
 
@@ -772,7 +772,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				if (ry) {
 					circ.centro.x = Largura - circ.centro.x;
 				}
-				circunferencia_bresenham(circ.centro,circ.raio,Color.BLACK);
+				circunferencia_bresenham(circ,Color.BLACK);
 			}
 
 		}
@@ -1008,12 +1008,25 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					reta_bresenham(RBp1, RBp2, corE);
 				}
 			} else if(ferramenta_atual == Ferramentas.CIRC_BRESENHAM) {
-				CBx = x1;
-				CBy = y1;
-				//Desenha a circunferencia
-				Ponto CBp = new Ponto(CBx, CBy);
-				Circunferencia circ = new Circunferencia(CBp, CBraio, corE);
-				circunferencia_bresenham(CBp, CBraio, corE);
+				if(DAx == -1) {
+					DAx = x1;
+					DAy = y1;
+				}else if(DBx == -1) {
+					DBx = x1;
+					DBy = y1;
+					//Centro da circunferencia
+					int x_centro = Math.round((DAx+DBx)/2);
+					int y_centro = Math.round((DAy+DBy)/2);
+					Ponto Cc = new Ponto(x_centro,y_centro);
+					//raio da circunferencia = (dx^2 + dy^2) /2
+					double diametro = Math.sqrt(((DBx-DAx)*(DBx-DAx) + (DBy-DAy)*(DBy-DAy)));
+					int raio = (int) Math.round(diametro / 2);
+					//Desenha a circunferencia
+					Circunferencia circ = new Circunferencia(Cc, raio, corE);
+					circunferencia_bresenham(circ,corE);
+					//reseta variaveis
+					DAx = DAy = DBx = DBy = -1;
+				}
 			} else if(ferramenta_atual == Ferramentas.DDA) {
 				//captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
