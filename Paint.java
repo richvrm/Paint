@@ -32,36 +32,17 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
 public class Paint extends JFrame implements ActionListener{ //MouseListener, MouseMotionListener{
-	private JPanel contentPane;
-	private JPanel panelMenu;
-	private JPanel panelStatus;
-	private JPanel panel;
-	private JLabel labelPosX;
-	private JLabel labelPosY;
-	private JButton buttonCor;
-	private JButton buttonPonto;
-	private JButton buttonRetangulo;
-    private JButton buttonCirculo;
-    private JButton buttonRetaD;
-    private JButton buttonTrans;
-    private JButton buttonRetaB;
-    private JButton buttonMirrorX;
-    private JButton buttonMirrorY;
-    private JButton buttonMirrorXY;
-    private JButton buttonRota;
-    private JButton buttonClear;
-    private JButton buttonCS;
-    private JButton buttonLB;
-	private Point mousePos;
 
-	private int x1, y1, x2,y2;
+	private JPanel contentPane, panelMenu, panelStatus, panel;
+	private JLabel labelPosX, labelPosY;
+	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonRetaB,
+                    buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB;
+	private int x1,y1,x2,y2;
 	private MouseHandler mouse;
 	private Graphics g;
-
-	protected Point mouseReleased;
-	protected Point mousePressed;
-	protected JColorChooser Cores;
-	protected Color corE = Color.BLACK;
+	private Point mouseReleased, mousePressed,mousePos;
+	private JColorChooser Cores;
+	private Color corE = Color.BLACK;
 
     private Icon pen      = new ImageIcon(getClass().getResource("img/pen.png"));
     private Icon ret      = new ImageIcon(getClass().getResource("img/retangulo.png"));
@@ -142,7 +123,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	public Paint(){
 
 		//Inicializando Ambiente
-
 		setTitle("Paint Brush");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100,100,800,600);
@@ -257,8 +237,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		g1_panelMenu.setHorizontalGroup(
 				g1_panelMenu.createParallelGroup(Alignment.CENTER)
 				.addGroup( g1_panelMenu.createSequentialGroup()
-					.addComponent(buttonCor)
-					.addGap(10)
 					.addComponent(buttonPonto)
 					.addGap(10)
 					.addComponent(buttonRetangulo)
@@ -270,10 +248,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addComponent(buttonRetaB)
                     .addGap(10)
                     .addComponent(buttonTrans)
+					.addGap(10)
+					.addComponent(buttonCor)
 
 					)
                 .addGroup( g1_panelMenu.createSequentialGroup()
-                    .addGap(10)
+                    .addGap(30)
                     .addComponent(buttonMirrorX)
                     .addGap(10)
                     .addComponent(buttonMirrorY)
@@ -282,12 +262,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addGap(10)
                     .addComponent(buttonRota)
                     .addGap(10)
-                    .addComponent(buttonClear)
-                    .addGap(10)
                     .addComponent(buttonCS)
                     .addGap(10)
                     .addComponent(buttonLB)
-
+                    .addGap(10)
+                    .addComponent(buttonClear)
                 )
 			);
 
@@ -296,14 +275,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				.addGroup(g1_panelMenu.createSequentialGroup()
 					.addGap(10)
 					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
-						.addComponent(buttonCor)
 						.addComponent(buttonPonto)
 						.addComponent(buttonRetangulo)
 						.addComponent(buttonCirculo)
                         .addComponent(buttonRetaD)
                         .addComponent(buttonRetaB)
                         .addComponent(buttonTrans)
- 
+						.addComponent(buttonCor)
+
 						)
                     .addGap(10)
 					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
@@ -311,14 +290,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                         .addComponent(buttonMirrorY)
                         .addComponent(buttonMirrorXY)
                         .addComponent(buttonRota)
-                        .addComponent(buttonClear)
                         .addComponent(buttonCS)
                         .addComponent(buttonLB)
+                        .addComponent(buttonClear)
                         ))
 				);
-
 		panelMenu.setLayout(g1_panelMenu);
-
 
 
 		//Painel de desenho
@@ -329,7 +306,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		panel.setLayout(null);
 
 		mouse  = new MouseHandler();
-
 		this.addMouseListener( mouse );
 		this.addMouseMotionListener( mouse );
 
@@ -410,15 +386,19 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         String xis;
         String yis;
         xis = JOptionPane.showInputDialog("Digite X:");
-        yis = JOptionPane.showInputDialog("Digite Y:");
-            try {
-                TEx = Integer.parseInt(xis);
-                TEy = Integer.parseInt(yis);
-                ferramenta_atual = Ferramentas.TRANSLACAO;
-                mouse.translacao();
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
-            }     
+            if ((xis != null) && (xis.length() > 0)) {    
+                yis = JOptionPane.showInputDialog("Digite Y:");
+                if((yis != null) ){
+                    try {
+                        TEx = Integer.parseInt(xis);
+                        TEy = Integer.parseInt(yis);
+                        ferramenta_atual = Ferramentas.TRANSLACAO;
+                        mouse.translacao();
+                    }catch(NumberFormatException e){
+                        JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
+                    }   
+                }            
+            }
     }
 
     protected void do_buttonMirrorX_actionPerfomed(ActionEvent arg0){
@@ -436,6 +416,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     protected void do_buttonRota_actionPerfomed(ActionEvent arg0){
 		String grau;
         grau = JOptionPane.showInputDialog("Digite o grau:");
+        if ((grau != null) && (grau.length() > 0)) {    
             try {
                 Grau = Integer.parseInt(grau);
                 ferramenta_atual = Ferramentas.ROTACAO;
@@ -443,6 +424,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             }catch(NumberFormatException e){
                 JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
             }  
+        }
     }
 
     protected void do_buttonClear_actionPerfomed(ActionEvent arg0){
@@ -451,11 +433,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     }
 
     protected void do_buttonCS_actionPerfomed(ActionEvent arg0){
-		mouse.recorte(0);
+        ferramenta_atual = Ferramentas.RECORTE;
     }
 
     protected void do_buttonLB_actionPerfomed(ActionEvent arg0){
-		mouse.recorte(1);
+        ferramenta_atual = Ferramentas.RECORTELB;
     }
 
 	private void setupDesenho(){
@@ -466,7 +448,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	//Classe interna para lidar com eventos de mouse
 	private class MouseHandler extends MouseAdapter
 	{
-
         public void apagartudo(){
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -484,7 +465,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             while( Circunferencia.lista.size() > 0){
          	    Circunferencia.lista.remove(0);           
             }
-
         }
 
 		public void setPixel(Ponto ponto, Color cor) {
