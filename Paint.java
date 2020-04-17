@@ -108,8 +108,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int DBy = -1;
 
 	//variaveis da escala
-	private int TEx = 20;
-	private int TEy = 20;
+	private int TEx;
+	private int TEy;
 
 	//variaveis do recorte
 	private Ponto ReMin = new Ponto();
@@ -152,7 +152,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		contentPane.setLayout(null);
 
 
-
 		//Painel com botoes
 		panelMenu = new JPanel();
 		panelMenu.setBounds(0,0,800,120);
@@ -180,7 +179,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         buttonRetangulo.setHorizontalTextPosition(SwingConstants.CENTER); 
 
 		//botao circulo
-
 		buttonCirculo = new JButton();
 		buttonCirculo.addActionListener(this);
 		buttonCirculo.setIcon(circ);
@@ -188,7 +186,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonCirculo.setHorizontalTextPosition(SwingConstants.CENTER); 
 
         //botao retaDDA
-
         buttonRetaD = new JButton();
         buttonRetaD.addActionListener(this);
         buttonRetaD.setIcon(retaD);
@@ -450,6 +447,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
     protected void do_buttonClear_actionPerfomed(ActionEvent arg0){
 		panel.repaint();
+        mouse.apagartudo();
     }
 
     protected void do_buttonCS_actionPerfomed(ActionEvent arg0){
@@ -468,6 +466,26 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	//Classe interna para lidar com eventos de mouse
 	private class MouseHandler extends MouseAdapter
 	{
+
+        public void apagartudo(){
+			RetaDDA retaDDA;
+			RetaBRE retaBRE;
+			Retangulo r;
+			Circunferencia circ;
+            while( RetaDDA.lista.size() > 0){
+         	    RetaDDA.lista.remove(0);           
+            }
+            while( RetaBRE.lista.size() > 0){
+         	    RetaBRE.lista.remove(0);           
+            }
+            while( Retangulo.lista.size() > 0){
+         	    Retangulo.lista.remove(0);           
+            }
+            while( Circunferencia.lista.size() > 0){
+         	    Circunferencia.lista.remove(0);           
+            }
+
+        }
 
 		public void setPixel(Ponto ponto, Color cor) {
 			setupDesenho();
