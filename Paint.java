@@ -50,6 +50,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JButton buttonMirrorXY;
     private JButton buttonRota;
     private JButton buttonClear;
+    private JButton buttonCS;
+    private JButton buttonLB;
 	private Point mousePos;
 
 	private int x1, y1, x2,y2;
@@ -71,8 +73,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private Icon mirrorY  = new ImageIcon(getClass().getResource("img/mirror_y.png"));
     private Icon mirrorXY = new ImageIcon(getClass().getResource("img/mirror_xy.png"));
     private Icon rota     = new ImageIcon(getClass().getResource("img/rotacao.png"));
-    private Icon clear    = new ImageIcon(getClass().getResource("img/pen.png"));
-
+    private Icon clear    = new ImageIcon(getClass().getResource("img/apaga_tudo.png"));
+    private Icon cs    = new ImageIcon(getClass().getResource("img/cohen_sutherland.png"));
+    private Icon lb    = new ImageIcon(getClass().getResource("img/liang_barsky.png"));
 
     //Tamanho do Canvas
     private int inicioL = 0;
@@ -117,8 +120,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	//Ferramentas possiveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE, ROTACAO
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE, ROTACAO, RECORTELB
 	};
+	
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
 
 	//main: inicializar tela e captura de eventos
@@ -139,7 +143,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		//Inicializando Ambiente
 
-		setTitle("Paint Calafrio");
+		setTitle("Paint Brush");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100,100,800,600);
 		contentPane = new JPanel();
@@ -238,6 +242,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         buttonClear.setBackground(Color.decode("#e70065"));
         buttonClear.setHorizontalTextPosition(SwingConstants.CENTER);  
 
+        buttonCS = new JButton();
+        buttonCS.addActionListener(this);
+        buttonCS.setIcon(cs);
+        buttonCS.setBackground(Color.decode("#e70065"));
+        buttonCS.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        buttonLB = new JButton();
+        buttonLB.addActionListener(this);
+        buttonLB.setIcon(lb);
+        buttonLB.setBackground(Color.decode("#e70065"));
+        buttonLB.setHorizontalTextPosition(SwingConstants.CENTER);
+
 
 		//configurar grupo de botoes
 		GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
@@ -270,6 +286,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addComponent(buttonRota)
                     .addGap(10)
                     .addComponent(buttonClear)
+                    .addGap(10)
+                    .addComponent(buttonCS)
+                    .addGap(10)
+                    .addComponent(buttonLB)
+
                 )
 			);
 
@@ -294,6 +315,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                         .addComponent(buttonMirrorXY)
                         .addComponent(buttonRota)
                         .addComponent(buttonClear)
+                        .addComponent(buttonCS)
+                        .addComponent(buttonLB)
                         ))
 				);
 
@@ -352,6 +375,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         }
         if(arg0.getSource() == buttonClear){
             do_buttonClear_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonCS){
+            do_buttonCS_actionPerfomed(arg0);
+        }
+        if(arg0.getSource() == buttonLB){
+            do_buttonLB_actionPerfomed(arg0);
         }
 	}
 
@@ -421,6 +450,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
     protected void do_buttonClear_actionPerfomed(ActionEvent arg0){
 		panel.repaint();
+    }
+
+    protected void do_buttonCS_actionPerfomed(ActionEvent arg0){
+		mouse.recorte(0);
+    }
+
+    protected void do_buttonLB_actionPerfomed(ActionEvent arg0){
+		mouse.recorte(1);
     }
 
 	private void setupDesenho(){
@@ -916,7 +953,67 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		public void recorte() {
+		public boolean cliptest(float p, float q, float u1, float u2){
+			boolean result = true;
+			float r;
+			if (p < 0){ //fora pra dentro
+				r = q/p;
+				if (r > u2){
+					result = false;
+				}
+				else if (r > u1){
+					u1 = r;
+				}
+			}
+			else if (p > 0){ //dentro pra fora
+				r = q/p;
+				if (r < u1){
+					result= false;
+				}
+				else if (r < u2){
+					u2 = r;
+				}
+			}
+			else if (q < 0){
+				result = false;
+			}
+			return result;
+	}
+
+	//ReMin.x, ReMax.x, ReMin.y, ReMax.y -> limites da janela
+	public void liangBarsky(Ponto p1, Ponto p2) {
+		float x1 = p1.x;
+		float x2 = p2.x;
+		float y1 = p1.y;
+		float y2 = p2.y;
+		float u1 = 0;
+		float u2 = 1;
+		float dx = x2-x1;
+		float dy = y2-y1;
+		Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
+		Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
+		if (cliptest(-dx, x1-ReMin.x, u1, u2)){
+			if (cliptest(dx, ReMax.x-x1, u1, u2)){
+				if (cliptest(-dy, y1-ReMin.y, u1, u2)){
+					if (cliptest(dy, ReMax.y-y1, u1, u2)){
+						if (u2 < 1){
+							x2 = x1 + u2*dx;
+							y2 = y1 + u2*dy;
+						}
+						if (u1 > 0){
+							x1 = x1 + u1*dx;
+							y1 = y1 + u1*dy;
+						}
+						f1 = new Ponto(Math.round(x1),Math.round(y1));
+						f2 = new Ponto(Math.round(x2),Math.round(y2));
+						dda(f1,f2,corE);
+					}
+				}
+			}
+		}
+	}
+
+		public void recorte(int recorte) {
 			//Troca valores caso ponto minimo seja maximo em x ou em y
 			if(ReMin.x > ReMax.x) {
 				int aux = ReMax.x;
@@ -937,13 +1034,19 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				retaDDA = RetaDDA.lista.get(i);
 				//apaga e plota a reta recortada
 				apaga_dda(retaDDA);
-				cohenSutherland(retaDDA.p1,retaDDA.p2);
+				if (recorte == 0)
+					cohenSutherland(retaDDA.p1,retaDDA.p2);
+				else
+					liangBarsky(retaDDA.p1,retaDDA.p2);
 			}
 			for(int i=0; i < RetaBRE.lista.size(); i++) {
 				retaBRE = RetaBRE.lista.get(i);
 				//apaga e plota a reta recortada
 				apaga_reta_bresenham(retaBRE);
-				cohenSutherland(retaBRE.p1,retaBRE.p2);
+				if (recorte == 0)
+					cohenSutherland(retaBRE.p1,retaBRE.p2);
+				else
+					liangBarsky(retaBRE.p1,retaBRE.p2);
 			}
 			for(int i=0; i < Retangulo.lista.size(); i++) {
 				ret = Retangulo.lista.get(i);
@@ -953,10 +1056,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				Ponto p2 = new Ponto(ret.p1.x,ret.p2.y);
 				Ponto p3 = new Ponto(ret.p2.x,ret.p1.y);
 				Ponto p4 = new Ponto(ret.p2.x,ret.p2.y);
-				cohenSutherland(p1,p2);
-				cohenSutherland(p2,p4);
-				cohenSutherland(p3,p4);
-				cohenSutherland(p1,p3);
+				if (recorte == 0) {
+					cohenSutherland(p1,p2);
+					cohenSutherland(p2,p4);
+					cohenSutherland(p3,p4);
+					cohenSutherland(p1,p3);
+				}
+				else {
+					liangBarsky(p1,p2);
+					liangBarsky(p2,p4);
+					liangBarsky(p3,p4);
+					liangBarsky(p1,p3);
+				}
 			}
 			ReMax.x=-1;ReMax.y=-1;
 			ReMin.x=-1;ReMin.y=-1;
@@ -1042,7 +1153,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					dda(DDAp1, DDAp2, corE);
 				}
 			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
-			//	translacao();
+			} else if(ferramenta_atual == Ferramentas.ROTACAO) {
 			} else if (ferramenta_atual == Ferramentas.RECORTE) {
 				if (ReMin.x == -1) {
 					ReMin.x = x1;
@@ -1050,7 +1161,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				}else if(ReMax.x == -1) {
 					ReMax.x = x1;
 					ReMax.y = y1;
-					recorte();
+					recorte(0);
+				}
+			} else if (ferramenta_atual == Ferramentas.RECORTELB) {
+				if (ReMin.x == -1) {
+					ReMin.x = x1;
+					ReMin.y = y1;
+				}else if(ReMax.x == -1) {
+					ReMax.x = x1;
+					ReMax.y = y1;
+					recorte(1);
 				}
 			}
 			x2=x1;
