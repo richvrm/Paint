@@ -382,10 +382,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			do_buttonCirculo_actionPerfomed(arg0);
 		}
 		if(arg0.getSource() == buttonRetaD){
-			do_buttonRetaD_actionPerfomed(arg0);
+			do_buttonReta_actionPerfomed(arg0);
 		}
 		if(arg0.getSource() == buttonRetaB){
-			do_buttonRetaB_actionPerfomed(arg0);
+			do_buttonReta_actionPerfomed(arg0); //retaBRE
 		}
 		if(arg0.getSource() == buttonTrans){
 			do_buttonTrans_actionPerfomed(arg0);
@@ -447,14 +447,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 
 
-	protected void do_buttonRetaD_actionPerfomed(ActionEvent arg0){
+	protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.DDA;
 	}
 
+	/*
 	protected void do_buttonRetaB_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.RETA_BRESENHAM;
-	}
-
+	}*/
 
 	protected void do_buttonSalvar_actionPerfomed(ActionEvent arg0){
 		salvar();
