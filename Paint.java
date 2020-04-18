@@ -104,9 +104,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int DBx = -1;
 	private int DBy = -1;
 
-	//variaveis da escala
+	//variaveis da translacao
 	private int TEx;
 	private int TEy;
+   
+   //variaveis da escala
+   private int TAx = 1;
+   private int TAy = 2;
 
 	//variaveis do recorte
 	private Ponto ReMin = new Ponto();
@@ -931,6 +935,80 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			for(int i = 0; i < Circunferencia.lista.size(); i++) {
 				circ = Circunferencia.lista.get(i);
 				circunferencia_bresenham(circ, circ.cor);
+			}
+		}
+      
+      public void escala() {
+			RetaDDA retaDDA;
+			RetaBRE retaBRE;
+			Retangulo r;
+
+			// apaga imagens atuais na tela
+			for(int i = 0; i < RetaDDA.lista.size(); i++) {
+				retaDDA = RetaDDA.lista.get(i);
+				apaga_dda(retaDDA);
+			}
+			for(int i = 0; i < RetaBRE.lista.size(); i++) {
+				retaBRE = RetaBRE.lista.get(i);
+				apaga_reta_bresenham(retaBRE);
+			}
+			for(int i = 0; i < Retangulo.lista.size(); i++) {
+				r = Retangulo.lista.get(i);
+				apaga_retangulo(r);
+			}
+
+			// aplica a escala nas retas DDA
+			for(int i = 0; i < RetaDDA.lista.size(); i++) {
+				retaDDA = RetaDDA.lista.get(i);
+				// atualiza p1
+				retaDDA.p1.x = retaDDA.p1.x * TAx;
+				retaDDA.p1.y = retaDDA.p1.y * TAy;
+				// atualiza p2
+				retaDDA.p2.x = retaDDA.p2.x * TAx;
+				retaDDA.p2.y = retaDDA.p2.y * TAy;
+				// substitui a reta pela nova na lista
+				RetaDDA.lista.set(i, retaDDA);
+			}
+			// redesenha as retas da lista
+			for(int i = 0; i < RetaDDA.lista.size(); i++) {
+				retaDDA = RetaDDA.lista.get(i);
+				dda(retaDDA.p1, retaDDA.p2, retaDDA.cor);
+			}
+
+			// aplica translacao nas retas bresenham
+			for(int i = 0; i < RetaBRE.lista.size(); i++) {
+				retaBRE = RetaBRE.lista.get(i);
+				// atualiza p1
+				retaBRE.p1.x = retaBRE.p1.x * TAx;
+				retaBRE.p1.y = retaBRE.p1.y * TAy;
+				// atualiza p2
+				retaBRE.p2.x = retaBRE.p2.x * TAx;
+				retaBRE.p2.y = retaBRE.p2.y * TAy;
+				// substitui a reta pela nova na lista
+				RetaBRE.lista.set(i, retaBRE);
+			}
+			// redesenha as retas da lista
+			for(int i = 0; i < RetaBRE.lista.size(); i++) {
+				retaBRE = RetaBRE.lista.get(i);
+				reta_bresenham(retaBRE.p1, retaBRE.p2, retaBRE.cor);
+			}
+
+			// aplica translacao nos retangulos
+			for(int i = 0; i < Retangulo.lista.size(); i++) {
+				r = Retangulo.lista.get(i);
+				// atualiza p1
+				r.p1.x = r.p1.x * TAx;
+				r.p1.y = r.p1.y * TAy;
+				// atualiza p2
+				r.p2.x = r.p2.x * TAx;
+				r.p2.y = r.p2.y * TAy;
+				// substitui o retangulo pelo novo na lista
+				Retangulo.lista.set(i, r);
+			}
+			// redesenha os retangulos da lista
+			for(int i = 0; i < Retangulo.lista.size(); i++) {
+				r = Retangulo.lista.get(i);
+				retangulo(r.p1, r.p2, r.cor);
 			}
 		}
 
