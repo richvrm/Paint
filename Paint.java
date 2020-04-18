@@ -1137,7 +1137,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				if (c1 == 0 && c2 == 0) {// 100% dentro
 					aceite = true;
 					feito = true;
-				}else if (c1 != 0 && c2 != 0) {//100% fora
+				}else if ((c1 & c2) == 1 || (c1 & c2) == 2 || (c1 & c2) == 4 || (c1 & c2) == 8) {//100% fora
 					feito = true;
 				}else{
 					if(c1 != 0) //determina um ponto fora
