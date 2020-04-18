@@ -1,4 +1,0 @@
-RetaDDA 161 431 249 309
-RetaBRE 204 201 304 342
-Retangulo 58 202 172 280
-Circunferencia 122 323 43
