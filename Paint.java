@@ -47,7 +47,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private JPanel contentPane, panelMenu, panelStatus, panel;
 	private JLabel labelPosX, labelPosY;
 	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonRetaB,
-			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar;
+			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, buttonBoundary, buttonFlood;
 	private int x1,y1,x2,y2;
 	private static MouseHandler mouse;
 	private Graphics g;
@@ -72,7 +72,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private Icon salvar    = new ImageIcon(getClass().getResource("img/salvar.png"));
 	private Icon restaurar    = new ImageIcon(getClass().getResource("img/restaurar.png"));
 	//private Icon flood    = new ImageIcon(getClass().getResource("img/flood_fill.png"));
-	//private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
+	private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
 
 	//Tamanho do Canvas
 	private int inicioL = 0;
@@ -273,12 +273,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		   buttonFlood.setBackground(Color.decode("#e70065"));
 		   buttonFlood.setHorizontalTextPosition(SwingConstants.CENTER);*/
 
-		/*
-		   buttonBoundary = new JButton();
-		   buttonBoundary.addActionListener(this);
-		   buttonBoundary.setIcon(boundary);
-		   buttonBoundary.setBackground(Color.decode("#e70065"));
-		   buttonBoundary.setHorizontalTextPosition(SwingConstants.CENTER);*/
+		
+		buttonBoundary = new JButton();
+		buttonBoundary.addActionListener(this);
+		buttonBoundary.setIcon(boundary);
+		buttonBoundary.setBackground(Color.decode("#e70065"));
+		buttonBoundary.setHorizontalTextPosition(SwingConstants.CENTER);
 
 		//configurar grupo de botoes
 		GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
@@ -319,10 +319,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addComponent(buttonSalvar)
 					.addGap(10)
 					.addComponent(buttonRestaurar)
+					.addGap(10)
+					.addComponent(buttonBoundary)
 					//.addGap(10)
 					//.addComponent(buttonFlood)
-					//.addGap(10)
-					//.addComponent(buttonBoundary)
 					)
 					);
 
@@ -352,7 +352,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonSalvar)
 						.addComponent(buttonRestaurar)
 						//.addComponent(buttonFlood)
-						//.addComponent(buttonBoundary)
+						.addComponent(buttonBoundary)
 						))
 						);
 		panelMenu.setLayout(g1_panelMenu);
@@ -424,9 +424,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		//if(arg0.getSource() == buttonFlood){
 		//do_buttonFlood_actionPerfomed(arg0);
 		//}
-		//if(arg0.getSource() == buttonBoundary){
-		//do_buttonBoundary_actionPerfomed(arg0);
-		//}
+		if(arg0.getSource() == buttonBoundary){
+		do_buttonBoundary_actionPerfomed(arg0);
+		}
 	}
 
 	//mudar cor
@@ -480,9 +480,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	   ferramenta_atual = Ferramentas.FLOOD;
 	   }*/
 
-	//protected void do_buttonBoundary_actionPerfomed(ActionEvent arg0){
-	//ferramenta_atual = Ferramentas.BOUNDARY;
-	//}
+	protected void do_buttonBoundary_actionPerfomed(ActionEvent arg0){
+		ferramenta_atual = Ferramentas.BOUNDARY;
+	}
 
 	protected void do_buttonTrans_actionPerfomed(ActionEvent arg0){
 		String xis;
@@ -1141,16 +1141,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				apaga_retangulo(r);
 
 				//pega todos os 4 pontos do retangulo
-				int x0 = r.p1.x;
+				int x0 = r.p2.x;//canto esquerdo sup
 				int y0 = r.p1.y;
 
-				int x1 = r.p1.x;
+				int x1 = r.p1.x;//canto esquerdo inf
 				int y1 = r.p2.y;
 
-				int x2 = r.p2.x;
+				int x2 = r.p2.x;//canto direito sup
 				int y2 = r.p1.y;
 
-				int xr = r.p2.x;
+				int xr = r.p2.x;//canto direito inf
 				int yr = r.p2.y;
 
 				//double nx0 = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
@@ -1372,6 +1372,197 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 
+		//Retorna True se o ponto p pertence à algum
+		//objeto plotado
+		//testa se p em relacao a um ponto do objeto tem
+		//o mesmo coeficiente angular que os pontos
+		//conhecidos do objeto e esta entre os dois pontos
+		public boolean toca_borda(Ponto p) {
+			boolean retorno = false;
+			RetaDDA retaDDA;
+			RetaBRE retaBRE;
+			Retangulo r;
+			Circunferencia circ;
+			double m = 0; // coeficiente angula da reta
+
+			//checa se chegou nos limites do canvas
+			if (p.x > Largura || p.y > Altura) retorno = true;
+
+			for(int i=0; i < RetaDDA.lista.size() && !retorno; i++) {
+				retaDDA = RetaDDA.lista.get(i);
+				//delta x,y da propria reta
+				int dx = Math.abs(retaDDA.p2.x - retaDDA.p1.x);
+				int dy = Math.abs(retaDDA.p2.y - retaDDA.p1.y);
+				// dx é zero se a reta é paralela ao eixo x
+				// if para evitar divisao por 0
+				if(dx != 0) m = dx/dy;
+				//delta x,y do ponto com a reta
+				dx = Math.abs(retaDDA.p2.x - p.x);
+				dy = Math.abs(retaDDA.p2.y - p.y);
+
+				if(dx != 0 && m == dy/dx)
+					retorno = true;
+				
+				//exclui casos nos quais o ponto esta fora do segmento de reta
+				//pois o ponto pode estar na reta mas nao no segmento
+				if(retaDDA.p2.x < retaDDA.p1.x){
+					if(p.x < retaDDA.p2.x || p.x > retaDDA.p1.x)
+						retorno = false;
+				}else{
+					if(p.x > retaDDA.p2.x || p.x < retaDDA.p1.x)
+						retorno = false;
+				}
+				if(retaDDA.p2.y < retaDDA.p1.y){
+					if(p.y < retaDDA.p2.y || p.y > retaDDA.p1.y)
+						retorno = false;
+				}else{
+					if(p.y > retaDDA.p2.y || p.y < retaDDA.p1.y)
+						retorno = false;
+				}
+
+			}
+			for(int i=0; i < RetaBRE.lista.size() && ! retorno; i++) {
+				retaBRE = RetaBRE.lista.get(i);
+				//delta x,y da propria reta
+				int dx = Math.abs(retaBRE.p2.x - retaBRE.p1.x);
+				int dy = Math.abs(retaBRE.p2.y - retaBRE.p1.y);
+				// dx é zero se a reta é paralela ao eixo x
+				// if para evitar divisao por 0
+				if(dx != 0) m = dx/dy;
+				//delta x,y do ponto com a reta
+				dx = Math.abs(retaBRE.p2.x - p.x);
+				dy = Math.abs(retaBRE.p2.y - p.y);
+				
+				if(dx != 0 && m == dy/dx)
+					retorno = true;
+
+				//exclui casos nos quais o ponto esta fora do segmento de reta
+				//pois o ponto pode estar na reta mas nao no segmento
+				if(retaBRE.p2.x < retaBRE.p1.x){
+					if(p.x < retaBRE.p2.x || p.x > retaBRE.p1.x)
+						retorno = false;
+				}else{
+					if(p.x > retaBRE.p2.x || p.x < retaBRE.p1.x)
+						retorno = false;
+				}
+				if(retaBRE.p2.y < retaBRE.p1.y){
+					if(p.y < retaBRE.p2.y || p.y > retaBRE.p1.y)
+						retorno = false;
+				}else{
+					if(p.y > retaBRE.p2.y || p.y < retaBRE.p1.y)
+						retorno = false;
+				}
+			}
+			for(int i=0; i < Retangulo.lista.size() && ! retorno; i++) {
+				r= Retangulo.lista.get(i);
+				//testa com as 4 retas do retangulo
+				//delta x,y da propria reta
+				int dx,dy;
+				
+				//pega todos os 4 pontos do retangulo
+				int x0 = r.p1.x;
+				int y0 = r.p1.y;
+
+				int x1 = r.p1.x;
+				int y1 = r.p2.y;
+
+				int x2 = r.p2.x;
+				int y2 = r.p1.y;
+
+				int xr = r.p2.x;
+				int yr = r.p2.y;
+				
+				Ponto[] pts = {new Ponto(x0,y0), new Ponto(x1,y1), new Ponto(x2,y2), new Ponto(xr,yr)};
+
+				//reta esquerda
+				dx = Math.abs(pts[0].x - pts[1].x);
+				dy = Math.abs(pts[0].y - pts[1].y);
+				// dx é zero se a reta é paralela ao eixo x
+				// if para evitar divisao por 0
+				if(dx != 0) m = dy/dx;
+				//delta x,y do ponto com a reta
+				dx = Math.abs(pts[0].x - p.x);
+				dy = Math.abs(pts[0].y - p.y);
+				if(dx != 0 && m == dy/dx)
+					retorno = true;
+
+				//so testa o proximo se nao pertence ao anterior
+				if (! retorno) {
+					//reta superior
+					dx = Math.abs(pts[0].x - pts[2].x);
+					dy = Math.abs(pts[0].y - pts[2].y);
+					// dx é zero se a reta é paralela ao eixo x
+					// if para evitar divisao por 0
+					if(dx != 0) m = dy/dx;
+					//delta x,y do ponto com a reta
+					dx = Math.abs(pts[0].x - p.x);
+					dy = Math.abs(pts[0].y - p.y);
+					if(dx != 0 && m == dy/dx)
+						retorno = true;
+
+					//so testa o proximo se nao pertence ao anterior
+					if (! retorno) {
+						//reta direita
+						dx = Math.abs(pts[2].x - pts[3].x);
+						dy = Math.abs(pts[2].y - pts[3].y);
+						// dx é zero se a reta é paralela ao eixo x
+						// if para evitar divisao por 0
+						if(dx != 0) m = dy/dx;
+						//delta x,y do ponto com a reta
+						dx = Math.abs(pts[2].x - p.x);
+						dy = Math.abs(pts[2].y - p.y);
+						if(dx != 0 && m == dy/dx)
+							retorno = true;
+
+						//so testa o proximo se nao pertence ao anterior
+						if (! retorno) {
+							//reta inferior
+							dx = Math.abs(pts[1].x - pts[3].x);
+							dy = Math.abs(pts[1].y - pts[3].y);
+							// dx é zero se a reta é paralela ao eixo x
+							// if para evitar divisao por 0
+							if(dx != 0) m = dy/dx;
+							//delta x,y do ponto com a reta
+							dx = Math.abs(pts[1].x - p.x);
+							dy = Math.abs(pts[1].y - p.y);
+							if(dx != 0 && m == dy/dx)
+								retorno = true;
+						}
+					}
+				}
+
+				//exclui casos nos quais o ponto esta fora do segmento de reta
+				//pois o ponto pode estar na reta mas nao no segmento
+				if(r.p2.x < r.p1.x){
+					if(p.x < r.p2.x || p.x > r.p1.x)
+						retorno = false;
+				}else{
+					if(p.x > r.p2.x || p.x < r.p1.x)
+						retorno = false;
+				}
+				if(r.p2.y < r.p1.y){
+					if(p.y < r.p2.y || p.y > r.p1.y)
+						retorno = false;
+				}else{
+					if(p.y > r.p2.y || p.y < r.p1.y)
+						retorno = false;
+				}
+			}
+			//No circulo, verifica se a distancia até o centro é igual ao raio
+			for(int i=0; i < Circunferencia.lista.size() && ! retorno; i++) {
+				circ = Circunferencia.lista.get(i);
+
+				//distancia do ponto ao centro da circunferencia
+				int dist_pt_centro = (int)Math.round(tamanho_reta(circ.centro,p));
+
+				//teste feito com +1 e -1 para levar em conta possivel erro de arredondamento
+				if ( dist_pt_centro == circ.raio || dist_pt_centro +1 == circ.raio || dist_pt_centro-1 == circ.raio)
+					retorno = true;
+				
+			}
+			return retorno;
+		}
+
 		/*
 		//x, y = ponto inicial
 		//cor_preenche = cor de preenchiemnto
@@ -1387,21 +1578,31 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
+		*/
+
 		//x, y = ponto inicial
-		//cor_preenche = cor de preenchiemnto
-		//cor_conorno = cor do contorno
-		public void boundary(int x, int y, int cor_preenche, int cor_contorno){
-			int cor_atual = inquirir_cor(x_y);
-			if (cor_atual != cor_contorno & cor_atual != cor_preenche){
-				Ponto p = new Ponto(x, y);
-				setPixel(p,cor_preenche);
-				boundary(x+1,y,cor_preenche,cor_conorno);
-				boundary(x-1,y,cor_preenche,cor_contorno);
-				boundary(x,y+1,cor_preenche,cor_contorno);
-				boundary(x,y-1,cor_preenche,cor_contorno);
+		//algoritmo adaptado pois nao usamos matriz de pixels
+		//ele verifica se chegou na borda olhando se o ponto
+		//intercepta algum objeto criado
+		public void boundary(int x, int y,int l){
+			Ponto p = new Ponto(x, y);
+			//se o ponto nao eh de nenhuma borda, plota
+			System.out.println(l);
+			if ( l > 0){
+				setPixel(p,corE);
+				boundary(x+1,y,l-1);
+				boundary(x-1,y,l-1);
+				boundary(x,y+1,l-1);
+				boundary(x,y-1,l-1);
 			}
 		}
-		*/
+
+		//calcula o tamanho da reta fg
+		//Tamanho da reta = sqrt(dx^2 + dy^2)
+		public int tamanho_reta(Ponto f, Ponto g /*hihihi*/) {
+			double tam = Math.sqrt( ( (g.x-f.x)*(g.x-f.x) + (g.y-f.y)*(g.y-f.y) ) );
+			return (int) Math.round(tam);
+		}
 
 		public void mousePressed( MouseEvent e )
 		{
@@ -1450,15 +1651,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					DAx = x1;
 					DAy = y1;
 				}else if(DBx == -1) {
+					//Como capturamos os pontos do diametro da circunferencia, 
+					//é necessário calcular o centro e o raio
 					DBx = x1;
 					DBy = y1;
 					//Centro da circunferencia
 					int x_centro = Math.round((DAx+DBx)/2);
 					int y_centro = Math.round((DAy+DBy)/2);
 					Ponto Cc = new Ponto(x_centro,y_centro);
-					//raio da circunferencia = (dx^2 + dy^2) /2
-					double diametro = Math.sqrt(((DBx-DAx)*(DBx-DAx) + (DBy-DAy)*(DBy-DAy)));
-					int raio = (int) Math.round(diametro / 2);
+					//distancia do centro ate um dos pontos marcados
+					int raio = (int) Math.round( tamanho_reta(Cc,new Ponto(DAx,DAy)));
 					//Desenha a circunferencia
 					Circunferencia circ = new Circunferencia(Cc, raio, corE);
 					circunferencia_bresenham(circ,corE);
@@ -1484,7 +1686,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
 			} else if(ferramenta_atual == Ferramentas.ROTACAO) {
 				//} else if(ferramenta_atual == Ferramentas.FLOOD) {
-				//} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
+			} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
+				boundary(x1,y1,10);
 		} else if (ferramenta_atual == Ferramentas.RECORTE) {
 			if (ReMin.x == -1) {
 				ReMin.x = x1;
