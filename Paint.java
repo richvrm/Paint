@@ -382,10 +382,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			do_buttonCirculo_actionPerfomed(arg0);
 		}
 		if(arg0.getSource() == buttonRetaD){
-			do_buttonRetaD_actionPerfomed(arg0);
+			do_buttonReta_actionPerfomed(arg0);
 		}
 		if(arg0.getSource() == buttonRetaB){
-			do_buttonRetaB_actionPerfomed(arg0);
+			do_buttonReta_actionPerfomed(arg0); //retaBRE
 		}
 		if(arg0.getSource() == buttonTrans){
 			do_buttonTrans_actionPerfomed(arg0);
@@ -447,14 +447,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 
 
-	protected void do_buttonRetaD_actionPerfomed(ActionEvent arg0){
+	protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.DDA;
 	}
 
+	/*
 	protected void do_buttonRetaB_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.RETA_BRESENHAM;
-	}
-
+	}*/
 
 	protected void do_buttonSalvar_actionPerfomed(ActionEvent arg0){
 		salvar();
@@ -1029,8 +1029,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				int xr = retaDDA.p1.x;
 				int yr = retaDDA.p1.y;
 
-				double x = (x0 - xr) * Math.cos(Grau+180) - (y0 - yr) * Math.sin(Grau+180) + xr;
-				double y = (y0 - yr) * Math.cos(Grau+180) + (x0 - xr) * Math.sin(Grau+180) + yr;
+				double x = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
+				double y = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
 
 				retaDDA.p2.x = (int)x;
 				retaDDA.p2.y = (int)y;
@@ -1048,8 +1048,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				int xr = retaBRE.p1.x;
 				int yr = retaBRE.p1.y;
 
-				double x = (x0 - xr) * Math.cos(Grau+180) - (y0 - yr) * Math.sin(Grau+180) + xr;
-				double y = (y0 - yr) * Math.cos(Grau+180) + (x0 - xr) * Math.sin(Grau+180) + yr;
+				double x = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
+				double y = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
 
 				retaBRE.p2.x = (int)x;
 				retaBRE.p2.y = (int)y;
@@ -1062,18 +1062,41 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				r = Retangulo.lista.get(i);
 				apaga_retangulo(r);
 
-				int x0 = r.p2.x;
-				int y0 = r.p2.y;
-				int xr = r.p1.x;
-				int yr = r.p1.y;
+				//pega todos os 4 pontos do retangulo
+				int x0 = r.p1.x;
+				int y0 = r.p1.y;
 
-				double x = (x0 - xr) * Math.cos(Grau+180) - (y0 - yr) * Math.sin(Grau+180) + xr;
-				double y = (y0 - yr) * Math.cos(Grau+180) + (x0 - xr) * Math.sin(Grau+180) + yr;
+				int x1 = r.p1.x;
+				int y1 = r.p2.y;
 
-				r.p2.x = (int)x;
-				r.p2.y = (int)y;
+				int x2 = r.p2.x;
+				int y2 = r.p1.y;
 
-				retangulo(r.p1,r.p2,Color.BLACK);
+				int xr = r.p2.x;
+				int yr = r.p2.y;
+
+				//double nx0 = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
+				//double ny0 = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
+
+				//aplica a equação para cada ponto com base no ponto 1 do retangulo.
+				//dessa forma a rotação do retangulo se dá em torno de um ponto e não de seu centro
+				double nx1 = (x0 - x1) * Math.cos(Grau) - (y0 - y1) * Math.sin(Grau) + x1;
+				double ny1 = (y0 - y1) * Math.cos(Grau) + (x0 - x1) * Math.sin(Grau) + y1;
+
+				double nx2 = (x0 - x2) * Math.cos(Grau) - (y0 - y2) * Math.sin(Grau) + x2;
+				double ny2 = (y0 - y2) * Math.cos(Grau) + (x0 - x2) * Math.sin(Grau) + y2;
+
+				double nxr = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
+				double nyr = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
+
+				Ponto p2 = new Ponto((int)nx1,(int)ny1);
+				Ponto p3 = new Ponto((int)nx2,(int)ny2);
+				Ponto p4 = new Ponto((int)nxr,(int)nyr);
+
+				dda(r.p1,p2,corE);
+				dda(p2,p4,corE);
+				dda(p3,p4,corE);
+				dda(r.p1,p3,corE);
 			}
 		}
 
@@ -1114,7 +1137,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				if (c1 == 0 && c2 == 0) {// 100% dentro
 					aceite = true;
 					feito = true;
-				}else if (c1 != 0 && c2 != 0) {//100% fora
+				}else if ((c1 & c2) == 1 || (c1 & c2) == 2 || (c1 & c2) == 4 || (c1 & c2) == 8) {//100% fora
 					feito = true;
 				}else{
 					if(c1 != 0) //determina um ponto fora
