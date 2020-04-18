@@ -47,13 +47,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JPanel contentPane, panelMenu, panelStatus, panel;
     private JLabel labelPosX, labelPosY;
     private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonRetaB,
-            buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB;
+            buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar;
     private int x1,y1,x2,y2;
     private static MouseHandler mouse;
     private Graphics g;
     private Point mouseReleased, mousePressed,mousePos;
     private JColorChooser Cores;
     private static Color corE = Color.BLACK;
+    //private static Color corB = Color.WHITE;
 
     private Icon pen      = new ImageIcon(getClass().getResource("img/pen.png"));
     private Icon ret      = new ImageIcon(getClass().getResource("img/retangulo.png"));
@@ -68,6 +69,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private Icon clear    = new ImageIcon(getClass().getResource("img/apaga_tudo.png"));
     private Icon cs    = new ImageIcon(getClass().getResource("img/cohen_sutherland.png"));
     private Icon lb    = new ImageIcon(getClass().getResource("img/liang_barsky.png"));
+    private Icon salvar    = new ImageIcon(getClass().getResource("img/salvar.png"));
+    //private Icon restaurar    = new ImageIcon(getClass().getResource("img/restaurar.png"));
+    //private Icon flood    = new ImageIcon(getClass().getResource("img/flood_fill.png"));
+    //private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
 
     //Tamanho do Canvas
     private int inicioL = 0;
@@ -114,7 +119,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
     //Ferramentas possiveis
     private enum Ferramentas {
-        NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE, ROTACAO, RECORTELB
+        NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE, ROTACAO, RECORTELB, FLOOD, BOUNDARY
     };
 
     private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
@@ -247,6 +252,32 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         buttonLB.setBackground(Color.decode("#e70065"));
         buttonLB.setHorizontalTextPosition(SwingConstants.CENTER);
 
+        buttonSalvar = new JButton();
+        buttonSalvar.addActionListener(this);
+        buttonSalvar.setIcon(salvar);
+        buttonSalvar.setBackground(Color.decode("#e70065"));
+        buttonSalvar.setHorizontalTextPosition(SwingConstants.CENTER);
+
+        /*
+        buttonRestaurar = new JButton();
+        buttonRestaurar.addActionListener(this);
+        buttonRestaurar.setIcon(restaurar);
+        buttonRestaurar.setBackground(Color.decode("#e70065"));
+        buttonRestaurar.setHorizontalTextPosition(SwingConstants.CENTER);*/
+
+        /*
+        buttonFlood = new JButton();
+        buttonFlood.addActionListener(this);
+        buttonFlood.setIcon(flood);
+        buttonFlood.setBackground(Color.decode("#e70065"));
+        buttonFlood.setHorizontalTextPosition(SwingConstants.CENTER);*/
+
+        /*
+        buttonBoundary = new JButton();
+        buttonBoundary.addActionListener(this);
+        buttonBoundary.setIcon(boundary);
+        buttonBoundary.setBackground(Color.decode("#e70065"));
+        buttonBoundary.setHorizontalTextPosition(SwingConstants.CENTER);*/
 
         //configurar grupo de botoes
         GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
@@ -283,6 +314,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     .addComponent(buttonLB)
                     .addGap(10)
                     .addComponent(buttonClear)
+                    .addGap(10)
+                    .addComponent(buttonSalvar)
+                    //.addGap(10)
+                    //.addComponent(buttonRestaurar)
+                    //.addGap(10)
+                    //.addComponent(buttonFlood)
+                    //.addGap(10)
+                    //.addComponent(buttonBoundary)
                     )
                 );
 
@@ -309,6 +348,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                         .addComponent(buttonCS)
                         .addComponent(buttonLB)
                         .addComponent(buttonClear)
+                        .addComponent(buttonSalvar)
+                        //.addComponent(buttonRestaurar)
+                        //.addComponent(buttonFlood)
+                        //.addComponent(buttonBoundary)
                         ))
                         );
         panelMenu.setLayout(g1_panelMenu);
@@ -342,10 +385,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             do_buttonCirculo_actionPerfomed(arg0);
         }
         if(arg0.getSource() == buttonRetaD){
-            do_buttonReta_actionPerfomed(arg0);
+            do_buttonRetaD_actionPerfomed(arg0);
         }
         if(arg0.getSource() == buttonRetaB){
-            do_buttonReta_actionPerfomed(arg0);
+            do_buttonRetaB_actionPerfomed(arg0);
         }
         if(arg0.getSource() == buttonTrans){
             do_buttonTrans_actionPerfomed(arg0);
@@ -371,6 +414,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         if(arg0.getSource() == buttonLB){
             do_buttonLB_actionPerfomed(arg0);
         }
+		if(arg0.getSource() == buttonSalvar){
+            do_buttonSalvar_actionPerfomed(arg0);
+        }
+        //if(arg0.getSource() == buttonRestaurar){
+            //do_buttonRestaurar_actionPerfomed(arg0);
+        //}
+        //if(arg0.getSource() == buttonFlood){
+            //do_buttonFlood_actionPerfomed(arg0);
+        //}
+        //if(arg0.getSource() == buttonBoundary){
+            //do_buttonBoundary_actionPerfomed(arg0);
+        //}
     }
 
     //mudar cor
@@ -394,10 +449,40 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         ferramenta_atual = Ferramentas.CIRC_BRESENHAM;
     }
 
-    protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
-        //ferramenta_atual = Ferramentas.DDA;
-		salvar();
+    
+    protected void do_buttonRetaD_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.DDA;
     }
+
+    protected void do_buttonRetaB_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.RETA_BRESENHAM;
+    }
+
+    
+    protected void do_buttonSalvar_actionPerfomed(ActionEvent arg0){
+        salvar();
+    }
+    /*
+    protected void do_buttonRestaurar_actionPerfomed(ActionEvent arg0){
+        String arq;
+        arq = JOptionPane.showInputDialog("Digite o nome do arquivo:");
+        if ((arq != null) && (arq.length() > 0)) {    
+            try {
+                restaurar(arq);
+                mouse.rotation();
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(null, "Digite o nome do arquivo");
+            }  
+        }
+    }*/
+    /*
+    protected void do_buttonFlood_actionPerfomed(ActionEvent arg0){
+        ferramenta_atual = Ferramentas.FLOOD;
+    }*/
+
+    //protected void do_buttonBoundary_actionPerfomed(ActionEvent arg0){
+        //ferramenta_atual = Ferramentas.BOUNDARY;
+    //}
 
     protected void do_buttonTrans_actionPerfomed(ActionEvent arg0){
         String xis;
@@ -1188,6 +1273,34 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             ReMin.x=-1;ReMin.y=-1;
         }
 
+        //x, y = ponto inicial
+		//cor_preenche = cor de preenchiemnto
+		//cor_antiga = cor do interior
+		public void flood(int x, int y, int cor_preenche, int cor_antiga){
+			if (inquirir_cor(x,y) = cor_antiga){
+				Ponto p = new Ponto(x, y);
+				setPixel(p,cor_preenche);
+				flood(x+1,y,cor_preenche,cor_antiga);
+				flood(x-1,y,cor_preenche,cor_antiga);
+				flood(x,y+1,cor_preenche,cor_antiga);
+				flood(x,y-1,cor_preenche,cor_antiga);
+			}
+		}
+
+		//x, y = ponto inicial
+		//cor_preenche = cor de preenchiemnto
+		//cor_conorno = cor do contorno
+		public void boundary(int x, int y, int cor_preenche, int cor_contorno){
+			int cor_atual = inquirir_cor(x_y);
+			if (cor_atual != cor_contorno & cor_atual != cor_preenche){
+				Ponto p = new Ponto(x, y);
+				setPixel(p,cor_preenche);
+				boundary(x+1,y,cor_preenche,cor_conorno);
+				boundary(x-1,y,cor_preenche,cor_contorno);
+				boundary(x,y+1,cor_preenche,cor_contorno);
+				boundary(x,y-1,cor_preenche,cor_contorno);
+			}
+		}
 
         public void mousePressed( MouseEvent e )
         {
@@ -1269,6 +1382,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                 }
             } else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
             } else if(ferramenta_atual == Ferramentas.ROTACAO) {
+            //} else if(ferramenta_atual == Ferramentas.FLOOD) {
+            //} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
             } else if (ferramenta_atual == Ferramentas.RECORTE) {
                 if (ReMin.x == -1) {
                     ReMin.x = x1;
