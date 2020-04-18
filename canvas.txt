@@ -1,0 +1,2 @@
+Retangulo 58 202 172 280
+Circunferencia 122 323 43

@@ -1,6 +1,17 @@
 import java.util.ArrayList;
 import java.lang.Math;
 
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.io.Reader;
+
 import javax.swing.*;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -38,11 +49,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonRetaB,
             buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB;
     private int x1,y1,x2,y2;
-    private MouseHandler mouse;
+    private static MouseHandler mouse;
     private Graphics g;
     private Point mouseReleased, mousePressed,mousePos;
     private JColorChooser Cores;
-    private Color corE = Color.BLACK;
+    private static Color corE = Color.BLACK;
 
     private Icon pen      = new ImageIcon(getClass().getResource("img/pen.png"));
     private Icon ret      = new ImageIcon(getClass().getResource("img/retangulo.png"));
@@ -115,6 +126,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                 try{
                     Paint frame = new Paint();
                     frame.setVisible(true);
+					if (args.length > 0) {
+						restaurar(args[0]);
+					}
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -381,7 +395,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     }
 
     protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
-        ferramenta_atual = Ferramentas.DDA;
+        //ferramenta_atual = Ferramentas.DDA;
+		salvar();
     }
 
     protected void do_buttonTrans_actionPerfomed(ActionEvent arg0){
@@ -445,6 +460,107 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private void setupDesenho(){
         g = panel.getGraphics();
     }
+
+	//Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
+	private void salvar() {
+		RetaDDA retaDDA;
+		RetaBRE retaBRE;
+		Retangulo r;
+		Circunferencia circ;
+		Writer writer = null;
+
+		try {
+			writer = new BufferedWriter(new OutputStreamWriter(
+						new FileOutputStream("canvas.txt"), "utf-8"));
+
+			for(int i=0; i < RetaDDA.lista.size(); ++i){
+				retaDDA = RetaDDA.lista.get(i);
+				writer.write("RetaDDA "+retaDDA.p1.x+" "+retaDDA.p1.y+" "+retaDDA.p2.x+" "+retaDDA.p2.y+"\n");
+			}
+			for(int i=0; i < RetaBRE.lista.size(); ++i){
+				retaBRE = RetaBRE.lista.get(i);
+				writer.write("RetaBRE "+retaBRE.p1.x+" "+retaBRE.p1.y+" "+retaBRE.p2.x+" "+retaBRE.p2.y+"\n");
+			}
+			for(int i=0; i < Retangulo.lista.size(); ++i){
+				r= Retangulo.lista.get(i);
+				writer.write("Retangulo "+r.p1.x+" "+r.p1.y+" "+r.p2.x+" "+r.p2.y+"\n");
+			}
+			for(int i=0; i < Circunferencia.lista.size(); ++i){
+				circ = Circunferencia.lista.get(i);
+				writer.write("Circunferencia "+circ.centro.x+" "+circ.centro.y+" "+circ.raio+"\n");
+			}
+		} catch (IOException ex) {
+			System.out.println("IO EXCEPTION");
+		} finally {
+			try {writer.close();} catch (Exception ex) {/*ignore*/}
+		}	
+	}
+
+
+	//Le um estado do canvas salvo anteriormente
+	private static void restaurar(String nome) {
+		Reader reader = null;
+		BufferedReader br = null;
+
+		try {
+
+			br = new BufferedReader(new FileReader(nome));
+			String line = br.readLine();
+
+			while (line != null) {
+				int a1,b1,a2,b2;
+				RetaDDA retaDDA;
+				RetaBRE retaBRE;
+				Retangulo r;
+				Circunferencia circ;
+				//para cada linha lida, separa por espaços e 
+				//vê que tipo de objeto é e cria o objeto
+				String[] objeto = line.split(" ");
+				if (objeto[0] == "RetaDDA") {
+					a1 = Integer.parseInt(objeto[1]);
+					b1 = Integer.parseInt(objeto[2]);
+					a2 = Integer.parseInt(objeto[3]);
+					b2 = Integer.parseInt(objeto[4]);
+					Ponto p1 = new Ponto(a1,b1);
+					Ponto p2 = new Ponto(a2,b2);
+					retaDDA = new RetaDDA(p1,p2,corE);
+					mouse.dda(retaDDA.p1,retaDDA.p2,corE);
+				}else if (objeto[0] == "RetaBRE") {
+					a1 = Integer.parseInt(objeto[1]);
+					b1 = Integer.parseInt(objeto[2]);
+					a2 = Integer.parseInt(objeto[3]);
+					b2 = Integer.parseInt(objeto[4]);
+					Ponto p1 = new Ponto(a1,b1);
+					Ponto p2 = new Ponto(a2,b2);
+					retaBRE = new RetaBRE(p1,p2,corE);
+					mouse.reta_bresenham(retaBRE.p1,retaBRE.p2,corE);
+				}else if (objeto[0] == "Retangulo") {
+					a1 = Integer.parseInt(objeto[1]);
+					b1 = Integer.parseInt(objeto[2]);
+					a2 = Integer.parseInt(objeto[3]);
+					b2 = Integer.parseInt(objeto[4]);
+					Ponto p1 = new Ponto(a1,b1);
+					Ponto p2 = new Ponto(a2,b2);
+					r = new Retangulo(p1,p2,corE);
+					mouse.retangulo(r.p1,r.p2,corE);
+				}else if (objeto[0] == "Circunferencia") {
+					a1 = Integer.parseInt(objeto[1]);
+					b1 = Integer.parseInt(objeto[2]);
+					int raio = Integer.parseInt(objeto[4]);
+					Ponto p1 = new Ponto(a1,b1);
+					circ = new Circunferencia(p1,raio,corE);
+					mouse.circunferencia_bresenham(circ,corE);
+				}
+
+				line = br.readLine();
+			}
+		} catch (Exception ex) {
+			System.out.println("IO EXCEPTION");
+		} finally {
+			try {br.close();} catch (Exception ex) {/*ignore*/}
+		}
+
+	}
 
 
     //Classe interna para lidar com eventos de mouse
