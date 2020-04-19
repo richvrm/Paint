@@ -28,7 +28,7 @@ O programa dispõe dos seguintes recursos:
 
 Para selecionar uma ferramenta, clique no botão que a representa.
 
-A seção a seguir descreve o uso de cada uma dessas ferramentas.
+As seções a seguir descrevem o uso de cada uma dessas ferramentas.
 
 #### Plotagem de pontos soltos
 Selecione a ferramenta de caneta. Cada clique no canvas vai colorir o pixel clicado com a cor selecionada.
@@ -37,25 +37,28 @@ Selecione a ferramenta de caneta. Cada clique no canvas vai colorir o pixel clic
 Selecione a ferramenta DDA ou Bresenham.
 As duas ferramentas têm a mesma mecânica, o primeiro clique no canvas seleciona o primeiro ponto da reta, o segundo ponto
 seleciona o segundo. Logo após clicar no segundo ponto a reta será desenhada.
-
+```  
+ ----------------
+p1              p2
+```  
 #### Plotagem de retângulos
 Selecione a ferramenta retângulo.
 O primeiro clique no canvas marca um dos cantos do retângulo (p1). O segundo clique marca o canto oposto do retângulo (p3).
 Esses dois pontos são os pontos que fazem parte da diagonal do retângulo. 
 Logo após o clique no segundo ponto o retângulo será plotado.
-
+```         
+             p3 
+ +-----------+  
+ |           |  
+ +-----------+  
 p1
- +-----------+
- |           |
- +-----------+ 
-             p3
-
+```
 #### Plotagem de circunferências
 Selecione a ferramenta de Circunferência.
 O primeiro clique no canvas marca um ponto da circunferência. O segundo clique marca o ponto oposto na circunferência.
-Note que os pontos clicados são o Diâmetro da circunferência.
+Note que os pontos clicados são o diâmetro da circunferência.
 
-#### Tranformações (Tranlação, Rotação e Escala)
+#### Transformações (Translação, Rotação e Escala)
 Essas três ferramentas tem mecânica igual.
 Clique no botão da ferramenta e uma caixa de diálogo aparecerá para o usuário digitar os parâmetros.
 No caso da rotação o parâmetro é o ângulo da rotação.
@@ -65,6 +68,45 @@ Após entrar com os parâmetros a transformação é aplicada à todos os objeto
 #### Reflexões
 As 3 reflexões funcionam da mesma maneira.
 Ao clicar no botão da reflexão todo o canvas será refletido no eixo correspondente (X, Y ou XY).
+```
+      Reflexão eixo X
+             |   
++--------+   |   +--------+
+|        |   |   |        | 
+|        |   |   |        | 
+|        |   |   |        | 
++--------+   |   +--------+ 
+             |
+
+      Reflexão eixo y
+                 
+        +--------+    
+        |        |   
+        |        |  
+        |        |  
+        +--------+  
+   ---------------------
+        +--------+    
+        |        |   
+        |        |  
+        |        |  
+        +--------+  
+
+      Reflexão eixo XY
+                 
++--------+   |   
+|        |   |    
+|        |   |    
+|        |   |    
++--------+   |   
+------------------------------
+             |    +--------+ 
+             |    |        |
+             |    |        |
+             |    |        |
+             |    +--------+ 
+             |
+```  
 
 #### Recortes
 Tanto o recorte Cohen-Sutherland como o Liang-Barsky têm a mesma mecânica.
@@ -74,15 +116,15 @@ O primeiro clique é p1 e o segundo clique é p3, o ponto oposto pela diagonal �
 Tudo dentro dessa área será plotado, tudo que estiver fora não será plotado.
 Esses métodos não apagam os objetos, eles apenas ficam escondidos. Selecionar a janela
 inteira mostra todos os objetos.
-
-      ~^~   p3
- +-----------+
- |   /   \   |
- |  /     \  |
- | /       \ |
- +-----------+ 
-p1          ~\~
-
+```  
+       ^     p3  
+ +-----------+  
+ |   /   \   |  
+ |  /     \  |  
+ | /       \ |  
+ +-----------+  
+p1              
+```  
 #### Preenchimento
 Selecione a ferramenta de preenchimento.
 Um clique na tela e começa a preencher a área a qual o ponto clicado pertence.
