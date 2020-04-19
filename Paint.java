@@ -124,7 +124,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	float u2 = 1;
 
 	//variáveis da rotação
-	private int Grau = 20;
+	private double Grau = 20;
 
 	//Ferramentas possíveis
 	private enum Ferramentas {
@@ -1169,6 +1169,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			Retangulo r;
 			Circunferencia circ;
 
+			//Ajusta o grau ja que o canvas não representa todos os quadrantes
+			//inverte o sinal pois a posição 0,0 é em cima na esquerda
+			Grau = -(Grau * 3.14/180);
+
 			//apaga e plota a reta rotacionada
 			for(int i=0; i < RetaDDA.lista.size(); i++) {
 				retaDDA = RetaDDA.lista.get(i);
@@ -1213,7 +1217,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				apaga_retangulo(r);
 
 				//pega todos os 4 pontos do retangulo
-				int x0 = r.p2.x;//canto esquerdo sup
+				int x0 = r.p1.x;//canto esquerdo sup
 				int y0 = r.p1.y;
 
 				int x1 = r.p1.x;//canto esquerdo inf
@@ -1225,13 +1229,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				int xr = r.p2.x;//canto direito inf
 				int yr = r.p2.y;
 
-				//double nx0 = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
-				//double ny0 = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
-
 				//aplica a equação para cada ponto com base no ponto 1 do retangulo.
 				//dessa forma a rotação do retangulo se dá em torno de um ponto e não de seu centro
 				double nx1 = (x0 - x1) * Math.cos(Grau) - (y0 - y1) * Math.sin(Grau) + x1;
 				double ny1 = (y0 - y1) * Math.cos(Grau) + (x0 - x1) * Math.sin(Grau) + y1;
+
+				//double nx1 = (x0 - x1) * Math.cos(Grau) - (y0 - y1) * Math.sin(Grau) + x1;
+				//double ny1 = (y0 - y1) * Math.cos(Grau) + (x0 - x1) * Math.sin(Grau) + y1;
 
 				double nx2 = (x0 - x2) * Math.cos(Grau) - (y0 - y2) * Math.sin(Grau) + x2;
 				double ny2 = (y0 - y2) * Math.cos(Grau) + (x0 - x2) * Math.sin(Grau) + y2;
@@ -1239,18 +1243,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				double nxr = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
 				double nyr = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
 
-				Ponto p1 = new Ponto(x0,y0);
 				Ponto p2 = new Ponto((int)nx1,(int)ny1);
 				Ponto p3 = new Ponto((int)nx2,(int)ny2);
 				Ponto p4 = new Ponto((int)nxr,(int)nyr);
 
-				r.p2.x = xr;
-				r.p2.y = yr;
+				r.p2 = p4;
 
-				dda(p1,p2,corE);
-				dda(p2,p4,corE);
-				dda(p3,p4,corE);
-				dda(p1,p3,corE);
+				dda(r.p1,p2,corE);
+				dda(p4,p2,corE);
+				dda(p4,p3,corE);
+				dda(r.p1,p3,corE);
 			}
 		}
 
