@@ -311,42 +311,41 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		g1_panelMenu.setHorizontalGroup(
 				g1_panelMenu.createParallelGroup(Alignment.CENTER)
 				.addGroup( g1_panelMenu.createSequentialGroup()
+					.addGap(5)
+					.addComponent(buttonSalvar)
+					.addComponent(buttonRestaurar)
+					.addGap(10)
+					.addComponent(buttonClear)
+					.addGap(15)
+					.addComponent(buttonCor)
+					.addGap(15)
 					.addComponent(buttonPonto)
-					.addGap(10)
-					.addComponent(buttonRetangulo)
-					.addGap(10)
-					.addComponent(buttonCirculo)
 					.addGap(10)
 					.addComponent(buttonRetaD)
 					.addGap(10)
 					.addComponent(buttonRetaB)
 					.addGap(10)
-					.addComponent(buttonTrans)
+					.addComponent(buttonRetangulo)
 					.addGap(10)
-					.addComponent(buttonEscala)
-					.addGap(10)
-					.addComponent(buttonCor)
-
+					.addComponent(buttonCirculo)
 					)
 				.addGroup( g1_panelMenu.createSequentialGroup()
 					.addGap(30)
+					.addComponent(buttonEscala)
+					.addGap(10)
+					.addComponent(buttonTrans)
+					.addGap(10)
+					.addComponent(buttonRota)
+					.addGap(10)
 					.addComponent(buttonMirrorX)
 					.addGap(10)
 					.addComponent(buttonMirrorY)
 					.addGap(10)
 					.addComponent(buttonMirrorXY)
 					.addGap(10)
-					.addComponent(buttonRota)
-					.addGap(10)
 					.addComponent(buttonCS)
 					.addGap(10)
 					.addComponent(buttonLB)
-					.addGap(10)
-					.addComponent(buttonClear)
-					.addGap(10)
-					.addComponent(buttonSalvar)
-					.addGap(10)
-					.addComponent(buttonRestaurar)
 					.addGap(10)
 					.addComponent(buttonBoundary)
 					//.addGap(10)
@@ -359,29 +358,28 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				.addGroup(g1_panelMenu.createSequentialGroup()
 					.addGap(10)
 					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
+						.addComponent(buttonSalvar)
+						.addComponent(buttonRestaurar)
+						.addComponent(buttonClear)
+						.addComponent(buttonCor)
 						.addComponent(buttonPonto)
-						.addComponent(buttonRetangulo)
-						.addComponent(buttonCirculo)
 						.addComponent(buttonRetaD)
 						.addComponent(buttonRetaB)
-						.addComponent(buttonTrans)
-						.addComponent(buttonEscala)
-						.addComponent(buttonCor)
-
+						.addComponent(buttonRetangulo)
+						.addComponent(buttonCirculo)
 						)
 					.addGap(10)
 					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
+						.addComponent(buttonEscala)
+						.addComponent(buttonTrans)
+						.addComponent(buttonRota)
 						.addComponent(buttonMirrorX)
 						.addComponent(buttonMirrorY)
 						.addComponent(buttonMirrorXY)
-						.addComponent(buttonRota)
 						.addComponent(buttonCS)
 						.addComponent(buttonLB)
-						.addComponent(buttonClear)
-						.addComponent(buttonSalvar)
-						.addComponent(buttonRestaurar)
-						//.addComponent(buttonFlood)
 						.addComponent(buttonBoundary)
+						//.addComponent(buttonFlood)
 						))
 						);
 		panelMenu.setLayout(g1_panelMenu);
@@ -404,61 +402,43 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	public void actionPerformed(ActionEvent arg0){
 		if(arg0.getSource() == buttonCor){
 			do_buttonCor_actionPerfomed(arg0);
-		} else
-			if(arg0.getSource() == buttonPonto){
-				do_buttonPonto_actionPerfomed(arg0);
-			} else
-				if(arg0.getSource() == buttonRetangulo){
-					do_buttonRetangulo_actionPerfomed(arg0);
-				} else
-					if(arg0.getSource() == buttonCirculo){
-						do_buttonCirculo_actionPerfomed(arg0);
-					} else
-						if(arg0.getSource() == buttonRetaD){
-							do_buttonReta_actionPerfomed(arg0);
-						} else
-							if(arg0.getSource() == buttonRetaB){
-								do_buttonRetaB_actionPerfomed(arg0);
-							} else
-								if(arg0.getSource() == buttonTrans){
-									do_buttonTrans_actionPerfomed(arg0);
-								} else
-									if(arg0.getSource() == buttonEscala){
-										do_buttonEscala_actionPerfomed(arg0);
-									} else
-										if(arg0.getSource() == buttonMirrorX){
-											do_buttonMirrorX_actionPerfomed(arg0);
-										} else
-											if(arg0.getSource() == buttonMirrorY){
-												do_buttonMirrorY_actionPerfomed(arg0);
-											} else
-												if(arg0.getSource() == buttonMirrorXY){
-													do_buttonMirrorXY_actionPerfomed(arg0);
-												} else
-													if(arg0.getSource() == buttonRota){
-														do_buttonRota_actionPerfomed(arg0);
-													} else
-														if(arg0.getSource() == buttonClear){
-															do_buttonClear_actionPerfomed(arg0);
-														} else
-															if(arg0.getSource() == buttonCS){
-																do_buttonCS_actionPerfomed(arg0);
-															} else
-																if(arg0.getSource() == buttonLB){
-																	do_buttonLB_actionPerfomed(arg0);
-																} else
-																	if(arg0.getSource() == buttonSalvar){
-																		do_buttonSalvar_actionPerfomed(arg0);
-																	} else
-																		if(arg0.getSource() == buttonRestaurar){
-																			do_buttonRestaurar_actionPerfomed(arg0);
-																		} else
-																			//if(arg0.getSource() == buttonFlood){
-																													//do_buttonFlood_actionPerfomed(arg0);
-																																																											//}
-																			if(arg0.getSource() == buttonBoundary){
-																				do_buttonBoundary_actionPerfomed(arg0);
-																			}
+		} else if(arg0.getSource() == buttonPonto){
+			do_buttonPonto_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonRetangulo){
+				do_buttonRetangulo_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonCirculo){
+			do_buttonCirculo_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonRetaD){
+			do_buttonReta_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonRetaB){
+			do_buttonRetaB_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonTrans){
+			do_buttonTrans_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonEscala){
+			do_buttonEscala_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonMirrorX){
+			do_buttonMirrorX_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonMirrorY){
+			do_buttonMirrorY_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonMirrorXY){
+			do_buttonMirrorXY_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonRota){
+			do_buttonRota_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonClear){
+			do_buttonClear_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonCS){
+			do_buttonCS_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonLB){
+			do_buttonLB_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonSalvar){
+			do_buttonSalvar_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonRestaurar){
+			do_buttonRestaurar_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonBoundary){
+			do_buttonBoundary_actionPerfomed(arg0);
+		} //else if(arg0.getSource() == buttonFlood){
+			//do_buttonFlood_actionPerfomed(arg0);
+		//}
 	}
 
 	//mudar cor
@@ -628,12 +608,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}	
 	}
 
-
 	// Desenho
 	private void setupDesenho(){
 		g = panel.getGraphics();
 	}
-
 
 	//Classe para lidar com eventos de mouse
 	public class MouseHandler extends MouseAdapter
@@ -1710,9 +1688,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		flood(x,y+1,cor_preenche,cor_antiga);
 		flood(x,y-1,cor_preenche,cor_antiga);
 		}
-		}
-
-*/
+		}*/
 
 		//x, y = ponto inicial
 		//algoritmo adaptado pois nao usamos matriz de pixels
@@ -1736,8 +1712,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		// Captura um clique e define seu significado
 		// conforme a ferramenta em uso
-		public void mousePressed( MouseEvent e )
-		{
+		public void mousePressed( MouseEvent e ){
 			x1 = e.getX();
 			y1 = e.getY();
 
@@ -1760,6 +1735,22 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					Ponto Rp2 = new Ponto(Rx2, Ry2);
 					Retangulo r = new Retangulo(Rp1, Rp2, corE);
 					retangulo(Rp1, Rp2, corE);
+				}
+			} else if(ferramenta_atual == Ferramentas.DDA) {
+				//captura o primeiro ponto se as primeiras variaveis da
+				//reta forem -1
+				if (DDAx1 == -1) {
+					DDAx1 = x1;
+					DDAy1 = y1;
+					//Captura o segundo ponto se as primeiras variaveis da 
+					//reta forem != -1 e as segundas forem -1
+				} else if(DDAx2 == -1) {
+					DDAx2 = x1;
+					DDAy2 = y1;
+					Ponto DDAp1 = new Ponto(DDAx1, DDAy1);
+					Ponto DDAp2 = new Ponto(DDAx2, DDAy2);
+					RetaDDA retaDDA = new RetaDDA(DDAp1, DDAp2, corE);
+					dda(DDAp1, DDAp2, corE);
 				}
 			} else if(ferramenta_atual == Ferramentas.RETA_BRESENHAM) {
 				//captura o primeiro ponto se as primeiras variaveis da
@@ -1799,52 +1790,35 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					//reseta variaveis
 					DAx = DAy = DBx = DBy = -1;
 				}
-			} else if(ferramenta_atual == Ferramentas.DDA) {
-				//captura o primeiro ponto se as primeiras variaveis da
-				//reta forem -1
-				if (DDAx1 == -1) {
-					DDAx1 = x1;
-					DDAy1 = y1;
-					//Captura o segundo ponto se as primeiras variaveis da 
-					//reta forem != -1 e as segundas forem -1
-				} else if(DDAx2 == -1) {
-					DDAx2 = x1;
-					DDAy2 = y1;
-					Ponto DDAp1 = new Ponto(DDAx1, DDAy1);
-					Ponto DDAp2 = new Ponto(DDAx2, DDAy2);
-					RetaDDA retaDDA = new RetaDDA(DDAp1, DDAp2, corE);
-					dda(DDAp1, DDAp2, corE);
-				}
 			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
 			} else if(ferramenta_atual == Ferramentas.ROTACAO) {
-				//} else if(ferramenta_atual == Ferramentas.FLOOD) {
-		} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
-			boundary(x1,y1,50);
-		} else if (ferramenta_atual == Ferramentas.RECORTE) {
-			if (ReMin.x == -1) {
-				ReMin.x = x1;
-				ReMin.y = y1;
-			}else if(ReMax.x == -1) {
-				ReMax.x = x1;
-				ReMax.y = y1;
-				recorte(0);
+			//} else if(ferramenta_atual == Ferramentas.FLOOD) {
+			} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
+				boundary(x1,y1,50);
+			} else if (ferramenta_atual == Ferramentas.RECORTE) {
+				if (ReMin.x == -1) {
+					ReMin.x = x1;
+					ReMin.y = y1;
+				}else if(ReMax.x == -1) {
+					ReMax.x = x1;
+					ReMax.y = y1;
+					recorte(0);
+				}
+			} else if (ferramenta_atual == Ferramentas.RECORTELB) {
+				if (ReMin.x == -1) {
+					ReMin.x = x1;
+					ReMin.y = y1;
+				}else if(ReMax.x == -1) {
+					ReMax.x = x1;
+					ReMax.y = y1;
+					recorte(1);
+				}
 			}
-		} else if (ferramenta_atual == Ferramentas.RECORTELB) {
-			if (ReMin.x == -1) {
-				ReMin.x = x1;
-				ReMin.y = y1;
-			}else if(ReMax.x == -1) {
-				ReMax.x = x1;
-				ReMax.y = y1;
-				recorte(1);
-			}
-		}
-		x2=x1;
-		y2=y1;
+			x2=x1;
+			y2=y1;
 		}
 
-		public void mouseDragged( MouseEvent e )
-		{
+		public void mouseDragged( MouseEvent e ){
 			if(ferramenta_atual == Ferramentas.NORMAL) {
 				x1 = e.getX();
 				y1 = e.getY();
