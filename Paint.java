@@ -46,7 +46,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	private JPanel contentPane, panelMenu, panelStatus, panel;
 	private JLabel labelPosX, labelPosY;
-	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonRetaB,
+	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonEscala, buttonRetaB,
 			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, buttonBoundary, buttonFlood;
 	private int x1,y1,x2,y2;
 	private static MouseHandler mouse;
@@ -71,6 +71,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private Icon lb    = new ImageIcon(getClass().getResource("img/liang_barsky.png"));
 	private Icon salvar    = new ImageIcon(getClass().getResource("img/salvar.png"));
 	private Icon restaurar    = new ImageIcon(getClass().getResource("img/restaurar.png"));
+	private Icon escala    = new ImageIcon(getClass().getResource("img/escala.png"));
 	//private Icon flood    = new ImageIcon(getClass().getResource("img/flood_fill.png"));
 	private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
 
@@ -123,7 +124,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	//Ferramentas possiveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, RECORTE, ROTACAO, RECORTELB, FLOOD, BOUNDARY
+		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, ESCALA, RECORTE, ROTACAO, RECORTELB, FLOOD, BOUNDARY
 	};
 
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
@@ -208,6 +209,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonTrans.setBackground(Color.decode("#e70065"));
 		buttonTrans.setHorizontalTextPosition(SwingConstants.CENTER); 
 
+		//botao escala
+		buttonEscala = new JButton();
+		buttonEscala.addActionListener(this);
+		buttonEscala.setIcon(escala);
+		buttonEscala.setBackground(Color.decode("#e70065"));
+		buttonEscala.setHorizontalTextPosition(SwingConstants.CENTER); 
 
 		buttonMirrorX = new JButton();
 		buttonMirrorX.addActionListener(this);
@@ -297,6 +304,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addGap(10)
 					.addComponent(buttonTrans)
 					.addGap(10)
+					.addComponent(buttonEscala)
+					.addGap(10)
 					.addComponent(buttonCor)
 
 					)
@@ -337,6 +346,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonRetaD)
 						.addComponent(buttonRetaB)
 						.addComponent(buttonTrans)
+						.addComponent(buttonEscala)
 						.addComponent(buttonCor)
 
 						)
@@ -393,6 +403,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 		if(arg0.getSource() == buttonTrans){
 			do_buttonTrans_actionPerfomed(arg0);
+		}
+		if(arg0.getSource() == buttonEscala){
+			do_buttonEscala_actionPerfomed(arg0);
 		}
 		if(arg0.getSource() == buttonMirrorX){
 			do_buttonMirrorX_actionPerfomed(arg0);
@@ -495,7 +508,26 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					TEx = Integer.parseInt(xis);
 					TEy = Integer.parseInt(yis);
 					ferramenta_atual = Ferramentas.TRANSLACAO;
-					mouse.translacao();
+					mouse.translacao(true);
+				}catch(NumberFormatException e){
+					JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
+				}   
+			}            
+		}
+	}
+
+	protected void do_buttonEscala_actionPerfomed(ActionEvent arg0){
+		String xis;
+		String yis;
+		xis = JOptionPane.showInputDialog("Digite X:");
+		if ((xis != null) && (xis.length() > 0)) {    
+			yis = JOptionPane.showInputDialog("Digite Y:");
+			if((yis != null) ){
+				try {
+					TAx = Integer.parseInt(xis);
+					TAy = Integer.parseInt(yis);
+					ferramenta_atual = Ferramentas.ESCALA;
+					mouse.escala();
 				}catch(NumberFormatException e){
 					JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
 				}   
@@ -844,33 +876,20 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 
-		public void translacao() {
+		// plotar booleano que controla se vai plotar os objetos
+		// ou so calcular a translacao
+		// feito para usar junto com a escala
+		public void translacao(boolean plotar) {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
 			Retangulo r;
 			Circunferencia circ;
 
-			// apaga imagens atuais na tela
-			for(int i = 0; i < RetaDDA.lista.size(); i++) {
-				retaDDA = RetaDDA.lista.get(i);
-				apaga_dda(retaDDA);
-			}
-			for(int i = 0; i < RetaBRE.lista.size(); i++) {
-				retaBRE = RetaBRE.lista.get(i);
-				apaga_reta_bresenham(retaBRE);
-			}
-			for(int i = 0; i < Retangulo.lista.size(); i++) {
-				r = Retangulo.lista.get(i);
-				apaga_retangulo(r);
-			}
-			for(int i = 0; i < Circunferencia.lista.size(); i++) {
-				circ = Circunferencia.lista.get(i);
-				apaga_circunferencia_bresenham(circ);
-			}
 
 			// aplica translacao nas retas DDA
 			for(int i = 0; i < RetaDDA.lista.size(); i++) {
 				retaDDA = RetaDDA.lista.get(i);
+				apaga_dda(retaDDA);
 				// atualiza p1
 				retaDDA.p1.x = retaDDA.p1.x + TEx;
 				retaDDA.p1.y = retaDDA.p1.y + TEy;
@@ -879,16 +898,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				retaDDA.p2.y = retaDDA.p2.y + TEy;
 				// substitui a reta pela nova na lista
 				RetaDDA.lista.set(i, retaDDA);
-			}
-			// redesenha as retas da lista
-			for(int i = 0; i < RetaDDA.lista.size(); i++) {
-				retaDDA = RetaDDA.lista.get(i);
-				dda(retaDDA.p1, retaDDA.p2, retaDDA.cor);
+				if(plotar)
+					dda(retaDDA.p1, retaDDA.p2, retaDDA.cor);
 			}
 
 			// aplica translacao nas retas bresenham
 			for(int i = 0; i < RetaBRE.lista.size(); i++) {
 				retaBRE = RetaBRE.lista.get(i);
+				apaga_reta_bresenham(retaBRE);
 				// atualiza p1
 				retaBRE.p1.x = retaBRE.p1.x + TEx;
 				retaBRE.p1.y = retaBRE.p1.y + TEy;
@@ -897,16 +914,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				retaBRE.p2.y = retaBRE.p2.y + TEy;
 				// substitui a reta pela nova na lista
 				RetaBRE.lista.set(i, retaBRE);
-			}
-			// redesenha as retas da lista
-			for(int i = 0; i < RetaBRE.lista.size(); i++) {
-				retaBRE = RetaBRE.lista.get(i);
-				reta_bresenham(retaBRE.p1, retaBRE.p2, retaBRE.cor);
+				if(plotar)
+					reta_bresenham(retaBRE.p1, retaBRE.p2, retaBRE.cor);
 			}
 
 			// aplica translacao nos retangulos
 			for(int i = 0; i < Retangulo.lista.size(); i++) {
 				r = Retangulo.lista.get(i);
+				apaga_retangulo(r);
 				// atualiza p1
 				r.p1.x = r.p1.x + TEx;
 				r.p1.y = r.p1.y + TEy;
@@ -915,26 +930,21 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				r.p2.y = r.p2.y + TEy;
 				// substitui o retangulo pelo novo na lista
 				Retangulo.lista.set(i, r);
-			}
-			// redesenha os retangulos da lista
-			for(int i = 0; i < Retangulo.lista.size(); i++) {
-				r = Retangulo.lista.get(i);
-				retangulo(r.p1, r.p2, r.cor);
+				if(plotar)
+					retangulo(r.p1, r.p2, r.cor);
 			}
 
 			// aplica translacao nas circunferencias
 			for(int i = 0; i < Circunferencia.lista.size(); i++) {
 				circ = Circunferencia.lista.get(i);
+				apaga_circunferencia_bresenham(circ);
 				// atualiza o centro
 				circ.centro.x = circ.centro.x + TEx;
 				circ.centro.y = circ.centro.y + TEy;
 				// substitui a circunferencia pela nova na lista
 				Circunferencia.lista.set(i, circ);
-			}
-			// redesenha as circunferencias da lista
-			for(int i = 0; i < Circunferencia.lista.size(); i++) {
-				circ = Circunferencia.lista.get(i);
-				circunferencia_bresenham(circ, circ.cor);
+				if(plotar)
+					circunferencia_bresenham(circ, circ.cor);
 			}
 		}
       
@@ -942,73 +952,100 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
 			Retangulo r;
-
-			// apaga imagens atuais na tela
-			for(int i = 0; i < RetaDDA.lista.size(); i++) {
-				retaDDA = RetaDDA.lista.get(i);
-				apaga_dda(retaDDA);
-			}
-			for(int i = 0; i < RetaBRE.lista.size(); i++) {
-				retaBRE = RetaBRE.lista.get(i);
-				apaga_reta_bresenham(retaBRE);
-			}
-			for(int i = 0; i < Retangulo.lista.size(); i++) {
-				r = Retangulo.lista.get(i);
-				apaga_retangulo(r);
-			}
+			Circunferencia circ;
 
 			// aplica a escala nas retas DDA
 			for(int i = 0; i < RetaDDA.lista.size(); i++) {
 				retaDDA = RetaDDA.lista.get(i);
+				apaga_dda(retaDDA);
+				//translada para a origem para nao mudar a imagem de posicao
+				TEx = - retaDDA.p1.x;
+				TEy = - retaDDA.p1.y;
+				translacao(false);
 				// atualiza p1
 				retaDDA.p1.x = retaDDA.p1.x * TAx;
 				retaDDA.p1.y = retaDDA.p1.y * TAy;
 				// atualiza p2
 				retaDDA.p2.x = retaDDA.p2.x * TAx;
 				retaDDA.p2.y = retaDDA.p2.y * TAy;
+				//translada de volta para onde estava
+				TEx = - TEx;
+				TEy = - TEy;
+				translacao(false);
 				// substitui a reta pela nova na lista
 				RetaDDA.lista.set(i, retaDDA);
-			}
-			// redesenha as retas da lista
-			for(int i = 0; i < RetaDDA.lista.size(); i++) {
-				retaDDA = RetaDDA.lista.get(i);
 				dda(retaDDA.p1, retaDDA.p2, retaDDA.cor);
 			}
 
-			// aplica translacao nas retas bresenham
+			// aplica escala nas retas bresenham
 			for(int i = 0; i < RetaBRE.lista.size(); i++) {
 				retaBRE = RetaBRE.lista.get(i);
+				apaga_reta_bresenham(retaBRE);
+				//translada para a origem para nao mudar a imagem de posicao
+				TEx = - retaBRE.p1.x;
+				TEy = - retaBRE.p1.y;
+				translacao(false);
 				// atualiza p1
 				retaBRE.p1.x = retaBRE.p1.x * TAx;
 				retaBRE.p1.y = retaBRE.p1.y * TAy;
 				// atualiza p2
 				retaBRE.p2.x = retaBRE.p2.x * TAx;
 				retaBRE.p2.y = retaBRE.p2.y * TAy;
+				//translada de volta para onde estava
+				TEx = - TEx;
+				TEy = - TEy;
+				translacao(false);
 				// substitui a reta pela nova na lista
 				RetaBRE.lista.set(i, retaBRE);
-			}
-			// redesenha as retas da lista
-			for(int i = 0; i < RetaBRE.lista.size(); i++) {
-				retaBRE = RetaBRE.lista.get(i);
 				reta_bresenham(retaBRE.p1, retaBRE.p2, retaBRE.cor);
 			}
-
-			// aplica translacao nos retangulos
+			// aplica escala nos retangulos
 			for(int i = 0; i < Retangulo.lista.size(); i++) {
 				r = Retangulo.lista.get(i);
+				apaga_retangulo(r);
+				//translada para a origem para nao mudar a imagem de posicao
+				TEx = - r.p1.x;
+				TEy = - r.p1.y;
+				translacao(false);
 				// atualiza p1
 				r.p1.x = r.p1.x * TAx;
 				r.p1.y = r.p1.y * TAy;
 				// atualiza p2
 				r.p2.x = r.p2.x * TAx;
 				r.p2.y = r.p2.y * TAy;
+				//translada de volta para onde estava
+				TEx = - TEx;
+				TEy = - TEy;
+				translacao(false);
 				// substitui o retangulo pelo novo na lista
 				Retangulo.lista.set(i, r);
-			}
-			// redesenha os retangulos da lista
-			for(int i = 0; i < Retangulo.lista.size(); i++) {
-				r = Retangulo.lista.get(i);
 				retangulo(r.p1, r.p2, r.cor);
+			}
+			// aplica escala nas Circunferencias
+			for(int i = 0; i < Circunferencia.lista.size(); i++) {
+				circ = Circunferencia.lista.get(i);
+				apaga_circunferencia_bresenham(circ);
+				//Pega um ponto qualquer que esteja na circunferencia
+				//dessa forma a escala é aplicada no raio da circunferência,
+				int xg = circ.centro.x - circ.raio;
+				int yg = circ.centro.y;
+				//translada para a origem para nao mudar a imagem de posicao
+				//TEx = - circ.centro.x;
+				//TEy = - circ.centro.y;
+				//translacao(false);
+				circ.centro.x = circ.centro.x * TAx;
+				circ.centro.y = circ.centro.y * TAy;
+				xg = xg * TAx;
+				yg = yg * TAy;
+				//recalcula o raio com base no ponto generico obtido e o novo centro
+				circ.raio = tamanho_reta(new Ponto(xg,yg),circ.centro);
+				//translada de volta para onde estava
+				//TEx = - TEx;
+				//TEy = - TEy;
+				//translacao(false);
+				// substitui a Circunferencia pela nova na lista
+				Circunferencia.lista.set(i,circ);
+				circunferencia_bresenham(circ,corE);
 			}
 		}
 
