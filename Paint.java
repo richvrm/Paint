@@ -42,8 +42,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
+
 public class Paint extends JFrame implements ActionListener{ //MouseListener, MouseMotionListener{
 
+	// Definição de variáveis relacionadas à tela
 	private JPanel contentPane, panelMenu, panelStatus, panel;
 	private JLabel labelPosX, labelPosY;
 	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonEscala, buttonRetaB,
@@ -81,55 +83,67 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int Largura = 800;
 	private int Altura = 540;
 
-	//variaveis das coordenadas do retangulo
+	// Variáveis relacionadas às funções
+
+	//variáveis das coordenadas do retangulo
 	private int Rx1 = -1;
 	private int Ry1 = -1;
 	private int Rx2 = -1;
 	private int Ry2 = -1;
 
-	//variaveis das coordenadas do DDA
+	//variáveis das coordenadas do DDA
 	private int DDAx1 = -1;
 	private int DDAy1 = -1;
 	private int DDAx2 = -1;
 	private int DDAy2 = -1;
 
-	//variaveis das coordenadas da reta bresenham
+	//variáveis das coordenadas da reta bresenham
 	private int RBx1 = -1;
 	private int RBy1 = -1;
 	private int RBx2 = -1;
 	private int RBy2 = -1;
 
-	//variaveis da circunferencia de bresenham
+	//variáveis da circunferência de bresenham
 	private int DAx = -1;
 	private int DAy = -1;
 	private int DBx = -1;
 	private int DBy = -1;
 
-	//variaveis da translacao
+	//variáveis da translação
 	private int TEx;
 	private int TEy;
-   
-   //variaveis da escala
-   private int TAx = 1;
-   private int TAy = 2;
 
-	//variaveis do recorte
+	//variáveis da escala
+	private int TAx = 1;
+	private int TAy = 2;
+
+	//variáveis do recorte
 	private Ponto ReMin = new Ponto();
 	private Ponto ReMax = new Ponto();
 	float u1 = 0;
 	float u2 = 1;
 
-	//variaveis da rotacao
+	//variáveis da rotação
 	private int Grau = 20;
 
-	//Ferramentas possiveis
+	//Ferramentas possíveis
 	private enum Ferramentas {
-		NORMAL, RETANGULO, DDA, RETA_BRESENHAM, CIRC_BRESENHAM, TRANSLACAO, ESCALA, RECORTE, ROTACAO, RECORTELB, FLOOD, BOUNDARY
+		NORMAL,
+		RETANGULO,
+		DDA,
+		RETA_BRESENHAM,
+		CIRC_BRESENHAM,
+		TRANSLACAO,
+		ESCALA,
+		RECORTE,
+		ROTACAO,
+		RECORTELB,
+		FLOOD,
+		BOUNDARY
 	};
 
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
 
-	//main: inicializar tela e captura de eventos
 	public static void main(String[] args){
 		EventQueue.invokeLater(new Runnable(){
 			public void run(){
@@ -144,16 +158,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 
 	public Paint(){
-
 		//Inicializando Ambiente
-		setTitle("Paint Brush");
+		setTitle("Paint Calafrio");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100,100,800,600);
 		contentPane = new JPanel();
 		// contentPane.setBorder(new EmptyBorder(5,5,5,5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
 
 		//Painel com botoes
 		panelMenu = new JPanel();
@@ -216,57 +228,63 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonEscala.setBackground(Color.decode("#e70065"));
 		buttonEscala.setHorizontalTextPosition(SwingConstants.CENTER); 
 
+		//botão reflexão
 		buttonMirrorX = new JButton();
 		buttonMirrorX.addActionListener(this);
 		buttonMirrorX.setIcon(mirrorX);
 		buttonMirrorX.setBackground(Color.decode("#e70065"));
 		buttonMirrorX.setHorizontalTextPosition(SwingConstants.CENTER); 
 
-
+		//botão reflexão
 		buttonMirrorY = new JButton();
 		buttonMirrorY.addActionListener(this);
 		buttonMirrorY.setIcon(mirrorY);
 		buttonMirrorY.setBackground(Color.decode("#e70065"));
 		buttonMirrorY.setHorizontalTextPosition(SwingConstants.CENTER); 
 
-
+		//botão reflexão
 		buttonMirrorXY = new JButton();
 		buttonMirrorXY.addActionListener(this);
 		buttonMirrorXY.setIcon(mirrorXY);
 		buttonMirrorXY.setBackground(Color.decode("#e70065"));
 		buttonMirrorXY.setHorizontalTextPosition(SwingConstants.CENTER);
 
+		//botão rotação
 		buttonRota = new JButton();
 		buttonRota.addActionListener(this);
 		buttonRota.setIcon(rota);
 		buttonRota.setBackground(Color.decode("#e70065"));
 		buttonRota.setHorizontalTextPosition(SwingConstants.CENTER);
 
+		//botão limpar
 		buttonClear = new JButton();
 		buttonClear.addActionListener(this);
 		buttonClear.setIcon(clear);
 		buttonClear.setBackground(Color.decode("#e70065"));
 		buttonClear.setHorizontalTextPosition(SwingConstants.CENTER);  
 
+		//botão Cohen Sutherland
 		buttonCS = new JButton();
 		buttonCS.addActionListener(this);
 		buttonCS.setIcon(cs);
 		buttonCS.setBackground(Color.decode("#e70065"));
 		buttonCS.setHorizontalTextPosition(SwingConstants.CENTER);
 
+		//botão LiangBarsky
 		buttonLB = new JButton();
 		buttonLB.addActionListener(this);
 		buttonLB.setIcon(lb);
 		buttonLB.setBackground(Color.decode("#e70065"));
 		buttonLB.setHorizontalTextPosition(SwingConstants.CENTER);
 
+		//botão salvar aquivo
 		buttonSalvar = new JButton();
 		buttonSalvar.addActionListener(this);
 		buttonSalvar.setIcon(salvar);
 		buttonSalvar.setBackground(Color.decode("#e70065"));
 		buttonSalvar.setHorizontalTextPosition(SwingConstants.CENTER);
 
-
+		//botão restaurar arquivo
 		buttonRestaurar = new JButton();
 		buttonRestaurar.addActionListener(this);
 		buttonRestaurar.setIcon(restaurar);
@@ -280,7 +298,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		   buttonFlood.setBackground(Color.decode("#e70065"));
 		   buttonFlood.setHorizontalTextPosition(SwingConstants.CENTER);*/
 
-		
+
+		//botão boundary fill
 		buttonBoundary = new JButton();
 		buttonBoundary.addActionListener(this);
 		buttonBoundary.setIcon(boundary);
@@ -385,61 +404,61 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	public void actionPerformed(ActionEvent arg0){
 		if(arg0.getSource() == buttonCor){
 			do_buttonCor_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonPonto){
-			do_buttonPonto_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonRetangulo){
-			do_buttonRetangulo_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonCirculo){
-			do_buttonCirculo_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonRetaD){
-			do_buttonReta_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonRetaB){
-			do_buttonReta_actionPerfomed(arg0); //retaBRE
-		}
-		if(arg0.getSource() == buttonTrans){
-			do_buttonTrans_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonEscala){
-			do_buttonEscala_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonMirrorX){
-			do_buttonMirrorX_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonMirrorY){
-			do_buttonMirrorY_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonMirrorXY){
-			do_buttonMirrorXY_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonRota){
-			do_buttonRota_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonClear){
-			do_buttonClear_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonCS){
-			do_buttonCS_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonLB){
-			do_buttonLB_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonSalvar){
-			do_buttonSalvar_actionPerfomed(arg0);
-		}
-		if(arg0.getSource() == buttonRestaurar){
-			do_buttonRestaurar_actionPerfomed(arg0);
-		}
-		//if(arg0.getSource() == buttonFlood){
-		//do_buttonFlood_actionPerfomed(arg0);
-		//}
-		if(arg0.getSource() == buttonBoundary){
-		do_buttonBoundary_actionPerfomed(arg0);
-		}
+		} else
+			if(arg0.getSource() == buttonPonto){
+				do_buttonPonto_actionPerfomed(arg0);
+			} else
+				if(arg0.getSource() == buttonRetangulo){
+					do_buttonRetangulo_actionPerfomed(arg0);
+				} else
+					if(arg0.getSource() == buttonCirculo){
+						do_buttonCirculo_actionPerfomed(arg0);
+					} else
+						if(arg0.getSource() == buttonRetaD){
+							do_buttonReta_actionPerfomed(arg0);
+						} else
+							if(arg0.getSource() == buttonRetaB){
+								do_buttonRetaB_actionPerfomed(arg0);
+							} else
+								if(arg0.getSource() == buttonTrans){
+									do_buttonTrans_actionPerfomed(arg0);
+								} else
+									if(arg0.getSource() == buttonEscala){
+										do_buttonEscala_actionPerfomed(arg0);
+									} else
+										if(arg0.getSource() == buttonMirrorX){
+											do_buttonMirrorX_actionPerfomed(arg0);
+										} else
+											if(arg0.getSource() == buttonMirrorY){
+												do_buttonMirrorY_actionPerfomed(arg0);
+											} else
+												if(arg0.getSource() == buttonMirrorXY){
+													do_buttonMirrorXY_actionPerfomed(arg0);
+												} else
+													if(arg0.getSource() == buttonRota){
+														do_buttonRota_actionPerfomed(arg0);
+													} else
+														if(arg0.getSource() == buttonClear){
+															do_buttonClear_actionPerfomed(arg0);
+														} else
+															if(arg0.getSource() == buttonCS){
+																do_buttonCS_actionPerfomed(arg0);
+															} else
+																if(arg0.getSource() == buttonLB){
+																	do_buttonLB_actionPerfomed(arg0);
+																} else
+																	if(arg0.getSource() == buttonSalvar){
+																		do_buttonSalvar_actionPerfomed(arg0);
+																	} else
+																		if(arg0.getSource() == buttonRestaurar){
+																			do_buttonRestaurar_actionPerfomed(arg0);
+																		} else
+																			//if(arg0.getSource() == buttonFlood){
+																													//do_buttonFlood_actionPerfomed(arg0);
+																																																											//}
+																			if(arg0.getSource() == buttonBoundary){
+																				do_buttonBoundary_actionPerfomed(arg0);
+																			}
 	}
 
 	//mudar cor
@@ -468,10 +487,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		ferramenta_atual = Ferramentas.DDA;
 	}
 
-	/*
+
 	protected void do_buttonRetaB_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.RETA_BRESENHAM;
-	}*/
+	}
 
 	protected void do_buttonSalvar_actionPerfomed(ActionEvent arg0){
 		salvar();
@@ -574,10 +593,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		ferramenta_atual = Ferramentas.RECORTELB;
 	}
 
-	private void setupDesenho(){
-		g = panel.getGraphics();
-	}
-
 	//Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
 	private void salvar() {
 		RetaDDA retaDDA;
@@ -614,11 +629,36 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 
 
+	// Desenho
+	private void setupDesenho(){
+		g = panel.getGraphics();
+	}
 
 
-	//Classe interna para lidar com eventos de mouse
-	private class MouseHandler extends MouseAdapter
+	//Classe para lidar com eventos de mouse
+	public class MouseHandler extends MouseAdapter
 	{
+		//Métodos para Apagar=======================
+		//plotam os objetos com a cor do fundo
+		//Note que os métodos de apagar não excluem os objetos
+		//pois são usados para redesenhar esses objetos
+		//O único método que realmente exclui é o apagartudo()
+		public void apaga_circunferencia_bresenham(Circunferencia circ) {
+			circunferencia_bresenham(circ, Color.WHITE);
+		}
+
+		public void apaga_reta_bresenham(RetaBRE reta) {
+			reta_bresenham(reta.p1, reta.p2, Color.WHITE);
+		}
+
+		public void apaga_retangulo(Retangulo retangulo) {
+			retangulo(retangulo.p1, retangulo.p2, Color.WHITE);
+		}
+
+		public void apaga_dda(RetaDDA reta) {
+			dda(reta.p1, reta.p2, Color.WHITE);
+		}
+
 		public void apagartudo(){
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -638,7 +678,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
+		//Método para Ler de arquivos ================
 		//Le um estado do canvas salvo anteriormente
+		//e recria e plota os objetos
 		private void restaurar(String nome) {
 			Reader reader = null;
 			BufferedReader br = null;
@@ -655,7 +697,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					Retangulo r;
 					Circunferencia circ;
 					//para cada linha lida, separa por espaços e 
-					//vê que tipo de objeto é e cria o objeto
+					//vê que tipo de objeto é e cria e plota o objeto
 					String[] objeto = line.split(" ");
 					if (objeto[0].equals("RetaDDA")) {
 						a1 = Integer.parseInt(objeto[1]);
@@ -703,6 +745,22 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		}
 
+		// Métodos para plotagem =============================
+
+		//calcula o tamanho da reta fg
+		//Tamanho da reta = sqrt(dx^2 + dy^2)
+		public int tamanho_reta(Ponto f, Ponto g /*hihihi*/) {
+			double tam = Math.sqrt( ( (g.x-f.x)*(g.x-f.x) + (g.y-f.y)*(g.y-f.y) ) );
+			return (int) Math.round(tam);
+		}
+
+		//Seta um ponto individual na tela
+		//Por utilizarmos uma interface java,
+		//não conseguimos interagir diretamente
+		//com o canvas. Foi necessário
+		//utilizar a função drawLine já implementada no java
+		//só utilizamos ela aqui para fazer uma linha de um ponto até
+		//ele mesmo, ou seja, setar um pixel
 		public void setPixel(Ponto ponto, Color cor) {
 			setupDesenho();
 			g.setColor(cor);
@@ -710,10 +768,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			g.setColor(corE);
 		}
 
-		public void apaga_dda(RetaDDA reta) {
-			dda(reta.p1, reta.p2, Color.WHITE);
-		}
-
+		//Plota uma reta utilizando o algoritmo DDA
 		public void dda(Ponto p1, Ponto p2, Color cor) {
 			int dx, dy, passos, k;
 			double x_inc, y_inc, x, y;
@@ -739,51 +794,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			DDAx1 = DDAy1 = DDAx2 = DDAy2 = -1;
 		}
 
-		public void apaga_retangulo(Retangulo retangulo) {
-			retangulo(retangulo.p1, retangulo.p2, Color.WHITE);
-		}
-
-		public void retangulo(Ponto p1, Ponto p2, Color cor) {
-			Ponto pr1, pr2;
-			//Reta superior
-			RBx1 = p1.x;
-			RBy1 = p1.y;
-			RBx2 = p2.x;
-			RBy2 = p1.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
-			//lateral esquerda
-			RBx1 = p1.x;
-			RBy1 = p1.y;
-			RBx2 = p1.x;
-			RBy2 = p2.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
-			//reta inferior
-			RBx1 = p1.x;
-			RBy1 = p2.y;
-			RBx2 = p2.x;
-			RBy2 = p2.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
-			//lateral direita
-			RBx1 = p2.x;
-			RBy1 = p1.y;
-			RBx2 = p2.x;
-			RBy2 = p2.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
-			Rx1 = Ry1 = Rx2 = Ry2 = -1;
-		}
-
-		public void apaga_reta_bresenham(RetaBRE reta) {
-			reta_bresenham(reta.p1, reta.p2, Color.WHITE);
-		}
-
+		//Plota uma reta utilizando o algoritmo de Bresenham
 		public void reta_bresenham(Ponto p1, Ponto p2, Color cor) {
 			int x, y, dx, dy, i, incrx, incry, const1, const2, p;
 			Ponto ponto;
@@ -839,10 +850,47 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			RBx1 = RBy1 = RBx2 = RBy2 = -1;
 		}
 
-		public void apaga_circunferencia_bresenham(Circunferencia circ) {
-			circunferencia_bresenham(circ, Color.WHITE);
+		//Plota um retangulo utilizando seus pontos diagonais
+		public void retangulo(Ponto p1, Ponto p2, Color cor) {
+			Ponto pr1, pr2;
+			//Reta superior
+			RBx1 = p1.x;
+			RBy1 = p1.y;
+			RBx2 = p2.x;
+			RBy2 = p1.y;
+			pr1 = new Ponto(RBx1, RBy1);
+			pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
+			//lateral esquerda
+			RBx1 = p1.x;
+			RBy1 = p1.y;
+			RBx2 = p1.x;
+			RBy2 = p2.y;
+			pr1 = new Ponto(RBx1, RBy1);
+			pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
+			//reta inferior
+			RBx1 = p1.x;
+			RBy1 = p2.y;
+			RBx2 = p2.x;
+			RBy2 = p2.y;
+			pr1 = new Ponto(RBx1, RBy1);
+			pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
+			//lateral direita
+			RBx1 = p2.x;
+			RBy1 = p1.y;
+			RBx2 = p2.x;
+			RBy2 = p2.y;
+			pr1 = new Ponto(RBx1, RBy1);
+			pr2 = new Ponto(RBx2, RBy2);
+			reta_bresenham(pr1, pr2, cor);
+			Rx1 = Ry1 = Rx2 = Ry2 = -1;
 		}
 
+
+		//Plota o segundo, terceiro e quarto quadrantes da circunferência
+		//refletindo o primeiro quadrante
 		public void colorirSimetricos(Ponto centro, int x, int y, Color cor) {
 			Ponto[] pontos = new Ponto[8];
 			pontos[0] = new Ponto(centro.x + x, centro.y + y);
@@ -857,6 +905,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				setPixel(pontos[i], cor);
 		}
 
+		// Plota o primeiro quadrante da circunferência utilizando
+		// o algoritmo de bresenham e chama colorirSimetricos para
+		// plotar os outros
 		public void circunferencia_bresenham(Circunferencia circ, Color cor) {
 			int x, y, p;
 			x = 0;
@@ -875,16 +926,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
+		//Métodos de transformações=========================================
 
-		// plotar booleano que controla se vai plotar os objetos
-		// ou so calcular a translacao
-		// feito para usar junto com a escala
+		// boolean plotar: controla se vai plotar os objetos ou só transformá-los
+		// dessa forma podemos utilizar o método juntamente com a escala
+		// utiliza os parâmetros globais TEx e TEy (vetor de translacao)
 		public void translacao(boolean plotar) {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
 			Retangulo r;
 			Circunferencia circ;
-
 
 			// aplica translacao nas retas DDA
 			for(int i = 0; i < RetaDDA.lista.size(); i++) {
@@ -947,8 +998,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					circunferencia_bresenham(circ, circ.cor);
 			}
 		}
-      
-      public void escala() {
+
+		//Aplica a escala nos objetos utilizando os parâmetros globais
+		//TAx e TAy (vetor de escala)
+		public void escala() {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
 			Retangulo r;
@@ -1025,14 +1078,16 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			for(int i = 0; i < Circunferencia.lista.size(); i++) {
 				circ = Circunferencia.lista.get(i);
 				apaga_circunferencia_bresenham(circ);
+				//translada para a origem para nao mudar a imagem de posicao
+				TEx = - circ.centro.x;
+				TEy = - circ.centro.y;
+				translacao(false);
+
 				//Pega um ponto qualquer que esteja na circunferencia
 				//dessa forma a escala é aplicada no raio da circunferência,
+				//aumentando o raio aumenta a circunferencia toda
 				int xg = circ.centro.x - circ.raio;
 				int yg = circ.centro.y;
-				//translada para a origem para nao mudar a imagem de posicao
-				//TEx = - circ.centro.x;
-				//TEy = - circ.centro.y;
-				//translacao(false);
 				circ.centro.x = circ.centro.x * TAx;
 				circ.centro.y = circ.centro.y * TAy;
 				xg = xg * TAx;
@@ -1040,9 +1095,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//recalcula o raio com base no ponto generico obtido e o novo centro
 				circ.raio = tamanho_reta(new Ponto(xg,yg),circ.centro);
 				//translada de volta para onde estava
-				//TEx = - TEx;
-				//TEy = - TEy;
-				//translacao(false);
+				TEx = - TEx;
+				TEy = - TEy;
+				translacao(false);
 				// substitui a Circunferencia pela nova na lista
 				Circunferencia.lista.set(i,circ);
 				circunferencia_bresenham(circ,corE);
@@ -1128,6 +1183,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 		//método para rotacionar objetos
+		//utiliza a variável global Grau
+		//Não se rotaciona um círculo por motivos óbvios
 		public void rotation() {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -1215,138 +1272,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		public int region_code(Ponto p) {
-			int codigo =0;
-			if (p.x < ReMin.x) {
-				++codigo;
-			}
-			if (p.x > ReMax.x) {
-				codigo += 2;
-			}
-			if (p.y < ReMin.y) {
-				codigo += 4;
-			}
-			if (p.y > ReMax.y) {
-				codigo += 8;
-			}
-			return codigo;
-		}
 
-		public void cohenSutherland(Ponto p1,Ponto p2) {
-			boolean aceite = false;
-			boolean feito = false;
-			int c1;
-			int c2;
-			int cfora;
-			float xint = 0;
-			float yint = 0;
-			float x1 = p1.x,
-				  x2 = p2.x,
-				  y1 = p1.y,
-				  y2 = p2.y;
-			Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
-			Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
-			while (!feito) {
-				c1 = region_code(f1);
-				c2 = region_code(f2);
-				if (c1 == 0 && c2 == 0) {// 100% dentro
-					aceite = true;
-					feito = true;
-				}else if ((c1 & c2) == 1 || (c1 & c2) == 2 || (c1 & c2) == 4 || (c1 & c2) == 8) {//100% fora
-					feito = true;
-				}else{
-					if(c1 != 0) //determina um ponto fora
-						cfora = c1;
-					else
-						cfora = c2;
-
-					if ((cfora & 1) == 1) { // limite esquerdo
-						xint = ReMin.x;
-						yint = y1 + (y2 - y1) * (ReMin.x - x1)/(x2-x1);
-					}else if ((cfora>>>1 & 1) == 1){//limite direito
-						xint = ReMax.x;
-						yint = y1 + (y2 - y1) * (ReMax.x - x1)/(x2-x1);
-					}else if ((cfora>>>2 & 1) == 1) {//limite inferior
-						yint = ReMin.y;
-						xint = x1 + (x2 - x1) * (ReMin.y - y1)/(y2-y1);
-					}else if ((cfora>>>3 & 1) == 1) {//limite superior
-						yint = ReMax.y;
-						xint = x1 + (x2 - x1) * (ReMax.y - y1)/(y2-y1);
-					}
-					if (c1 == cfora) {
-						x1 = xint;
-						y1 = yint;
-					}else{
-						x2 = xint;
-						y2 = yint;
-					}
-				}
-				f1 = new Ponto(Math.round(x1),Math.round(y1));
-				f2 = new Ponto(Math.round(x2),Math.round(y2));
-			}
-			if (aceite) {
-				dda(f1,f2,corE);
-			}
-		}
-
-		public boolean cliptest(float p, float q){
-			boolean result = true;
-			float r;
-			if (p < 0){ //fora pra dentro
-				r = q/p;
-				if (r > u2){
-					result = false;
-				}
-				else if (r > u1){
-					u1 = r;
-				}
-			}
-			else if (p > 0){ //dentro pra fora
-				r = q/p;
-				if (r < u1){
-					result= false;
-				}
-				else if (r < u2){
-					u2 = r;
-				}
-			}
-			else if (q < 0){
-				result = false;
-			}
-			return result;
-		}
-
+		//Métodos de recorte de regiões =================================================
 		//ReMin.x, ReMax.x, ReMin.y, ReMax.y -> limites da janela
-		public void liangBarsky(Ponto p1, Ponto p2) {
-			u1 = 0;
-			u2 = 1;
-			float x1 = p1.x;
-			float x2 = p2.x;
-			float y1 = p1.y;
-			float y2 = p2.y;
-			float dx = x2-x1;
-			float dy = y2-y1;
-			if (cliptest(-dx, x1-ReMin.x)){
-				if (cliptest(dx, ReMax.x-x1)){
-					if (cliptest(-dy, y1-ReMin.y)){
-						if (cliptest(dy, ReMax.y-y1)){
-							if (u2 < 1.0){
-								x2 = x1 + u2*dx;
-								y2 = y1 + u2*dy;
-							}
-							if (u1 > 0.0){
-								x1 = x1 + u1*dx;
-								y1 = y1 + u1*dy;
-							}
-							Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
-							Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
-							dda(f1,f2,corE);
-						}
-					}
-				}
-			}
-		}
 
+		// Método geral do recorte.
+		// pega os dados da janela, os trata se for necessário
+		// e chama o método de recorte ativo no momento
 		public void recorte(int recorte) {
 			//Troca valores caso ponto minimo seja maximo em x ou em y
 			if(ReMin.x > ReMax.x) {
@@ -1408,12 +1340,158 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			ReMin.x=-1;ReMin.y=-1;
 		}
 
+		// Calcula o código de região utilizado no 
+		// algoritmo cohenSutherland
+		public int region_code(Ponto p) {
+			int codigo =0;
+			if (p.x < ReMin.x) {
+				++codigo;
+			}
+			if (p.x > ReMax.x) {
+				codigo += 2;
+			}
+			if (p.y < ReMin.y) {
+				codigo += 4;
+			}
+			if (p.y > ReMax.y) {
+				codigo += 8;
+			}
+			return codigo;
+		}
+
+		//Plota segmentos de retas que estejam dentro da região
+		//selecionada utilizando o region_code
+		public void cohenSutherland(Ponto p1,Ponto p2) {
+			boolean aceite = false;
+			boolean feito = false;
+			int c1;
+			int c2;
+			int cfora;
+			float xint = 0;
+			float yint = 0;
+			float x1 = p1.x,
+				  x2 = p2.x,
+				  y1 = p1.y,
+				  y2 = p2.y;
+			Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
+			Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
+			while (!feito) {
+				c1 = region_code(f1);
+				c2 = region_code(f2);
+				if (c1 == 0 && c2 == 0) {// 100% dentro
+					aceite = true;
+					feito = true;
+				}else if ((c1 & c2) == 1 || (c1 & c2) == 2 || (c1 & c2) == 4 || (c1 & c2) == 8) {//100% fora
+					feito = true;
+				}else{
+					if(c1 != 0) //determina um ponto fora
+						cfora = c1;
+					else
+						cfora = c2;
+
+					if ((cfora & 1) == 1) { // limite esquerdo
+						xint = ReMin.x;
+						yint = y1 + (y2 - y1) * (ReMin.x - x1)/(x2-x1);
+					}else if ((cfora>>>1 & 1) == 1){//limite direito
+						xint = ReMax.x;
+						yint = y1 + (y2 - y1) * (ReMax.x - x1)/(x2-x1);
+					}else if ((cfora>>>2 & 1) == 1) {//limite inferior
+						yint = ReMin.y;
+						xint = x1 + (x2 - x1) * (ReMin.y - y1)/(y2-y1);
+					}else if ((cfora>>>3 & 1) == 1) {//limite superior
+						yint = ReMax.y;
+						xint = x1 + (x2 - x1) * (ReMax.y - y1)/(y2-y1);
+					}
+					if (c1 == cfora) {
+						x1 = xint;
+						y1 = yint;
+					}else{
+						x2 = xint;
+						y2 = yint;
+					}
+				}
+				f1 = new Ponto(Math.round(x1),Math.round(y1));
+				f2 = new Ponto(Math.round(x2),Math.round(y2));
+			}
+			if (aceite) {
+				dda(f1,f2,corE);
+			}
+		}
+
+		//Determina se a reta está dentro, fora ou parciamente dentro
+		//da região selecionada
+		//Utilizado no liangBarsky
+		public boolean cliptest(float p, float q){
+			boolean result = true;
+			float r;
+			if (p < 0){ //fora pra dentro
+				r = q/p;
+				if (r > u2){
+					result = false;
+				}
+				else if (r > u1){
+					u1 = r;
+				}
+			}
+			else if (p > 0){ //dentro pra fora
+				r = q/p;
+				if (r < u1){
+					result= false;
+				}
+				else if (r < u2){
+					u2 = r;
+				}
+			}
+			else if (q < 0){
+				result = false;
+			}
+			return result;
+		}
+
+		//Plota somente segmentos de reta que estejam dentro da área
+		//selecionada utilizando cliptest
+		public void liangBarsky(Ponto p1, Ponto p2) {
+			u1 = 0;
+			u2 = 1;
+			float x1 = p1.x;
+			float x2 = p2.x;
+			float y1 = p1.y;
+			float y2 = p2.y;
+			float dx = x2-x1;
+			float dy = y2-y1;
+			if (cliptest(-dx, x1-ReMin.x)){
+				if (cliptest(dx, ReMax.x-x1)){
+					if (cliptest(-dy, y1-ReMin.y)){
+						if (cliptest(dy, ReMax.y-y1)){
+							if (u2 < 1.0){
+								x2 = x1 + u2*dx;
+								y2 = y1 + u2*dy;
+							}
+							if (u1 > 0.0){
+								x1 = x1 + u1*dx;
+								y1 = y1 + u1*dy;
+							}
+							Ponto f1 = new Ponto(Math.round(x1),Math.round(y1));
+							Ponto f2 = new Ponto(Math.round(x2),Math.round(y2));
+							dda(f1,f2,corE);
+						}
+					}
+				}
+			}
+		}
+
+
+		//Métodos de preenchimento de áreas =========================================
 
 		//Retorna True se o ponto p pertence à algum
 		//objeto plotado
 		//testa se p em relacao a um ponto do objeto tem
 		//o mesmo coeficiente angular que os pontos
 		//conhecidos do objeto e esta entre os dois pontos
+		//
+		//TODO Funciona muito mal pois não verifica se já coloriu um ponto
+		//e vai colorir o mesmo ponto muitas vezes. 
+		//Implementar a matriz de pixels ou lista de pontos para resolver o problema
 		public boolean toca_borda(Ponto p) {
 			boolean retorno = false;
 			RetaDDA retaDDA;
@@ -1439,7 +1517,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 				if(dx != 0 && m == dy/dx)
 					retorno = true;
-				
+
 				//exclui casos nos quais o ponto esta fora do segmento de reta
 				//pois o ponto pode estar na reta mas nao no segmento
 				if(retaDDA.p2.x < retaDDA.p1.x){
@@ -1469,7 +1547,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//delta x,y do ponto com a reta
 				dx = Math.abs(retaBRE.p2.x - p.x);
 				dy = Math.abs(retaBRE.p2.y - p.y);
-				
+
 				if(dx != 0 && m == dy/dx)
 					retorno = true;
 
@@ -1495,7 +1573,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//testa com as 4 retas do retangulo
 				//delta x,y da propria reta
 				int dx,dy;
-				
+
 				//pega todos os 4 pontos do retangulo
 				int x0 = r.p1.x;
 				int y0 = r.p1.y;
@@ -1508,7 +1586,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 				int xr = r.p2.x;
 				int yr = r.p2.y;
-				
+
 				Ponto[] pts = {new Ponto(x0,y0), new Ponto(x1,y1), new Ponto(x2,y2), new Ponto(xr,yr)};
 
 				//reta esquerda
@@ -1595,7 +1673,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				//teste feito com +1 e -1 para levar em conta possivel erro de arredondamento
 				if ( dist_pt_centro == circ.raio || dist_pt_centro +1 == circ.raio || dist_pt_centro-1 == circ.raio)
 					retorno = true;
-				
+
 			}
 			return retorno;
 		}
@@ -1605,22 +1683,23 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		//cor_preenche = cor de preenchiemnto
 		//cor_antiga = cor do interior
 		public void flood(int x, int y, int cor_preenche, int cor_antiga){
-			if (inquirir_cor(x,y) = cor_antiga){
-				Ponto p = new Ponto(x, y);
-				setPixel(p,cor_preenche);
-				flood(x+1,y,cor_preenche,cor_antiga);
-				flood(x-1,y,cor_preenche,cor_antiga);
-				flood(x,y+1,cor_preenche,cor_antiga);
-				flood(x,y-1,cor_preenche,cor_antiga);
-			}
+		if (inquirir_cor(x,y) = cor_antiga){
+		Ponto p = new Ponto(x, y);
+		setPixel(p,cor_preenche);
+		flood(x+1,y,cor_preenche,cor_antiga);
+		flood(x-1,y,cor_preenche,cor_antiga);
+		flood(x,y+1,cor_preenche,cor_antiga);
+		flood(x,y-1,cor_preenche,cor_antiga);
+		}
 		}
 
-		*/
+*/
 
 		//x, y = ponto inicial
 		//algoritmo adaptado pois nao usamos matriz de pixels
 		//ele verifica se chegou na borda olhando se o ponto
 		//intercepta algum objeto criado
+		//preenche em uma direção até chegar na borda. Depois preenche em outra
 		public void boundary(int x, int y,int l){
 			Ponto p = new Ponto(x, y);
 			//se o ponto nao eh de nenhuma borda, plota
@@ -1634,13 +1713,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		//calcula o tamanho da reta fg
-		//Tamanho da reta = sqrt(dx^2 + dy^2)
-		public int tamanho_reta(Ponto f, Ponto g /*hihihi*/) {
-			double tam = Math.sqrt( ( (g.x-f.x)*(g.x-f.x) + (g.y-f.y)*(g.y-f.y) ) );
-			return (int) Math.round(tam);
-		}
 
+		// Métodos para capturar eventos ==================================
+
+		// Captura um clique e define seu significado
+		// conforme a ferramenta em uso
 		public void mousePressed( MouseEvent e )
 		{
 			x1 = e.getX();
@@ -1723,8 +1800,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
 			} else if(ferramenta_atual == Ferramentas.ROTACAO) {
 				//} else if(ferramenta_atual == Ferramentas.FLOOD) {
-			} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
-				boundary(x1,y1,10);
+		} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
+			boundary(x1,y1,10);
 		} else if (ferramenta_atual == Ferramentas.RECORTE) {
 			if (ReMin.x == -1) {
 				ReMin.x = x1;
@@ -1768,4 +1845,5 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 	}
+
 }
