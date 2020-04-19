@@ -812,8 +812,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				incry = -1;
 				dy= -dy;
 			}
-			x = RBx1;
-			y = RBy1;
+			x = p1.x;
+			y = p1.y;
 			ponto = new Ponto(x, y);
 			setPixel(ponto, cor);
 			if (dy < dx) {
