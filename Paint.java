@@ -1488,20 +1488,23 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		//testa se p em relacao a um ponto do objeto tem
 		//o mesmo coeficiente angular que os pontos
 		//conhecidos do objeto e esta entre os dois pontos
-		//
-		//TODO Funciona muito mal pois não verifica se já coloriu um ponto
-		//e vai colorir o mesmo ponto muitas vezes. 
-		//Implementar a matriz de pixels ou lista de pontos para resolver o problema
 		public boolean toca_borda(Ponto p) {
 			boolean retorno = false;
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
 			Retangulo r;
 			Circunferencia circ;
+			Ponto pt;
 			double m = 0; // coeficiente angula da reta
 
 			//checa se chegou nos limites do canvas
 			if (p.x > Largura || p.y > Altura) retorno = true;
+
+			//checa se o ponto ja foi colorido
+			for(int i=0; i < Ponto.lista.size() && !retorno; i++) {
+				pt = Ponto.lista.get(i);
+				if (p.x == pt.x && p.y == pt.y) retorno = true;
+			}
 
 			for(int i=0; i < RetaDDA.lista.size() && !retorno; i++) {
 				retaDDA = RetaDDA.lista.get(i);
@@ -1700,16 +1703,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		//ele verifica se chegou na borda olhando se o ponto
 		//intercepta algum objeto criado
 		//preenche em uma direção até chegar na borda. Depois preenche em outra
-		public void boundary(int x, int y,int l){
+		public void boundary(int x, int y,int lim){
 			Ponto p = new Ponto(x, y);
 			//se o ponto nao eh de nenhuma borda, plota
-			System.out.println(l);
-			if ( l > 0){
+			if ( !toca_borda(p) && lim > 0){
 				setPixel(p,corE);
-				boundary(x+1,y,l-1);
-				boundary(x-1,y,l-1);
-				boundary(x,y+1,l-1);
-				boundary(x,y-1,l-1);
+				boundary(x+1,y,lim-1);
+				boundary(x-1,y,lim-1);
+				boundary(x,y+1,lim-1);
+				boundary(x,y-1,lim-1);
 			}
 		}
 
@@ -1801,7 +1803,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			} else if(ferramenta_atual == Ferramentas.ROTACAO) {
 				//} else if(ferramenta_atual == Ferramentas.FLOOD) {
 		} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
-			boundary(x1,y1,10);
+			boundary(x1,y1,50);
 		} else if (ferramenta_atual == Ferramentas.RECORTE) {
 			if (ReMin.x == -1) {
 				ReMin.x = x1;

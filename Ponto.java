@@ -1,4 +1,9 @@
+import java.util.ArrayList;
+
 public class Ponto {
+
+	public static ArrayList<Ponto> lista = new ArrayList<Ponto>();
+
 	int x;
 	int y;
 	public Ponto() {
