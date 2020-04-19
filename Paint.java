@@ -1196,16 +1196,32 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				retaDDA = RetaDDA.lista.get(i);
 				apaga_dda(retaDDA);
 
-				int x0 = retaDDA.p2.x;
-				int y0 = retaDDA.p2.y;
-				int xr = retaDDA.p1.x;
-				int yr = retaDDA.p1.y;
+				System.out.println(retaDDA.p1.x +" "+retaDDA.p1.y+" "+retaDDA.p2.x+" "+retaDDA.p2.y);
 
-				double x = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
-				double y = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
+				//translada para a origem para nao mudar a imagem de posicao
+				TEx = - retaDDA.p1.x;
+				TEy = - retaDDA.p1.y;
+				translacao(false);
 
+				System.out.println(retaDDA.p1.x +" "+retaDDA.p1.y+" "+retaDDA.p2.x+" "+retaDDA.p2.y);
+
+				int xr = retaDDA.p2.x;
+				int yr = retaDDA.p2.y;
+
+				double x =  Math.abs(xr * Math.cos(Grau) - yr * Math.sin(Grau));
+				double y =  Math.abs(xr * Math.sin(Grau) + yr * Math.cos(Grau));
+				
 				retaDDA.p2.x = (int)x;
 				retaDDA.p2.y = (int)y;
+
+				System.out.println(retaDDA.p1.x +" "+retaDDA.p1.y+" "+retaDDA.p2.x+" "+retaDDA.p2.y);
+
+				//translada de volta para onde estava
+				TEx = - TEx;
+				TEy = - TEy;
+				translacao(false);
+
+				System.out.println(retaDDA.p1.x +" "+retaDDA.p1.y+" "+retaDDA.p2.x+" "+retaDDA.p2.y);
 
 				dda(retaDDA.p1,retaDDA.p2,Color.BLACK);
 			}
