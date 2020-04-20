@@ -75,7 +75,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private Icon restaurar    = new ImageIcon(getClass().getResource("img/restaurar.png"));
 	private Icon escala    = new ImageIcon(getClass().getResource("img/escala.png"));
 	//private Icon flood    = new ImageIcon(getClass().getResource("img/flood_fill.png"));
-	private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
+	//private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
 
 	//Tamanho do Canvas
 	private int inicioL = 0;
@@ -183,8 +183,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonPonto = new JButton();
 		buttonPonto.addActionListener(this);
 		buttonPonto.setIcon(pen);
+		buttonPonto.setBackground(Color.decode("#e70065"));
 		buttonPonto.setHorizontalTextPosition(SwingConstants.CENTER); 
-		buttonPonto.setBackground(Color.WHITE);
 
 		//botao retangulo
 		buttonRetangulo = new JButton();
@@ -300,25 +300,26 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 
 		//botão boundary fill
-		buttonBoundary = new JButton();
+		/*buttonBoundary = new JButton();
 		buttonBoundary.addActionListener(this);
 		buttonBoundary.setIcon(boundary);
 		buttonBoundary.setBackground(Color.decode("#e70065"));
-		buttonBoundary.setHorizontalTextPosition(SwingConstants.CENTER);
+		buttonBoundary.setHorizontalTextPosition(SwingConstants.CENTER);*/
 
 		//configurar grupo de botoes
 		GroupLayout g1_panelMenu = new GroupLayout(panelMenu);
 		g1_panelMenu.setHorizontalGroup(
 				g1_panelMenu.createParallelGroup(Alignment.CENTER)
 				.addGroup( g1_panelMenu.createSequentialGroup()
-					.addGap(5)
+					.addGap(15)
+					.addComponent(buttonCor)
+					.addGap(10)
 					.addComponent(buttonSalvar)
+					.addGap(10)
 					.addComponent(buttonRestaurar)
 					.addGap(10)
 					.addComponent(buttonClear)
-					.addGap(15)
-					.addComponent(buttonCor)
-					.addGap(15)
+					.addGap(10)
 					.addComponent(buttonPonto)
 					.addGap(10)
 					.addComponent(buttonRetaD)
@@ -330,7 +331,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addComponent(buttonCirculo)
 					)
 				.addGroup( g1_panelMenu.createSequentialGroup()
-					.addGap(30)
+					.addGap(60)
 					.addComponent(buttonEscala)
 					.addGap(10)
 					.addComponent(buttonTrans)
@@ -346,8 +347,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addComponent(buttonCS)
 					.addGap(10)
 					.addComponent(buttonLB)
-					.addGap(10)
-					.addComponent(buttonBoundary)
+					//.addGap(10)
+					//.addComponent(buttonBoundary)
 					//.addGap(10)
 					//.addComponent(buttonFlood)
 					)
@@ -358,10 +359,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				.addGroup(g1_panelMenu.createSequentialGroup()
 					.addGap(10)
 					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
+						.addComponent(buttonCor)
 						.addComponent(buttonSalvar)
 						.addComponent(buttonRestaurar)
 						.addComponent(buttonClear)
-						.addComponent(buttonCor)
 						.addComponent(buttonPonto)
 						.addComponent(buttonRetaD)
 						.addComponent(buttonRetaB)
@@ -378,7 +379,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonMirrorXY)
 						.addComponent(buttonCS)
 						.addComponent(buttonLB)
-						.addComponent(buttonBoundary)
+						//.addComponent(buttonBoundary)
 						//.addComponent(buttonFlood)
 						))
 						);
@@ -1180,8 +1181,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 				int x0 = retaDDA.p2.x;
 				int y0 = retaDDA.p2.y;
-				int xr = retaDDA.p1.x;
-				int yr = retaDDA.p1.y;
+				int xr = retaDDA.p1.x; //ponto de ref
+				int yr = retaDDA.p1.y; //ponto de ref
 
 				double x = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
 				double y = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
@@ -1199,8 +1200,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 				int x0 = retaBRE.p2.x;
 				int y0 = retaBRE.p2.y;
-				int xr = retaBRE.p1.x;
-				int yr = retaBRE.p1.y;
+				int xr = retaBRE.p1.x; //ponto de ref
+				int yr = retaBRE.p1.y; //ponto de ref
 
 				double x = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
 				double y = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
@@ -1214,45 +1215,48 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			//apaga e plota o retangulo rotacionado
 			for(int i=0; i < Retangulo.lista.size(); i++) {
 				r = Retangulo.lista.get(i);
-				apaga_retangulo(r);
 
 				//pega todos os 4 pontos do retangulo
-				int x0 = r.p1.x;//canto esquerdo sup
-				int y0 = r.p1.y;
+				int x0 = r.p2.x;//canto direito sup
+				int y0 = r.p2.y;
 
-				int x1 = r.p1.x;//canto esquerdo inf
+				int x1 = r.p1.x;//canto esquerdo sup
 				int y1 = r.p2.y;
 
-				int x2 = r.p2.x;//canto direito sup
+				int x2 = r.p2.x;//canto direito inf
 				int y2 = r.p1.y;
 
-				int xr = r.p2.x;//canto direito inf
-				int yr = r.p2.y;
+				int xr = r.p1.x;//canto esquerdo inf (ponto de ref)
+				int yr = r.p1.y;
+
+				apaga_retangulo(r);
 
 				//aplica a equação para cada ponto com base no ponto 1 do retangulo.
 				//dessa forma a rotação do retangulo se dá em torno de um ponto e não de seu centro
-				double nx1 = (x0 - x1) * Math.cos(Grau) - (y0 - y1) * Math.sin(Grau) + x1;
-				double ny1 = (y0 - y1) * Math.cos(Grau) + (x0 - x1) * Math.sin(Grau) + y1;
 
-				//double nx1 = (x0 - x1) * Math.cos(Grau) - (y0 - y1) * Math.sin(Grau) + x1;
-				//double ny1 = (y0 - y1) * Math.cos(Grau) + (x0 - x1) * Math.sin(Grau) + y1;
+				//rotação do ponto direito sup
+				double nx0 = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
+				double ny0 = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
 
-				double nx2 = (x0 - x2) * Math.cos(Grau) - (y0 - y2) * Math.sin(Grau) + x2;
-				double ny2 = (y0 - y2) * Math.cos(Grau) + (x0 - x2) * Math.sin(Grau) + y2;
+				//rotação do ponto esquerdo sup
+				double nx1 = (x1 - xr) * Math.cos(Grau) - (y1 - yr) * Math.sin(Grau) + xr;
+				double ny1 = (y1 - yr) * Math.cos(Grau) + (x1 - xr) * Math.sin(Grau) + yr;
 
-				double nxr = (x0 - xr) * Math.cos(Grau) - (y0 - yr) * Math.sin(Grau) + xr;
-				double nyr = (y0 - yr) * Math.cos(Grau) + (x0 - xr) * Math.sin(Grau) + yr;
+				//rotação do ponto direito inf
+				double nx2 = (x2 - xr) * Math.cos(Grau) - (y2 - yr) * Math.sin(Grau) + xr;
+				double ny2 = (y2 - yr) * Math.cos(Grau) + (x2 - xr) * Math.sin(Grau) + yr;
 
-				Ponto p2 = new Ponto((int)nx1,(int)ny1);
-				Ponto p3 = new Ponto((int)nx2,(int)ny2);
-				Ponto p4 = new Ponto((int)nxr,(int)nyr);
+				Ponto p2 = new Ponto((int)nx0,(int)ny0);
+				Ponto p3 = new Ponto((int)nx1,(int)ny1);
+				Ponto p4 = new Ponto((int)nx2,(int)ny2);
 
-				r.p2 = p4;
+				r.p2.x = p2.x;
+				r.p2.y = p2.y;
 
-				dda(r.p1,p2,corE);
-				dda(p4,p2,corE);
-				dda(p4,p3,corE);
 				dda(r.p1,p3,corE);
+				dda(r.p2,p4,corE);
+				dda(r.p2,p3,corE);
+				dda(r.p1,p4,corE);
 			}
 		}
 
@@ -1685,6 +1689,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		//ele verifica se chegou na borda olhando se o ponto
 		//intercepta algum objeto criado
 		//preenche em uma direção até chegar na borda. Depois preenche em outra
+		/*
 		public void boundary(int x, int y,int lim){
 			Ponto p = new Ponto(x, y);
 			//se o ponto nao eh de nenhuma borda, plota
@@ -1695,7 +1700,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				boundary(x,y+1,lim-1);
 				boundary(x,y-1,lim-1);
 			}
-		}
+		}*/
 
 
 		// Métodos para capturar eventos ==================================
@@ -1780,11 +1785,6 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					//reseta variaveis
 					DAx = DAy = DBx = DBy = -1;
 				}
-			} else if(ferramenta_atual == Ferramentas.TRANSLACAO) {
-			} else if(ferramenta_atual == Ferramentas.ROTACAO) {
-			//} else if(ferramenta_atual == Ferramentas.FLOOD) {
-			} else if(ferramenta_atual == Ferramentas.BOUNDARY) {
-				boundary(x1,y1,50);
 			} else if (ferramenta_atual == Ferramentas.RECORTE) {
 				if (ReMin.x == -1) {
 					ReMin.x = x1;
