@@ -631,7 +631,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 		public void apaga_retangulo(Retangulo retangulo) {
-			retangulo(retangulo.p1, retangulo.p2, Color.WHITE);
+			retangulo(retangulo, Color.WHITE);
 		}
 
 		public void apaga_dda(RetaDDA reta) {
@@ -704,7 +704,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						Ponto p1 = new Ponto(a1,b1);
 						Ponto p2 = new Ponto(a2,b2);
 						r = new Retangulo(p1,p2,corE);
-						retangulo(r.p1,r.p2,corE);
+						retangulo(r,corE);
 					}else if (objeto[0].equals("Circunferencia")) {
 						a1 = Integer.parseInt(objeto[1]);
 						b1 = Integer.parseInt(objeto[2]);
@@ -830,43 +830,17 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 		//Plota um retangulo utilizando seus pontos diagonais
-		public void retangulo(Ponto p1, Ponto p2, Color cor) {
-			Ponto pr1, pr2;
+		public void retangulo(Retangulo r, Color cor) {
 			//Reta superior
-			RBx1 = p1.x;
-			RBy1 = p1.y;
-			RBx2 = p2.x;
-			RBy2 = p1.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
+			reta_bresenham(r.p1, r.p3, cor);
 			//lateral esquerda
-			RBx1 = p1.x;
-			RBy1 = p1.y;
-			RBx2 = p1.x;
-			RBy2 = p2.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
+			reta_bresenham(r.p1, r.p4, cor);
 			//reta inferior
-			RBx1 = p1.x;
-			RBy1 = p2.y;
-			RBx2 = p2.x;
-			RBy2 = p2.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
+			reta_bresenham(r.p2, r.p3, cor);
 			//lateral direita
-			RBx1 = p2.x;
-			RBy1 = p1.y;
-			RBx2 = p2.x;
-			RBy2 = p2.y;
-			pr1 = new Ponto(RBx1, RBy1);
-			pr2 = new Ponto(RBx2, RBy2);
-			reta_bresenham(pr1, pr2, cor);
+			reta_bresenham(r.p2, r.p4, cor);
 			Rx1 = Ry1 = Rx2 = Ry2 = -1;
 		}
-
 
 		//Plota o segundo, terceiro e quarto quadrantes da circunferência
 		//refletindo o primeiro quadrante
@@ -961,7 +935,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				// substitui o retangulo pelo novo na lista
 				Retangulo.lista.set(i, r);
 				if(plotar)
-					retangulo(r.p1, r.p2, r.cor);
+					retangulo(r, r.cor);
 			}
 
 			// aplica translacao nas circunferencias
@@ -1051,7 +1025,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				translacao(false);
 				// substitui o retangulo pelo novo na lista
 				Retangulo.lista.set(i, r);
-				retangulo(r.p1, r.p2, r.cor);
+				retangulo(r, r.cor);
 			}
 			// aplica escala nas Circunferencias
 			for(int i = 0; i < Circunferencia.lista.size(); i++) {
@@ -1143,7 +1117,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					r.p1.x = Largura - r.p1.x;
 					r.p2.x = Largura - r.p2.x;
 				}
-				retangulo(r.p1,r.p2,Color.BLACK);
+				retangulo(r,Color.BLACK);
 			}
 
 			for(int i=0; i < Circunferencia.lista.size(); i++) {
@@ -1220,11 +1194,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				int x0 = r.p2.x;//canto direito sup
 				int y0 = r.p2.y;
 
-				int x1 = r.p1.x;//canto esquerdo sup
-				int y1 = r.p2.y;
+				int x1 = r.p3.x;//canto esquerdo sup
+				int y1 = r.p3.y;
 
-				int x2 = r.p2.x;//canto direito inf
-				int y2 = r.p1.y;
+				int x2 = r.p4.x;//canto direito inf
+				int y2 = r.p4.y;
 
 				int xr = r.p1.x;//canto esquerdo inf (ponto de ref)
 				int yr = r.p1.y;
@@ -1246,17 +1220,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				double nx2 = (x2 - xr) * Math.cos(Grau) - (y2 - yr) * Math.sin(Grau) + xr;
 				double ny2 = (y2 - yr) * Math.cos(Grau) + (x2 - xr) * Math.sin(Grau) + yr;
 
-				Ponto p2 = new Ponto((int)nx0,(int)ny0);
-				Ponto p3 = new Ponto((int)nx1,(int)ny1);
-				Ponto p4 = new Ponto((int)nx2,(int)ny2);
+				Ponto p2 = new Ponto((int)Math.floor(nx0),(int)Math.floor(ny0));
+				Ponto p3 = new Ponto((int)Math.floor(nx1),(int)Math.floor(ny1));
+				Ponto p4 = new Ponto((int)Math.floor(nx2),(int)Math.floor(ny2));
 
-				r.p2.x = p2.x;
-				r.p2.y = p2.y;
+				r.p2 = p2;
+				r.p3 = p3;
+				r.p4 = p4;
 
-				dda(r.p1,p3,corE);
-				dda(r.p2,p4,corE);
-				dda(r.p2,p3,corE);
-				dda(r.p1,p4,corE);
+				retangulo(r, corE);
 			}
 		}
 
@@ -1729,7 +1701,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					Ponto Rp1 = new Ponto(Rx1, Ry1);
 					Ponto Rp2 = new Ponto(Rx2, Ry2);
 					Retangulo r = new Retangulo(Rp1, Rp2, corE);
-					retangulo(Rp1, Rp2, corE);
+					retangulo(r, corE);
 				}
 			} else if(ferramenta_atual == Ferramentas.DDA) {
 				//captura o primeiro ponto se as primeiras variaveis da
