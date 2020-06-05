@@ -58,6 +58,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private JColorChooser Cores;
 	private static Color corE = Color.BLACK;
 	//private static Color corB = Color.WHITE;
+    private int steps = 15000;
 
 	private Icon pen      = new ImageIcon(getClass().getResource("img/pen.png"));
 	private Icon ret      = new ImageIcon(getClass().getResource("img/retangulo.png"));
@@ -158,6 +159,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		FLOOD,
 		BOUNDARY,
         HERMITE,
+        HERMITEEDIT,
         BEZIER,
         BEZIEREDIT,
         INTERPOLADA,
@@ -634,10 +636,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 
 	protected void do_buttonHermite_actionPerfomed(ActionEvent arg0){
+        zeroOUtres = true;
 		ferramentaAtual = Ferramentas.HERMITE;
 	}
 
 	protected void do_buttonBezier_actionPerfomed(ActionEvent arg0){
+        zeroOUtres = true;
 		ferramentaAtual = Ferramentas.BEZIER;
 	}
 
@@ -828,7 +832,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		public Ponto pontoCurvaB(Bezier curva,double t) {
 			Ponto ab   = lerp(curva.p0, curva.p0d, t);
-			Ponto bc   = lerp(curva.p0d, curva.p3d, t); /*hihihi*/
+			Ponto bc   = lerp(curva.p0d, curva.p3d, t);
 			Ponto cd   = lerp(curva.p3d, curva.p3, t);
 			Ponto abbc = lerp(ab, bc, t);
 			Ponto bccd = lerp(bc, cd, t);
@@ -836,30 +840,47 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 		public void curvaB(Bezier curva, Color c) {
-			for (int i=0; i< 1000; ++i) {
-				double t = i / 999.0;
+			for (int i=0; i< steps; ++i) {
+				double t = i / (steps-1.0);
 				setPixel(pontoCurvaB(curva,t),c);
 			}
             Bx1 = Bx2 = By1 = By2 = -1;
 		}
 
-/*
-        public void curvaH(Hermite cHermite){
-            steps = tamanho_reta(cHermite.p0, cHermite.p3);
-            for (int t=0; t < steps; t++){
-              float s = (float)t / (float)steps;    // scale s to go from 0 to 1
-              float h1 =  2 * Math.pow(s,3) - 3 * Math.pow(s,2) + 1;          // calculate basis function 1
-              float h2 = -2 * Math.pow(s,3) + 3 * Math.pow(s,2);              // calculate basis function 2
-              float h3 =  1 * Math.pow(s,3) - 2 * Math.pow(s,2) + s;          // calculate basis function 3
-              float h4 =  1 * Math.pow(s,3) - 1 * Math.pow(s,2);              // calculate basis function 4
-              int p =    h1*cHermite.p0 +                    // multiply and sum all funtions
-                         h2*cHermite.p3 +                    // together to build the interpolated
-                         h3*cHermite.p0d +                    // point along the curve.
-                         h4*cHermite.p3d;
-             // setPixel(p)                            // draw to calculated point on the curve
+
+        public void curvaH(Hermite curva, Color c){
+            int p3x = (2*curva.p0.x) + (-2*curva.p3.x) + (1*curva.p0d.x) + (1*curva.p3d.x);
+            int p2x = (-3*curva.p0.x) + (3*curva.p3.x) + (-2*curva.p0d.x) + (-1*curva.p3d.x);
+            int p1x = (0*curva.p0.x) + (0*curva.p3.x) + (1*curva.p0d.x) + (0*curva.p3d.x);
+            int p0x = (1*curva.p0.x) + (0*curva.p3.x) + (0*curva.p0d.x) + (0*curva.p3d.x);
+
+            int p3y = (2*curva.p0.y) + (-2*curva.p3.y) + (1*curva.p0d.y) + (1*curva.p3d.y);
+            int p2y = (-3*curva.p0.y) + (3*curva.p3.y) + (-2*curva.p0d.y) + (-1*curva.p3d.y);
+            int p1y = (0*curva.p0.y) + (0*curva.p3.y) + (1*curva.p0d.y) + (0*curva.p3d.y);
+            int p0y = (1*curva.p0.y) + (0*curva.p3.y) + (0*curva.p0d.y) + (0*curva.p3d.y);
+
+            for (int i = 0; i < steps ; i++){
+                double u = i / (steps-1.0);
+                int xh = (int) (p0x + p1x * u + p2x * u * u + p3x * u * u * u);
+                int yh = (int) (p0y + p1y * u + p2y * u * u + p3y * u * u * u);
+
+                
+
+                /*
+                double h1 =  (2 * Math.pow(t,3)) - (3 * Math.pow(t,2)) + 1;          // calculate basis function 1
+                double h2 = -(2 * Math.pow(t,3)) + (3 * Math.pow(t,2));              // calculate basis function 2
+                double h3 =  (1 * Math.pow(t,3)) - (2 * Math.pow(t,2)) + t;          // calculate basis function 3
+                double h4 =  (1 * Math.pow(t,3)) - (1 * Math.pow(t,2));              // calculate basis function 4
+                //int xh = (int)((h1*curva.p0.x)+(h2*curva.p3.x)+(h3*curva.p0d.x)+(h4*curva.p3d.x));
+                //qint yh = (int)((h1*curva.p0.y)+(h2*curva.p3.y)+(h3*curva.p0d.y)+(h4*curva.p3d.y));
+                */
+
+                Ponto p = new Ponto(xh, yh);
+                setPixel(p,c);                            // draw to calculated point on the curve
             }
+            Hx1 = Hx2 = Hy1 = Hy2 = -1;
         }
-*/
+
 		//Plota uma reta utilizando o algoritmo DDA
 		public void dda(Ponto p1, Ponto p2, Color cor) {
 			int dx, dy, passos, k;
@@ -1903,11 +1924,23 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					Ponto Hp1 = new Ponto(Hx1, Hy1);
 					Ponto Hp2 = new Ponto(Hx2, Hy2);
 
-					Hermite curvaHermite = new Hermite(Hp1, Hp2);
-					//curvaH(curvaHermite);
+                    Hermite.hermite = new Hermite(Hp1, Hp2);
+					curvaH(Hermite.hermite, corE);
+                    ferramentaAtual = Ferramentas.HERMITEEDIT;
                  }
 
-            } else if(ferramentaAtual == Ferramentas.BEZIER){
+            } else if(ferramentaAtual == Ferramentas.HERMITEEDIT){
+                curvaH( Hermite.hermite, Color.WHITE);
+                Ponto p = new Ponto(x1,y1);
+                if(zeroOUtres){
+                     Hermite.hermite.setP0d(p);
+                }else{
+                     Hermite.hermite.setP3d(p);
+                }
+				curvaH( Hermite.hermite, corE);
+                zeroOUtres = !zeroOUtres;
+
+            }else if(ferramentaAtual == Ferramentas.BEZIER){
                 //captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
 				if (Bx1 == -1) {
