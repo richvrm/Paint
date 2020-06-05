@@ -111,6 +111,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int DBx = -1;
 	private int DBy = -1;
 
+    //variaveis da curva Bezier
+    private int Bx1 = -1;
+    private int By1 = -1;
+    private int Bx2 = -1;
+    private int By2 = -1;
+
     //variaveis da curva Hermite
     private int Hx1 = -1;
     private int Hy1 = -1;
@@ -789,6 +795,31 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			g.drawLine(ponto.x, ponto.y-140, ponto.x, ponto.y-140);
 			g.setColor(corE);
 		}
+
+		public Ponto lerp(Ponto f, Ponto g /*hihihi*/, double t) {
+			Ponto retorno = new Ponto();
+
+			retorno.x = f.x + (int)Math.round((g.x-f.x) * t);
+			retorno.y = f.y + (int)Math.round((g.y-f.y) * t);
+			return retorno;
+		}
+
+		public Ponto pontoCurvaB(Bezier curva,double t) {
+			Ponto ab   = lerp(curva.p0, curva.p0d, t);
+			Ponto bc   = lerp(curva.p0d, curva.p3d, t); /*hihihi*/
+			Ponto cd   = lerp(curva.p3d, curva.p3, t);
+			Ponto abbc = lerp(ab, bc, t);
+			Ponto bccd = lerp(bc, cd, t);
+			return lerp(abbc, bccd, t);
+		}
+
+		public void curvaB(Bezier curva) {
+			for (int i=0; i< 1000; ++i) {
+				double t = i / 999.0;
+				setPixel(pontoCurvaB(curva,t),Color.BLACK);
+			}
+		}
+
 /*
         public void curvaH(Hermite cHermite){
             steps = tamanho_reta(cHermite.p0, cHermite.p3);
@@ -1850,6 +1881,24 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 					Hermite curvaHermite = new Hermite(Hp1, Hp2);
 					//curvaH(curvaHermite);
+                 }
+
+            }else if(ferramenta_atual == Ferramentas.BEZIER){
+                //captura o primeiro ponto se as primeiras variaveis da
+				//reta forem -1
+				if (Bx1 == -1) {
+					Bx1 = x1;
+					By1 = y1;
+					//Captura o segundo ponto se as primeiras variaveis da 
+					//reta forem != -1 e as segundas forem -1
+				} else if(Bx2 == -1) {
+					Bx2 = x1;
+					By2 = y1;
+					Ponto Bp1 = new Ponto(Bx1, By1);
+					Ponto Bp2 = new Ponto(Bx2, By2);
+
+					Bezier curvaBezier = new Bezier(Bp1, Bp2);
+					curvaB(curvaBezier);
                  }
 
             }
