@@ -864,8 +864,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                 int xh = (int) (p0x + p1x * u + p2x * u * u + p3x * u * u * u);
                 int yh = (int) (p0y + p1y * u + p2y * u * u + p3y * u * u * u);
 
-                
-
+       
                 /*
                 double h1 =  (2 * Math.pow(t,3)) - (3 * Math.pow(t,2)) + 1;          // calculate basis function 1
                 double h2 = -(2 * Math.pow(t,3)) + (3 * Math.pow(t,2));              // calculate basis function 2
