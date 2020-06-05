@@ -116,6 +116,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private int By1 = -1;
     private int Bx2 = -1;
     private int By2 = -1;
+    private boolean zeroOUtres = true;
 
     //variaveis da curva Hermite
     private int Hx1 = -1;
@@ -156,9 +157,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		BOUNDARY,
         HERMITE,
         BEZIER,
+        BEZIEREDIT,
 	};
 
-	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
+	private Ferramentas ferramentaAtual = Ferramentas.NORMAL;
 
 	public static void main(String[] args){
 		EventQueue.invokeLater(new Runnable(){
@@ -493,25 +495,25 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	//set ferramenta atual de acordo com o botao clicado
 	protected void do_buttonPonto_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.NORMAL;
+		ferramentaAtual = Ferramentas.NORMAL;
 	}
 
 	protected void do_buttonRetangulo_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.RETANGULO;
+		ferramentaAtual = Ferramentas.RETANGULO;
 	}
 
 	protected void do_buttonCirculo_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.CIRC_BRESENHAM;
+		ferramentaAtual = Ferramentas.CIRC_BRESENHAM;
 	}
 
 
 	protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.DDA;
+		ferramentaAtual = Ferramentas.DDA;
 	}
 
 
 	protected void do_buttonRetaB_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.RETA_BRESENHAM;
+		ferramentaAtual = Ferramentas.RETA_BRESENHAM;
 	}
 
 	protected void do_buttonSalvar_actionPerfomed(ActionEvent arg0){
@@ -531,11 +533,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 	/*
 	   protected void do_buttonFlood_actionPerfomed(ActionEvent arg0){
-	   ferramenta_atual = Ferramentas.FLOOD;
+	   ferramentaAtual = Ferramentas.FLOOD;
 	   }*/
 
 	protected void do_buttonBoundary_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.BOUNDARY;
+		ferramentaAtual = Ferramentas.BOUNDARY;
 	}
 
 	protected void do_buttonTrans_actionPerfomed(ActionEvent arg0){
@@ -548,7 +550,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				try {
 					TEx = Integer.parseInt(xis);
 					TEy = Integer.parseInt(yis);
-					ferramenta_atual = Ferramentas.TRANSLACAO;
+					ferramentaAtual = Ferramentas.TRANSLACAO;
 					mouse.translacao(true);
 				}catch(NumberFormatException e){
 					JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
@@ -567,7 +569,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				try {
 					TAx = Integer.parseInt(xis);
 					TAy = Integer.parseInt(yis);
-					ferramenta_atual = Ferramentas.ESCALA;
+					ferramentaAtual = Ferramentas.ESCALA;
 					mouse.escala();
 				}catch(NumberFormatException e){
 					JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
@@ -594,7 +596,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		if ((grau != null) && (grau.length() > 0)) {    
 			try {
 				Grau = Integer.parseInt(grau);
-				ferramenta_atual = Ferramentas.ROTACAO;
+				ferramentaAtual = Ferramentas.ROTACAO;
 				mouse.rotation();
 			}catch(NumberFormatException e){
 				JOptionPane.showMessageDialog(null, "Digite apenas números inteiros");
@@ -608,19 +610,19 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 
 	protected void do_buttonCS_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.RECORTE;
+		ferramentaAtual = Ferramentas.RECORTE;
 	}
 
 	protected void do_buttonLB_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.RECORTELB;
+		ferramentaAtual = Ferramentas.RECORTELB;
 	}
 
 	protected void do_buttonHermite_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.HERMITE;
+		ferramentaAtual = Ferramentas.HERMITE;
 	}
 
 	protected void do_buttonBezier_actionPerfomed(ActionEvent arg0){
-		ferramenta_atual = Ferramentas.BEZIER;
+		ferramentaAtual = Ferramentas.BEZIER;
 	}
 
 	//Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
@@ -813,11 +815,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			return lerp(abbc, bccd, t);
 		}
 
-		public void curvaB(Bezier curva) {
+		public void curvaB(Bezier curva, Color c) {
 			for (int i=0; i< 1000; ++i) {
 				double t = i / 999.0;
-				setPixel(pontoCurvaB(curva,t),Color.BLACK);
+				setPixel(pontoCurvaB(curva,t),c);
 			}
+            Bx1 = Bx2 = By1 = By2 = -1;
 		}
 
 /*
@@ -1772,11 +1775,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		public void mousePressed( MouseEvent e ){
 			x1 = e.getX();
 			y1 = e.getY();
-
-			if (ferramenta_atual == Ferramentas.NORMAL) {
+            
+			if (ferramentaAtual == Ferramentas.NORMAL) {
 				Ponto p = new Ponto(x1, y1);
 				setPixel(p, corE);
-			} else if(ferramenta_atual == Ferramentas.RETANGULO) {
+			} else if(ferramentaAtual == Ferramentas.RETANGULO) {
 				//captura o primeiro ponto se as primeiras variaveis do
 				//retangulo forem -1
 				if (Rx1 == -1) {
@@ -1793,7 +1796,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					Retangulo r = new Retangulo(Rp1, Rp2, corE);
 					retangulo(r, corE);
 				}
-			} else if(ferramenta_atual == Ferramentas.DDA) {
+			} else if(ferramentaAtual == Ferramentas.DDA) {
 				//captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
 				if (DDAx1 == -1) {
@@ -1809,7 +1812,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					RetaDDA retaDDA = new RetaDDA(DDAp1, DDAp2, corE);
 					dda(DDAp1, DDAp2, corE);
 				}
-			} else if(ferramenta_atual == Ferramentas.RETA_BRESENHAM) {
+			} else if(ferramentaAtual == Ferramentas.RETA_BRESENHAM) {
 				//captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
 				if (RBx1 == -1) {
@@ -1826,7 +1829,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					RetaBRE retaBRE = new RetaBRE(RBp1, RBp2, corE);
 					reta_bresenham(RBp1, RBp2, corE);
 				}
-			} else if(ferramenta_atual == Ferramentas.CIRC_BRESENHAM) {
+			} else if(ferramentaAtual == Ferramentas.CIRC_BRESENHAM) {
 				if(DAx == -1) {
 					DAx = x1;
 					DAy = y1;
@@ -1847,7 +1850,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					//reseta variaveis
 					DAx = DAy = DBx = DBy = -1;
 				}
-			} else if (ferramenta_atual == Ferramentas.RECORTE) {
+			} else if (ferramentaAtual == Ferramentas.RECORTE) {
 				if (ReMin.x == -1) {
 					ReMin.x = x1;
 					ReMin.y = y1;
@@ -1856,7 +1859,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					ReMax.y = y1;
 					recorte(0);
 				}
-			} else if (ferramenta_atual == Ferramentas.RECORTELB) {
+			} else if (ferramentaAtual == Ferramentas.RECORTELB) {
 				if (ReMin.x == -1) {
 					ReMin.x = x1;
 					ReMin.y = y1;
@@ -1865,7 +1868,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					ReMax.y = y1;
 					recorte(1);
 				}
-			}else if(ferramenta_atual == Ferramentas.HERMITE){
+			}else if(ferramentaAtual == Ferramentas.HERMITE){
                 //captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
 				if (Hx1 == -1) {
@@ -1883,7 +1886,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					//curvaH(curvaHermite);
                  }
 
-            }else if(ferramenta_atual == Ferramentas.BEZIER){
+            }else if(ferramentaAtual == Ferramentas.BEZIER){
                 //captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
 				if (Bx1 == -1) {
@@ -1897,17 +1900,28 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					Ponto Bp1 = new Ponto(Bx1, By1);
 					Ponto Bp2 = new Ponto(Bx2, By2);
 
-					Bezier curvaBezier = new Bezier(Bp1, Bp2);
-					curvaB(curvaBezier);
+					Bezier.bezier = new Bezier(Bp1, Bp2);
+					curvaB(Bezier.bezier, corE);
+                    ferramentaAtual = Ferramentas.BEZIEREDIT;
                  }
 
+            }else if(ferramentaAtual == Ferramentas.BEZIEREDIT){
+                curvaB(Bezier.bezier, Color.WHITE);
+                Ponto p = new Ponto(x1,y1);
+                if(zeroOUtres){
+                    Bezier.bezier.setP0d(p);
+                }else{
+                    Bezier.bezier.setP3d(p);
+                }
+				curvaB(Bezier.bezier, corE);
+                zeroOUtres = !zeroOUtres;
             }
 			x2=x1;
 			y2=y1;
 		}
 
 		public void mouseDragged( MouseEvent e ){
-			if(ferramenta_atual == Ferramentas.NORMAL) {
+			if(ferramentaAtual == Ferramentas.NORMAL) {
 				x1 = e.getX();
 				y1 = e.getY();
 
