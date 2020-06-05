@@ -49,7 +49,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private JPanel contentPane, panelMenu, panelStatus, panel;
 	private JLabel labelPosX, labelPosY;
 	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonEscala, buttonRetaB,
-			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, buttonBoundary, buttonFlood, buttonHermite;
+			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, buttonBoundary, buttonFlood, buttonHermite, buttonBezier;
 	private int x1,y1,x2,y2;
 	private static MouseHandler mouse;
 	private Graphics g;
@@ -149,6 +149,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		FLOOD,
 		BOUNDARY,
         HERMITE,
+        BEZIER,
 	};
 
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
@@ -300,12 +301,19 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonRestaurar.setBackground(Color.decode("#e70065"));
 		buttonRestaurar.setHorizontalTextPosition(SwingConstants.CENTER);
 
-		//botão restaurar arquivo
+		//botão curva de Hermite
 		buttonHermite = new JButton();
 		buttonHermite.addActionListener(this);
 		buttonHermite.setIcon(hermite);
 		buttonHermite.setBackground(Color.decode("#e70065"));
 		buttonHermite.setHorizontalTextPosition(SwingConstants.CENTER);
+
+		//botão curva de Bezier
+		buttonBezier = new JButton();
+		buttonBezier.addActionListener(this);
+		buttonBezier.setIcon(bezier);
+		buttonBezier.setBackground(Color.decode("#e70065"));
+		buttonBezier.setHorizontalTextPosition(SwingConstants.CENTER);
 
 
 		/*
@@ -366,6 +374,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addComponent(buttonCS)
 					.addGap(10)
 					.addComponent(buttonLB)
+					.addGap(10)
+					.addComponent(buttonBezier)
 					//.addGap(10)
 					//.addComponent(buttonBoundary)
 					//.addGap(10)
@@ -399,6 +409,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonMirrorXY)
 						.addComponent(buttonCS)
 						.addComponent(buttonLB)
+						.addComponent(buttonBezier)
 						//.addComponent(buttonBoundary)
 						//.addComponent(buttonFlood)
 						))
@@ -459,6 +470,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			do_buttonBoundary_actionPerfomed(arg0);
 		}  else if(arg0.getSource() == buttonHermite){
 			do_buttonHermite_actionPerfomed(arg0);
+		} else if(arg0.getSource() == buttonBezier){
+			do_buttonBezier_actionPerfomed(arg0);
 		}//else if(arg0.getSource() == buttonFlood){
 			//do_buttonFlood_actionPerfomed(arg0);
 		//}
@@ -598,6 +611,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	protected void do_buttonHermite_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.HERMITE;
+	}
+
+	protected void do_buttonBezier_actionPerfomed(ActionEvent arg0){
+		ferramenta_atual = Ferramentas.BEZIER;
 	}
 
 	//Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
