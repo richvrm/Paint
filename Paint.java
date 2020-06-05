@@ -49,7 +49,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private JPanel contentPane, panelMenu, panelStatus, panel;
 	private JLabel labelPosX, labelPosY;
 	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonEscala, buttonRetaB,
-			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, buttonBoundary, buttonFlood;
+			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, buttonBoundary, buttonFlood, buttonHermite;
 	private int x1,y1,x2,y2;
 	private static MouseHandler mouse;
 	private Graphics g;
@@ -74,6 +74,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private Icon salvar    = new ImageIcon(getClass().getResource("img/salvar.png"));
 	private Icon restaurar    = new ImageIcon(getClass().getResource("img/restaurar.png"));
 	private Icon escala    = new ImageIcon(getClass().getResource("img/escala.png"));
+	private Icon hermite    = new ImageIcon(getClass().getResource("img/hermite.png"));
+	private Icon bezier    = new ImageIcon(getClass().getResource("img/bezier.png"));
 	//private Icon flood    = new ImageIcon(getClass().getResource("img/flood_fill.png"));
 	//private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
 
@@ -109,6 +111,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int DBx = -1;
 	private int DBy = -1;
 
+    //variaveis da curva Hermite
+    private int Hx1 = -1;
+    private int Hy1 = -1;
+    private int Hx2 = -1;
+    private int Hy2 = -1;
+
 	//variáveis da translação
 	private int TEx;
 	private int TEy;
@@ -139,7 +147,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		ROTACAO,
 		RECORTELB,
 		FLOOD,
-		BOUNDARY
+		BOUNDARY,
+        HERMITE,
 	};
 
 	private Ferramentas ferramenta_atual = Ferramentas.NORMAL;
@@ -291,6 +300,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonRestaurar.setBackground(Color.decode("#e70065"));
 		buttonRestaurar.setHorizontalTextPosition(SwingConstants.CENTER);
 
+		//botão restaurar arquivo
+		buttonHermite = new JButton();
+		buttonHermite.addActionListener(this);
+		buttonHermite.setIcon(hermite);
+		buttonHermite.setBackground(Color.decode("#e70065"));
+		buttonHermite.setHorizontalTextPosition(SwingConstants.CENTER);
+
+
 		/*
 		   buttonFlood = new JButton();
 		   buttonFlood.addActionListener(this);
@@ -329,6 +346,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addComponent(buttonRetangulo)
 					.addGap(10)
 					.addComponent(buttonCirculo)
+					.addGap(10)
+					.addComponent(buttonHermite)
 					)
 				.addGroup( g1_panelMenu.createSequentialGroup()
 					.addGap(60)
@@ -368,6 +387,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonRetaB)
 						.addComponent(buttonRetangulo)
 						.addComponent(buttonCirculo)
+						.addComponent(buttonHermite)
 						)
 					.addGap(10)
 					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
@@ -437,7 +457,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			do_buttonRestaurar_actionPerfomed(arg0);
 		} else if(arg0.getSource() == buttonBoundary){
 			do_buttonBoundary_actionPerfomed(arg0);
-		} //else if(arg0.getSource() == buttonFlood){
+		}  else if(arg0.getSource() == buttonHermite){
+			do_buttonHermite_actionPerfomed(arg0);
+		}//else if(arg0.getSource() == buttonFlood){
 			//do_buttonFlood_actionPerfomed(arg0);
 		//}
 	}
@@ -572,6 +594,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	protected void do_buttonLB_actionPerfomed(ActionEvent arg0){
 		ferramenta_atual = Ferramentas.RECORTELB;
+	}
+
+	protected void do_buttonHermite_actionPerfomed(ActionEvent arg0){
+		ferramenta_atual = Ferramentas.HERMITE;
 	}
 
 	//Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
@@ -746,7 +772,23 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			g.drawLine(ponto.x, ponto.y-140, ponto.x, ponto.y-140);
 			g.setColor(corE);
 		}
-
+/*
+        public void curvaH(Hermite cHermite){
+            steps = tamanho_reta(cHermite.p0, cHermite.p3);
+            for (int t=0; t < steps; t++){
+              float s = (float)t / (float)steps;    // scale s to go from 0 to 1
+              float h1 =  2 * Math.pow(s,3) - 3 * Math.pow(s,2) + 1;          // calculate basis function 1
+              float h2 = -2 * Math.pow(s,3) + 3 * Math.pow(s,2);              // calculate basis function 2
+              float h3 =  1 * Math.pow(s,3) - 2 * Math.pow(s,2) + s;          // calculate basis function 3
+              float h4 =  1 * Math.pow(s,3) - 1 * Math.pow(s,2);              // calculate basis function 4
+              int p =    h1*cHermite.p0 +                    // multiply and sum all funtions
+                         h2*cHermite.p3 +                    // together to build the interpolated
+                         h3*cHermite.p0d +                    // point along the curve.
+                         h4*cHermite.p3d;
+             // setPixel(p)                            // draw to calculated point on the curve
+            }
+        }
+*/
 		//Plota uma reta utilizando o algoritmo DDA
 		public void dda(Ponto p1, Ponto p2, Color cor) {
 			int dx, dy, passos, k;
@@ -1775,7 +1817,25 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					ReMax.y = y1;
 					recorte(1);
 				}
-			}
+			}else if(ferramenta_atual == Ferramentas.HERMITE){
+                //captura o primeiro ponto se as primeiras variaveis da
+				//reta forem -1
+				if (Hx1 == -1) {
+					Hx1 = x1;
+					Hy1 = y1;
+					//Captura o segundo ponto se as primeiras variaveis da 
+					//reta forem != -1 e as segundas forem -1
+				} else if(Hx2 == -1) {
+					Hx2 = x1;
+					Hy2 = y1;
+					Ponto Hp1 = new Ponto(Hx1, Hy1);
+					Ponto Hp2 = new Ponto(Hx2, Hy2);
+
+					Hermite curvaHermite = new Hermite(Hp1, Hp2);
+					//curvaH(curvaHermite);
+                 }
+
+            }
 			x2=x1;
 			y2=y1;
 		}
