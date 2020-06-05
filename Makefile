@@ -3,3 +3,5 @@ make:
 
 make clean:
 	rm -f *.class
+run:
+	java Paint
