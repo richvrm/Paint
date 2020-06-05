@@ -49,7 +49,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private JPanel contentPane, panelMenu, panelStatus, panel;
 	private JLabel labelPosX, labelPosY;
 	private JButton buttonCor, buttonPonto, buttonRetangulo, buttonCirculo, buttonRetaD, buttonTrans, buttonEscala, buttonRetaB,
-			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, buttonBoundary, buttonFlood, buttonHermite, buttonBezier;
+			buttonMirrorX, buttonMirrorY, buttonMirrorXY, buttonRota, buttonClear, buttonCS, buttonLB, buttonSalvar, buttonRestaurar, 
+			buttonBoundary, buttonFlood, buttonHermite, buttonBezier, buttonInterpolada;
 	private int x1,y1,x2,y2;
 	private static MouseHandler mouse;
 	private Graphics g;
@@ -76,6 +77,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private Icon escala    = new ImageIcon(getClass().getResource("img/escala.png"));
 	private Icon hermite    = new ImageIcon(getClass().getResource("img/hermite.png"));
 	private Icon bezier    = new ImageIcon(getClass().getResource("img/bezier.png"));
+	private Icon interpolada = new ImageIcon(getClass().getResource("img/interpolada.png"));
 	//private Icon flood    = new ImageIcon(getClass().getResource("img/flood_fill.png"));
 	//private Icon boundary    = new ImageIcon(getClass().getResource("img/boundary_fill.png"));
 
@@ -158,6 +160,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         HERMITE,
         BEZIER,
         BEZIEREDIT,
+        INTERPOLADA,
 	};
 
 	private Ferramentas ferramentaAtual = Ferramentas.NORMAL;
@@ -323,6 +326,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		buttonBezier.setBackground(Color.decode("#e70065"));
 		buttonBezier.setHorizontalTextPosition(SwingConstants.CENTER);
 
+		//botão curva de Bezier
+		buttonInterpolada = new JButton();
+		buttonInterpolada.addActionListener(this);
+		buttonInterpolada.setIcon(interpolada);
+		buttonInterpolada.setBackground(Color.decode("#e70065"));
+		buttonInterpolada.setHorizontalTextPosition(SwingConstants.CENTER);
+
 
 		/*
 		   buttonFlood = new JButton();
@@ -344,9 +354,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		g1_panelMenu.setHorizontalGroup(
 				g1_panelMenu.createParallelGroup(Alignment.CENTER)
 				.addGroup( g1_panelMenu.createSequentialGroup()
-					.addGap(15)
+					.addGap(30)
 					.addComponent(buttonCor)
-					.addGap(10)
+					.addGap(20)
 					.addComponent(buttonSalvar)
 					.addGap(10)
 					.addComponent(buttonRestaurar)
@@ -363,12 +373,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addGap(10)
 					.addComponent(buttonCirculo)
 					.addGap(10)
-					.addComponent(buttonHermite)
+					.addComponent(buttonEscala)
+					
 					)
 				.addGroup( g1_panelMenu.createSequentialGroup()
-					.addGap(60)
-					.addComponent(buttonEscala)
-					.addGap(10)
+					.addGap(15)
 					.addComponent(buttonTrans)
 					.addGap(10)
 					.addComponent(buttonRota)
@@ -383,8 +392,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					.addGap(10)
 					.addComponent(buttonLB)
 					.addGap(10)
+					.addComponent(buttonInterpolada)
+					.addGap(10)
+					.addComponent(buttonHermite)
+					.addGap(10)
 					.addComponent(buttonBezier)
-					//.addGap(10)
 					//.addComponent(buttonBoundary)
 					//.addGap(10)
 					//.addComponent(buttonFlood)
@@ -405,11 +417,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonRetaB)
 						.addComponent(buttonRetangulo)
 						.addComponent(buttonCirculo)
-						.addComponent(buttonHermite)
+						.addComponent(buttonEscala)
+						
 						)
 					.addGap(10)
 					.addGroup(g1_panelMenu.createParallelGroup(Alignment.BASELINE)
-						.addComponent(buttonEscala)
 						.addComponent(buttonTrans)
 						.addComponent(buttonRota)
 						.addComponent(buttonMirrorX)
@@ -417,6 +429,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 						.addComponent(buttonMirrorXY)
 						.addComponent(buttonCS)
 						.addComponent(buttonLB)
+						.addComponent(buttonInterpolada)
+						.addComponent(buttonHermite)
 						.addComponent(buttonBezier)
 						//.addComponent(buttonBoundary)
 						//.addComponent(buttonFlood)
@@ -480,7 +494,9 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			do_buttonHermite_actionPerfomed(arg0);
 		} else if(arg0.getSource() == buttonBezier){
 			do_buttonBezier_actionPerfomed(arg0);
-		}//else if(arg0.getSource() == buttonFlood){
+		} else if(arg0.getSource() == buttonInterpolada){
+			do_buttonInterpolada_actionPerfomed(arg0);
+		}		//else if(arg0.getSource() == buttonFlood){
 			//do_buttonFlood_actionPerfomed(arg0);
 		//}
 	}
@@ -623,6 +639,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	protected void do_buttonBezier_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.BEZIER;
+	}
+
+	protected void do_buttonInterpolada_actionPerfomed(ActionEvent arg0){
+		ferramentaAtual = Ferramentas.INTERPOLADA;
 	}
 
 	//Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
@@ -1868,7 +1888,8 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					ReMax.y = y1;
 					recorte(1);
 				}
-			}else if(ferramentaAtual == Ferramentas.HERMITE){
+			} else if (ferramentaAtual == Ferramentas.INTERPOLADA) {
+			} else if(ferramentaAtual == Ferramentas.HERMITE){
                 //captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
 				if (Hx1 == -1) {
@@ -1886,7 +1907,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					//curvaH(curvaHermite);
                  }
 
-            }else if(ferramentaAtual == Ferramentas.BEZIER){
+            } else if(ferramentaAtual == Ferramentas.BEZIER){
                 //captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
 				if (Bx1 == -1) {
@@ -1905,7 +1926,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                     ferramentaAtual = Ferramentas.BEZIEREDIT;
                  }
 
-            }else if(ferramentaAtual == Ferramentas.BEZIEREDIT){
+            } else if(ferramentaAtual == Ferramentas.BEZIEREDIT){
                 curvaB(Bezier.bezier, Color.WHITE);
                 Ponto p = new Ponto(x1,y1);
                 if(zeroOUtres){
