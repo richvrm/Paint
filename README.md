@@ -130,7 +130,8 @@ Selecione a ferramenta de preenchimento.
 Um clique na tela e começa a preencher a área a qual o ponto clicado pertence.
 
 ### Alunos
- - Laura Nunes de Andrade
- - Lucca Augusto Moreira Santos
- - Pedro Achilles Carvalho
- - Richard Vinícius Rezende Mariano
+
++ [Laura N. de Andrade](https://github.com/lauranandrade)
++ [Lucca A. M. Santos](https://github.com/lrr68)
++ [Richard V. R. Mariano](https://github.com/richvrm)
++ [Pedro Achilles Carvalho](https://github.com/PedroAchilles)
