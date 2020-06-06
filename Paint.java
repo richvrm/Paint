@@ -41,7 +41,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-// pedro
 
 public class Paint extends JFrame implements ActionListener{ //MouseListener, MouseMotionListener{
 
@@ -127,6 +126,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
     private int Hx2 = -1;
     private int Hy2 = -1;
 
+	//variaveis da curva Interpolada
+	private int Ix1 = -1;
+	private int Iy1 = -1;
+	private int Ix2 = -1;
+	private int Iy2 = -1;
+
 	//variáveis da translação
 	private int TEx;
 	private int TEy;
@@ -163,6 +168,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
         BEZIER,
         BEZIEREDIT,
         INTERPOLADA,
+		INTERPOLADAEDIT,
 	};
 
 	private Ferramentas ferramentaAtual = Ferramentas.NORMAL;
@@ -646,6 +652,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	}
 
 	protected void do_buttonInterpolada_actionPerfomed(ActionEvent arg0){
+		zeroOUtres = true;
 		ferramentaAtual = Ferramentas.INTERPOLADA;
 	}
 
@@ -847,6 +854,32 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             Bx1 = Bx2 = By1 = By2 = -1;
 		}
 
+		private void curvaI(Interpolada curva, Color c) {
+			//int p3x = (1*curva.p0.x) + (1*curva.p3.x) + (1*curva.p0d.x) + (1*curva.p3d.x);
+			//int p2x = (1*curva.p0.x) + ((2/3)*curva.p3.x) + ((2/3)*curva.p0d.x) + ((2/3)*curva.p3d.x);
+			//int p1x = (1*curva.p0.x) + ((1/3)*curva.p3.x) + ((1/3)*curva.p0d.x) + ((1/3)*curva.p3d.x);
+			//int p0x = (1*curva.p0.x) + (0*curva.p3.x) + (0*curva.p0d.x) + (0*curva.p3d.x);
+
+			double p3x = (-4.5*curva.p0.x) + (13.5*curva.p0d.x) + (-13.5*curva.p3d.x) + (4.5*curva.p3.x);
+			double p2x = (9*curva.p0.x) + (-22.5*curva.p0d.x) + (18*curva.p3d.x) + (-4.5*curva.p3.x);
+			double p1x = (-5.5*curva.p0.x) + (9*curva.p0d.x) + (-4.5*curva.p3d.x) + (1*curva.p3.x);
+			double p0x = (1*curva.p0.x) + (0*curva.p0d.x) + (0*curva.p3d.x) + (0*curva.p3.x);
+
+			double p3y = (-4.5*curva.p0.y) + (13.5*curva.p0d.y) + (-13.5*curva.p3d.y) + (4.5*curva.p3.y);
+			double p2y = (9*curva.p0.y) + (-22.5*curva.p0d.y) + (18*curva.p3d.y) + (-4.5*curva.p3.y);
+			double p1y = (-5.5*curva.p0.y) + (9*curva.p0d.y) + (-4.5*curva.p3d.y) + (1*curva.p3.y);
+			double p0y = (1*curva.p0.y) + (0*curva.p0d.y) + (0*curva.p3d.y) + (0*curva.p3.y);
+
+			for (int i = 0; i < steps ; i++) {
+				double u = i / (steps-1.0);
+				int xi = (int) (p0x + p1x * u + p2x * u * u + p3x * u * u * u);
+				int yi = (int) (p0y + p1y * u + p2y * u * u + p3y * u * u * u);
+
+				Ponto p = new Ponto(xi, yi);
+				setPixel(p, c);
+			}
+			Ix1 = Ix2 = Iy1 = Iy2 = -1;
+		}
 
         public void curvaH(Hermite curva, Color c){
             int p3x = (2*curva.p0.x) + (-2*curva.p3.x) + (1*curva.p0d.x) + (1*curva.p3d.x);
@@ -1909,6 +1942,33 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 					recorte(1);
 				}
 			} else if (ferramentaAtual == Ferramentas.INTERPOLADA) {
+				//captura o primeiro ponto se as primeiras variaveis da
+				//reta forem -1
+				if (Ix1 == -1) {
+					Ix1 = x1;
+					Iy1 = y1;
+					//Captura o segundo ponto se as primeiras variaveis da
+					//reta forem != -1 e as segundas forem -1
+				} else if (Ix2 == -1) {
+					Ix2 = x1;
+					Iy2 = y1;
+					Ponto Ip1 = new Ponto(Ix1, Iy1);
+					Ponto Ip2 = new Ponto(Ix2, Iy2);
+
+					Interpolada.interpolada = new Interpolada(Ip1, Ip2);
+					curvaI(Interpolada.interpolada, corE);
+					ferramentaAtual = Ferramentas.INTERPOLADAEDIT;
+				}
+			} else if(ferramentaAtual == Ferramentas.INTERPOLADAEDIT) {
+				curvaI(Interpolada.interpolada, Color.WHITE);
+				Ponto p = new Ponto(x1,y1);
+				if(zeroOUtres){
+					Interpolada.interpolada.setP0d(p);
+				}else{
+					Interpolada.interpolada.setP3d(p);
+				}
+				curvaI(Interpolada.interpolada, corE);
+				zeroOUtres = !zeroOUtres;
 			} else if(ferramentaAtual == Ferramentas.HERMITE){
                 //captura o primeiro ponto se as primeiras variaveis da
 				//reta forem -1
@@ -1992,5 +2052,4 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 	}
-
 }
