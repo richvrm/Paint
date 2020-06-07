@@ -1,6 +1,9 @@
 # Paint
 Este  trabalho  tem  como  objetivo  complementar  os  conhecimentos  teóricos  na  disciplina  de Computação Gráfica com o desenvolvimento de uma aplicação de desenho gráfico assistido, como o Paint Brush.
 
+### Vídeo exemplificando
+https://www.youtube.com/watch?v=YJTuOonM_xQ&lc=UgzJgsu0fuT_3gFg7614AaABAg
+
 ### Instalar
 ```
 git clone https://github.com/lrr68/Paint
