@@ -87,7 +87,7 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	private int Largura = 800;
 	private int Altura = 540;
 
-	// Variáveis relacionadas às funções
+	// VARIÁVEIS ESPECÍFICAS DAS FUNÇÕES
 
 	//variáveis das coordenadas do retangulo
 	private int Rx1 = -1;
@@ -460,14 +460,17 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 	}
 
-	//capturar click em botoes
+	/**
+	 * Captura cliques em botões
+	 * @param arg0 evento de clique do mouse
+	 */
 	public void actionPerformed(ActionEvent arg0){
 		if(arg0.getSource() == buttonCor){
 			do_buttonCor_actionPerfomed(arg0);
 		} else if(arg0.getSource() == buttonPonto){
 			do_buttonPonto_actionPerfomed(arg0);
 		} else if(arg0.getSource() == buttonRetangulo){
-				do_buttonRetangulo_actionPerfomed(arg0);
+			do_buttonRetangulo_actionPerfomed(arg0);
 		} else if(arg0.getSource() == buttonCirculo){
 			do_buttonCirculo_actionPerfomed(arg0);
 		} else if(arg0.getSource() == buttonRetaD){
@@ -504,12 +507,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			do_buttonBezier_actionPerfomed(arg0);
 		} else if(arg0.getSource() == buttonInterpolada){
 			do_buttonInterpolada_actionPerfomed(arg0);
-		}		//else if(arg0.getSource() == buttonFlood){
+		}// else if(arg0.getSource() == buttonFlood){
 			//do_buttonFlood_actionPerfomed(arg0);
 		//}
 	}
 
-	//mudar cor
+	/**
+	 * Muda a cor do pincel
+	 * @param arg0 evento de clique no botão de mudar cor
+	 */
 	protected void do_buttonCor_actionPerfomed(ActionEvent arg0){
 		Cores = new JColorChooser();
 		corE = Cores.showDialog(null,"Escolha a cor", Color.BLACK);
@@ -517,33 +523,58 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		g.setColor(corE);
 	}
 
-	//set ferramenta atual de acordo com o botao clicado
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonPonto_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.NORMAL;
 	}
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonRetangulo_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.RETANGULO;
 	}
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonCirculo_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.CIRC_BRESENHAM;
 	}
 
-
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonReta_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.DDA;
 	}
 
-
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonRetaB_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.RETA_BRESENHAM;
 	}
 
+	/**
+	 * Chama a funcao de salvar imagem no computador
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonSalvar_actionPerfomed(ActionEvent arg0){
 		salvar();
 	}
 
+	/**
+	 * Abre uma imagem do computador
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonRestaurar_actionPerfomed(ActionEvent arg0){
 		String arq;
 		arq = JOptionPane.showInputDialog("Digite o nome do arquivo:");
@@ -556,14 +587,23 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 	}
 	/*
-	   protected void do_buttonFlood_actionPerfomed(ActionEvent arg0){
-	   ferramentaAtual = Ferramentas.FLOOD;
-	   }*/
+	protected void do_buttonFlood_actionPerfomed(ActionEvent arg0) {
+		ferramentaAtual = Ferramentas.FLOOD;
+	}
+	*/
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonBoundary_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.BOUNDARY;
 	}
 
+	/**
+	 * Pega os dados do vetor de translacao e seta a ferramenta atual para TRANSLACAO
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonTrans_actionPerfomed(ActionEvent arg0){
 		String xis;
 		String yis;
@@ -583,6 +623,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 	}
 
+	/**
+	 * Pega os dados do vetor de escala e seta a ferramenta atual para ESCALA
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonEscala_actionPerfomed(ActionEvent arg0){
 		String xis;
 		String yis;
@@ -602,18 +646,34 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 	}
 
+	/**
+	 * Seta button mirror em X
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonMirrorX_actionPerfomed(ActionEvent arg0){
 		mouse.mirror(true,false);
 	}
 
+	/**
+	 * Seta button mirror em Y
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonMirrorY_actionPerfomed(ActionEvent arg0){
 		mouse.mirror(false,true);
 	}
 
+	/**
+	 * Seta button mirror em XY
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonMirrorXY_actionPerfomed(ActionEvent arg0){
 		mouse.mirror(true,true);
 	}
 
+	/**
+	 * Pega o angulo de rotacao e seta a ferramento atual para ROTACAO
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonRota_actionPerfomed(ActionEvent arg0){
 		String grau;
 		grau = JOptionPane.showInputDialog("Digite o grau:");
@@ -628,35 +688,61 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 	}
 
+	/**
+	 * Limpa a tela
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonClear_actionPerfomed(ActionEvent arg0){
 		panel.repaint();
 		mouse.apagartudo();
 	}
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonCS_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.RECORTE;
 	}
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonLB_actionPerfomed(ActionEvent arg0){
 		ferramentaAtual = Ferramentas.RECORTELB;
 	}
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonHermite_actionPerfomed(ActionEvent arg0){
         zeroOUtres = true;
 		ferramentaAtual = Ferramentas.HERMITE;
 	}
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonBezier_actionPerfomed(ActionEvent arg0){
         zeroOUtres = true;
 		ferramentaAtual = Ferramentas.BEZIER;
 	}
 
+	/**
+	 * Seta a ferramenta atual de acordo com o botao clicado
+	 * @param arg0 evento de clique do mouse
+	 */
 	protected void do_buttonInterpolada_actionPerfomed(ActionEvent arg0){
 		zeroOUtres = true;
 		ferramentaAtual = Ferramentas.INTERPOLADA;
 	}
 
-	//Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
+	/**
+	 * Escreve em um arquivo todos os objetos criados no canvas em seu estado atual
+	 */
 	private void salvar() {
 		RetaDDA retaDDA;
 		RetaBRE retaBRE;
@@ -699,27 +785,50 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 	//Classe para lidar com eventos de mouse
 	public class MouseHandler extends MouseAdapter
 	{
-		//Métodos para Apagar=======================
-		//plotam os objetos com a cor do fundo
-		//Note que os métodos de apagar não excluem os objetos
-		//pois são usados para redesenhar esses objetos
-		//O único método que realmente exclui é o apagartudo()
+		// MÉTODOS PARA APAGAR
+
+		/*
+		Plotam os objetos com a cor do fundo.
+		Note que os métodos de apagar não excluem os objetos,
+		pois são usados para redesenhar esses objetos.
+		O único método que realmente exclui é o apagartudo()
+		*/
+
+		/**
+		 * Apaga a Circunferencia da tela
+		 * @param circ
+		 */
 		public void apaga_circunferencia_bresenham(Circunferencia circ) {
 			circunferencia_bresenham(circ, Color.WHITE);
 		}
 
+		/**
+		 * Apaga a Reta de Bresenham da tela
+		 * @param reta
+		 */
 		public void apaga_reta_bresenham(RetaBRE reta) {
 			reta_bresenham(reta.p1, reta.p2, Color.WHITE);
 		}
 
+		/**
+		 * Apaga o retangulo da tela
+		 * @param retangulo
+		 */
 		public void apaga_retangulo(Retangulo retangulo) {
 			retangulo(retangulo, Color.WHITE);
 		}
 
+		/**
+		 * Apaga a Reta DDA da tela
+		 * @param reta
+		 */
 		public void apaga_dda(RetaDDA reta) {
 			dda(reta.p1, reta.p2, Color.WHITE);
 		}
 
+		/**
+		 * Apaga todos os objetos da tela
+		 */
 		public void apagartudo(){
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -739,9 +848,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		//Método para Ler de arquivos ================
-		//Le um estado do canvas salvo anteriormente
-		//e recria e plota os objetos
+		// MÉTODO PARA LEITURA DE ARQUIVOS
+
+		/**
+		 * Le um estado do canvas salvo anteriormente e recria e plota os objetos
+		 * @param nome nome do arquivo a ser restaurado
+		 */
 		private void restaurar(String nome) {
 			Reader reader = null;
 			BufferedReader br = null;
@@ -806,22 +918,28 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		}
 
-		// Métodos para plotagem =============================
+		// MÉTODOS PARA PLOTAGEM
 
-		//calcula o tamanho da reta fg
-		//Tamanho da reta = sqrt(dx^2 + dy^2)
-		public int tamanho_reta(Ponto f, Ponto g /*hihihi*/) {
+		/**
+		 * Calcula o tamanho da reta fg -> sqrt(dx^2 + dy^2)
+		 * @param f ponto inicial da reta fg
+		 * @param g ponto final da reta fg
+		 * @return
+		 */
+		public int tamanho_reta(Ponto f, Ponto g) {
 			double tam = Math.sqrt( ( (g.x-f.x)*(g.x-f.x) + (g.y-f.y)*(g.y-f.y) ) );
 			return (int) Math.round(tam);
 		}
 
-		//Seta um ponto individual na tela
-		//Por utilizarmos uma interface java,
-		//não conseguimos interagir diretamente
-		//com o canvas. Foi necessário
-		//utilizar a função drawLine já implementada no java
-		//só utilizamos ela aqui para fazer uma linha de um ponto até
-		//ele mesmo, ou seja, setar um pixel
+		/**
+		 * Seta um ponto individual na tela.
+		 * Por utilizarmos uma interface java,
+		 * nao conseguimos interagir diretamente com o canvas.
+		 * Foi necessario utlizar a funcao drawLine() do java,
+		 * plotando uma reta de um ponto ate ele mesmo (um ponto)
+		 * @param ponto
+		 * @param cor
+		 */
 		public void setPixel(Ponto ponto, Color cor) {
 			setupDesenho();
 			g.setColor(cor);
@@ -829,7 +947,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			g.setColor(corE);
 		}
 
-		public Ponto lerp(Ponto f, Ponto g /*hihihi*/, double t) {
+		/**
+		 * Funcao utilizadas nos calculos das curvas parametricas
+		 * @param f ponto inicial
+		 * @param g ponto final
+		 * @param t fator multiplicador
+		 * @return retorna o Ponto gerado
+		 */
+		public Ponto lerp(Ponto f, Ponto g, double t) {
 			Ponto retorno = new Ponto();
 
 			retorno.x = f.x + (int)Math.round((g.x-f.x) * t);
@@ -837,6 +962,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			return retorno;
 		}
 
+		/**
+		 * Calcula ponto para a curva de Bezier
+		 * @param curva
+		 * @param t fator multiplicador
+		 * @return Ponto calculado para a curva de Bezier
+		 */
 		public Ponto pontoCurvaB(Bezier curva,double t) {
 			Ponto ab   = lerp(curva.p0, curva.p0d, t);
 			Ponto bc   = lerp(curva.p0d, curva.p3d, t);
@@ -846,6 +977,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			return lerp(abbc, bccd, t);
 		}
 
+		/**
+		 * Plota a curva de Bezier
+		 * @param curva
+		 * @param c cor dos pixels
+		 */
 		public void curvaB(Bezier curva, Color c) {
 			for (int i=0; i< steps; ++i) {
 				double t = i / (steps-1.0);
@@ -854,12 +990,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
             Bx1 = Bx2 = By1 = By2 = -1;
 		}
 
+		/**
+		 * Plota a curva interpolada
+		 * @param curva
+		 * @param c cor dos pixels
+		 */
 		private void curvaI(Interpolada curva, Color c) {
-			//int p3x = (1*curva.p0.x) + (1*curva.p3.x) + (1*curva.p0d.x) + (1*curva.p3d.x);
-			//int p2x = (1*curva.p0.x) + ((2/3)*curva.p3.x) + ((2/3)*curva.p0d.x) + ((2/3)*curva.p3d.x);
-			//int p1x = (1*curva.p0.x) + ((1/3)*curva.p3.x) + ((1/3)*curva.p0d.x) + ((1/3)*curva.p3d.x);
-			//int p0x = (1*curva.p0.x) + (0*curva.p3.x) + (0*curva.p0d.x) + (0*curva.p3d.x);
-
 			double p3x = (-4.5*curva.p0.x) + (13.5*curva.p0d.x) + (-13.5*curva.p3d.x) + (4.5*curva.p3.x);
 			double p2x = (9*curva.p0.x) + (-22.5*curva.p0d.x) + (18*curva.p3d.x) + (-4.5*curva.p3.x);
 			double p1x = (-5.5*curva.p0.x) + (9*curva.p0d.x) + (-4.5*curva.p3d.x) + (1*curva.p3.x);
@@ -881,6 +1017,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			Ix1 = Ix2 = Iy1 = Iy2 = -1;
 		}
 
+		/**
+		 * Plota a curva de Hermite
+		 * @param curva
+		 * @param c cor dos pixels
+		 */
         public void curvaH(Hermite curva, Color c){
             int p3x = (2*curva.p0.x) + (-2*curva.p3.x) + (1*curva.p0d.x) + (1*curva.p3d.x);
             int p2x = (-3*curva.p0.x) + (3*curva.p3.x) + (-2*curva.p0d.x) + (-1*curva.p3d.x);
@@ -897,23 +1038,18 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
                 int xh = (int) (p0x + p1x * u + p2x * u * u + p3x * u * u * u);
                 int yh = (int) (p0y + p1y * u + p2y * u * u + p3y * u * u * u);
 
-       
-                /*
-                double h1 =  (2 * Math.pow(t,3)) - (3 * Math.pow(t,2)) + 1;          // calculate basis function 1
-                double h2 = -(2 * Math.pow(t,3)) + (3 * Math.pow(t,2));              // calculate basis function 2
-                double h3 =  (1 * Math.pow(t,3)) - (2 * Math.pow(t,2)) + t;          // calculate basis function 3
-                double h4 =  (1 * Math.pow(t,3)) - (1 * Math.pow(t,2));              // calculate basis function 4
-                //int xh = (int)((h1*curva.p0.x)+(h2*curva.p3.x)+(h3*curva.p0d.x)+(h4*curva.p3d.x));
-                //qint yh = (int)((h1*curva.p0.y)+(h2*curva.p3.y)+(h3*curva.p0d.y)+(h4*curva.p3d.y));
-                */
-
                 Ponto p = new Ponto(xh, yh);
                 setPixel(p,c);                            // draw to calculated point on the curve
             }
             Hx1 = Hx2 = Hy1 = Hy2 = -1;
         }
 
-		//Plota uma reta utilizando o algoritmo DDA
+		/**
+		 * Plota uma reta utilizando o algoritmo DDA
+		 * @param p1 ponto inicial da reta
+		 * @param p2 ponto final da reta
+		 * @param cor
+		 */
 		public void dda(Ponto p1, Ponto p2, Color cor) {
 			int dx, dy, passos, k;
 			double x_inc, y_inc, x, y;
@@ -939,7 +1075,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			DDAx1 = DDAy1 = DDAx2 = DDAy2 = -1;
 		}
 
-		//Plota uma reta utilizando o algoritmo de Bresenham
+		/**
+		 * Plota uma reta utilizando o algoritmo de Bresenham
+		 * @param p1 ponto inicial da reta
+		 * @param p2 ponto final da reta
+		 * @param cor
+		 */
 		public void reta_bresenham(Ponto p1, Ponto p2, Color cor) {
 			int x, y, dx, dy, i, incrx, incry, const1, const2, p;
 			Ponto ponto;
@@ -995,9 +1136,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			RBx1 = RBy1 = RBx2 = RBy2 = -1;
 		}
 
-		//Plota um retangulo utilizando seus pontos diagonais
+		/**
+		 * Plota um retangulo utilizando seus pontos diagonais
+		 * @param r objeto retangulo ja calculado
+		 * @param cor
+		 */
 		public void retangulo(Retangulo r, Color cor) {
-			//Reta superior
+			//reta superior
 			reta_bresenham(r.p1, r.p3, cor);
 			//lateral esquerda
 			reta_bresenham(r.p1, r.p4, cor);
@@ -1008,8 +1153,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			Rx1 = Ry1 = Rx2 = Ry2 = -1;
 		}
 
-		//Plota o segundo, terceiro e quarto quadrantes da circunferência
-		//refletindo o primeiro quadrante
+		/**
+		 * Plota o segundo, terceiro e quarto quadrantes da circunferência refletindo o primeiro quadrante
+		 * @param centro
+		 * @param x coordenada X do ponto calculado
+		 * @param y coordenada Y do ponto calculado
+		 * @param cor
+		 */
 		public void colorirSimetricos(Ponto centro, int x, int y, Color cor) {
 			Ponto[] pontos = new Ponto[8];
 			pontos[0] = new Ponto(centro.x + x, centro.y + y);
@@ -1024,9 +1174,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				setPixel(pontos[i], cor);
 		}
 
-		// Plota o primeiro quadrante da circunferência utilizando
-		// o algoritmo de bresenham e chama colorirSimetricos para
-		// plotar os outros
+		/**
+		 * Plota o primeiro quadrante da circunferência utilizando
+		 * o algoritmo de bresenham e chama colorirSimetricos para
+		 * plotar os outros.
+		 * @param circ objeto circunferencia
+		 * @param cor
+		 */
 		public void circunferencia_bresenham(Circunferencia circ, Color cor) {
 			int x, y, p;
 			x = 0;
@@ -1045,11 +1199,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		//Métodos de transformações=========================================
+		// MÉTODOS DE TRANSFORMAÇÕES
 
-		// boolean plotar: controla se vai plotar os objetos ou só transformá-los
-		// dessa forma podemos utilizar o método juntamente com a escala
-		// utiliza os parâmetros globais TEx e TEy (vetor de translacao)
+		/**
+		 * Realiza a translação, pode ser utilizada com a escala
+		 * e utiliza TEx e TEy (vetor de translacao)
+		 * @param plotar controla se vai plotar os objetos ou só transformá-los
+		 */
 		public void translacao(boolean plotar) {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -1118,8 +1274,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		//Aplica a escala nos objetos utilizando os parâmetros globais
-		//TAx e TAy (vetor de escala)
+		/**
+		 * Aplica a escala nos objetos utilizando os parâmetros globais
+		 * TAx e TAy (vetor de escala)
+		 */
 		public void escala() {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -1223,12 +1381,14 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		// Reflexoes,
-		// x -> x constante, y varia
-		// y -> y constante, x varia
-		// se rx for True, espelha em x
-		// se ry for True, espelha em y
-		// se ambos forem True, espelha em xy
+		/**
+		 * Realiza as reflexões
+		 * x -> x constante, y varia
+		 * y -> y constante, x varia
+		 * Se rx e ry forem True, espelha em XY
+		 * @param rx se for True, espelha em X
+		 * @param ry se for True, espelha em Y
+		 */
 		public void mirror(boolean rx, boolean ry) {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -1301,9 +1461,10 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 
 		}
 
-		//método para rotacionar objetos
-		//utiliza a variável global Grau
-		//Não se rotaciona um círculo por motivos óbvios
+		/**
+		 * Método de rotação, utiliza a variavel Grau
+		 * Circunferências não precisam ser rotacionadas
+		 */
 		public void rotation() {
 			RetaDDA retaDDA;
 			RetaBRE retaBRE;
@@ -1398,13 +1559,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
+		// MÉTODOS DE RECORTE
 
-		//Métodos de recorte de regiões =================================================
-		//ReMin.x, ReMax.x, ReMin.y, ReMax.y -> limites da janela
-
-		// Método geral do recorte.
-		// pega os dados da janela, os trata se for necessário
-		// e chama o método de recorte ativo no momento
+		/**
+		 * Método geral do recorte.
+		 * Pega os dados da janela, os trata se for necessário
+		 * e chama o método de recorte ativo no momento
+		 * ReMin.x, ReMax.x, ReMin.y, ReMax.y -> limites da janela
+		 * @param recorte indica qual recorte será aplicado
+		 */
 		public void recorte(int recorte) {
 			//Troca valores caso ponto minimo seja maximo em x ou em y
 			if(ReMin.x > ReMax.x) {
@@ -1466,8 +1629,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			ReMin.x=-1;ReMin.y=-1;
 		}
 
-		// Calcula o código de região utilizado no 
-		// algoritmo cohenSutherland
+		/**
+		 * Calcula o código de região utilizado no algoritmo cohenSutherland
+		 * @param p Ponto da região
+		 * @return código da região calculado
+		 */
 		public int region_code(Ponto p) {
 			int codigo =0;
 			if (p.x < ReMin.x) {
@@ -1485,8 +1651,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			return codigo;
 		}
 
-		//Plota segmentos de retas que estejam dentro da região
-		//selecionada utilizando o region_code
+		/**
+		 * Plota segmentos de retas que estejam dentro da região
+		 * selecionada utilizando o region_code
+		 * @param p1 ponto inicial
+		 * @param p2 ponto final
+		 */
 		public void cohenSutherland(Ponto p1,Ponto p2) {
 			boolean aceite = false;
 			boolean feito = false;
@@ -1544,9 +1714,13 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			}
 		}
 
-		//Determina se a reta está dentro, fora ou parciamente dentro
-		//da região selecionada
-		//Utilizado no liangBarsky
+		/**
+		 * Determina se a reta está dentro, fora ou parciamente dentro
+		 * da região selecionada utilizando liangBarsky
+		 * @param p ponto inicial da reta
+		 * @param q ponto final da reta
+		 * @return true se estiver completamente dentro da região
+		 */
 		public boolean cliptest(float p, float q){
 			boolean result = true;
 			float r;
@@ -1574,8 +1748,12 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 			return result;
 		}
 
-		//Plota somente segmentos de reta que estejam dentro da área
-		//selecionada utilizando cliptest
+		/**
+		 * Plota somente segmentos de reta que estejam dentro da área
+		 * selecionada utilizando cliptest
+		 * @param p1 ponto inicial
+		 * @param p2 ponto final
+		 */
 		public void liangBarsky(Ponto p1, Ponto p2) {
 			u1 = 0;
 			u2 = 1;
@@ -1607,13 +1785,15 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 
-		//Métodos de preenchimento de áreas =========================================
+		// MÉTODOS PARA PREENCHIMENTO DE ÁREAS
 
-		//Retorna True se o ponto p pertence à algum
-		//objeto plotado
-		//testa se p em relacao a um ponto do objeto tem
-		//o mesmo coeficiente angular que os pontos
-		//conhecidos do objeto e esta entre os dois pontos
+		/**
+		 * Testa se o ponto p em relacao a um ponto do objeto tem
+		 * o mesmo coeficiente angular que os pontos
+		 * conhecidos do objeto e esta entre os dois pontos.
+		 * @param p ponto a ser testado
+		 * @return true se o ponto p pertence à algum objeto plotado
+		 */
 		public boolean toca_borda(Ponto p) {
 			boolean retorno = false;
 			RetaDDA retaDDA;
@@ -1808,25 +1988,37 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 		}
 
 		/*
-		//x, y = ponto inicial
-		//cor_preenche = cor de preenchiemnto
-		//cor_antiga = cor do interior
+		/**
+		 * Realiza preenchimento de área flood
+		 * @param x X do ponto inicial
+		 * @param y Y do ponto inicial
+		 * @param cor_preenche
+		 * @param cor_antiga
+		 */
+		/*
 		public void flood(int x, int y, int cor_preenche, int cor_antiga){
-		if (inquirir_cor(x,y) = cor_antiga){
-		Ponto p = new Ponto(x, y);
-		setPixel(p,cor_preenche);
-		flood(x+1,y,cor_preenche,cor_antiga);
-		flood(x-1,y,cor_preenche,cor_antiga);
-		flood(x,y+1,cor_preenche,cor_antiga);
-		flood(x,y-1,cor_preenche,cor_antiga);
+			if (inquirir_cor(x,y) = cor_antiga){
+				Ponto p = new Ponto(x, y);
+				setPixel(p,cor_preenche);
+				flood(x+1,y,cor_preenche,cor_antiga);
+				flood(x-1,y,cor_preenche,cor_antiga);
+				flood(x,y+1,cor_preenche,cor_antiga);
+				flood(x,y-1,cor_preenche,cor_antiga);
+			}
 		}
-		}*/
+		*/
 
-		//x, y = ponto inicial
-		//algoritmo adaptado pois nao usamos matriz de pixels
-		//ele verifica se chegou na borda olhando se o ponto
-		//intercepta algum objeto criado
-		//preenche em uma direção até chegar na borda. Depois preenche em outra
+		/*
+		/**
+		 * Realiza preenchimento boundary fill
+		 * Algoritmo adaptado pois nao usamos matriz de pixels.
+		 * Ele verifica se chegou na borda olhando se o ponto
+		 * intercepta algum objeto criado e preenche em uma
+		 * direção até chegar na borda, depois preenche em outra.
+		 * @param x
+		 * @param y
+		 * @param lim
+		 */
 		/*
 		public void boundary(int x, int y,int lim){
 			Ponto p = new Ponto(x, y);
@@ -1838,13 +2030,11 @@ public class Paint extends JFrame implements ActionListener{ //MouseListener, Mo
 				boundary(x,y+1,lim-1);
 				boundary(x,y-1,lim-1);
 			}
-		}*/
+		}
+		*/
 
+		// MÉTODOS PARA CAPTURAR EVENTOS
 
-		// Métodos para capturar eventos ==================================
-
-		// Captura um clique e define seu significado
-		// conforme a ferramenta em uso
 		public void mousePressed( MouseEvent e ){
 			x1 = e.getX();
 			y1 = e.getY();
