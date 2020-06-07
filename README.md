@@ -25,6 +25,9 @@ O programa dispõe dos seguintes recursos:
 + Reflexões nos eixos X, Y e XY
 + Recortes com Cohen-Sutherland e Liang-Barsky
 + Preenchimento Boundary Fill (Faltam melhorias na implementação) 
++ Curvas Interpoladas
++ Curvas de Hermite
++ Curvas de Bezier
 
 Para selecionar uma ferramenta, clique no botão que a representa.
 
@@ -155,5 +158,5 @@ Os dois últimos cliques poderão ser alterados, formando curvas diferentes.
 
 + [Laura N. de Andrade](https://github.com/lauranandrade)
 + [Lucca A. M. Santos](https://github.com/lrr68)
-+ [Richard V. R. Mariano](https://github.com/richvrm)
 + [Pedro Achilles Carvalho](https://github.com/PedroAchilles)
++ [Richard V. R. Mariano](https://github.com/richvrm)
