@@ -129,6 +129,28 @@ p1
 Selecione a ferramenta de preenchimento.
 Um clique na tela e começa a preencher a área a qual o ponto clicado pertence.
 
+#### Curvas Interpoladas
+Selecione a ferramenta de curvas interpoaldas.
+O primeiro clique na tela indica o começo da curva, o segundo indica o final. Estes pontos serão fixos.
+Estes dois cliques formarão uma linha entre os dois pontos. Após isso, o próximo clique deverá ser a direçãol do primeiro ponto de controle.
+E o último, deverá ser a direção do segundo ponto de controle.
+Os dois últimos cliques poderão ser alterados, formando curvas diferentes.
+
+#### Curvas de Hermite
+Selecione a ferramenta de curvas de Hermite.
+O primeiro clique na tela indica o começo da curva, o segundo indica o final. Estes pontos serão fixos.
+Estes dois cliques formarão uma linha entre os dois pontos. Após isso, o próximo clique deverá ser a direção do primeiro ponto de controle.
+E o último, deverá ser a direção oposta do segundo ponto de controle.
+Os dois últimos cliques poderão ser alterados, formando curvas diferentes.
+
+#### Curvas de Bezier
+Selecione a ferramenta de curvas de Bezier.
+O primeiro clique na tela indica o começo da curva, o segundo indica o final. Estes pontos serão fixos.
+Estes dois cliques formarão uma linha entre os dois pontos. Após isso, o próximo clique deverá ser a direçãol do primeiro ponto de controle.
+E o último, deverá ser a direção do segundo ponto de controle.
+Os dois últimos cliques poderão ser alterados, formando curvas diferentes.
+
+
 ### Alunos
 
 + [Laura N. de Andrade](https://github.com/lauranandrade)
